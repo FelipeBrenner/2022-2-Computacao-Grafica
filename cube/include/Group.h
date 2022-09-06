@@ -5,8 +5,11 @@ class Group {
   public:
     string name;
     string material;
-    vector<Face*> faces;
+    vector <Face*> faces;
     GLuint vao;
 
-    Group(string n, string m);
+  Group(string n, string m) {
+    name = n;
+    material = m;
+  }
 };
