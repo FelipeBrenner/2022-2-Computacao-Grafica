@@ -9,15 +9,101 @@
 	Lucas Oliveira
 */
 
+// Funcoes pra movimentar a camera
+void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+void processInput(GLFWwindow* window);
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+// settings
+const unsigned int SCR_WIDTH = 800;
+const unsigned int SCR_HEIGHT = 600;
+
+// camera
+/*glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+*/
+glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+bool firstMouse = true;
+float yaw = -90.0f;	// yaw is initialized to -90.0 degrees since a yaw of 0.0 results in a direction vector pointing to the right so we initially rotate a bit to the left.
+float pitch = 0.0f;
+float lastX = 800.0f / 2.0;
+float lastY = 600.0 / 2.0;
+float fov = 45.0f;
+
+Mesh* read(string filename) {
+	Mesh* mesh = new Mesh;
+	Group* group = new Group;
+	ifstream archive(filename);
+	while (!archive.eof()) {
+		string line;
+		getline(archive, line);
+		stringstream sline{};
+		sline << line;
+		string temp;
+		sline >> temp;
+		if (temp == "v") {
+			float x, y, z;
+			sline >> x >> y >> z;
+			glm::vec3* vertex = new glm::vec3(x, y, z);
+			mesh->vertex.push_back(vertex);
+		}else if (temp == "f") {
+			// implementar lógica de varições
+			// para face: v, v/t/n, v/t e v//n
+			// while enquanto tem tokens em sline:
+			//cout << sline << endl;
+			string x;
+
+			Face* face = new Face;
+			while (sline >> x) {
+				stringstream stoken;
+				stoken << x;
+				string aux;
+				while (getline(stoken, aux, '/')) {
+					face->verts.push_back(stoi(aux));
+				}
+				Face* face = new Face;
+			}
+			group->faces.push_back(face);
+		}
+	}
+	mesh->groups.push_back(group);
+	return mesh;
+}
 
 int main() {
-	GLFWwindow* window = NULL;
+
+	// glfw: initialize and configure
+	glfwInit();
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+	// glfw window creation
+	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
+	if (window == NULL)
+	{
+		fprintf(stderr, "ERROR: could not open window with GLFW3\n");
+		glfwTerminate();
+		return -1;
+	}
+
+	glfwMakeContextCurrent(window);
+	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+	glfwSetCursorPosCallback(window, mouse_callback);
+	glfwSetScrollCallback(window, scroll_callback);
+	// tell GLFW to capture our mouse
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	
 	const GLubyte* renderer;
 	const GLubyte* version;
 	GLuint vao, vao2;
 	GLuint vbo, vbo2;
 	/* geometry to use. these are 3 xyz points (9 floats total) to make a triangle
 	*/
+
+	Mesh* mesh2 = read("C:\\Users\\usuar\\Desktop\\cube.txt");
+
 
 	float matrix[] = {
 		1.0f, 0.0f, 0.0f, 0.0f,
@@ -238,21 +324,6 @@ int main() {
 		return 1;
 	}
 
-	/* change to 3.2 if on Apple OS X */
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-	window = glfwCreateWindow(
-		640, 480, "CGR - GLSL - 03 - Moving Triangle", NULL, NULL
-	);
-	if (!window) {
-		fprintf(stderr, "ERROR: could not open window with GLFW3\n");
-		glfwTerminate();
-		return 1;
-	}
-	glfwMakeContextCurrent(window);
 	/* start GLEW extension handler */
 	glewExperimental = GL_TRUE;
 	glewInit();
@@ -328,38 +399,38 @@ int main() {
 	float speed = 1.0f;
 	float lastPosition = 0.0f;
 	glm::vec3 cameraPos = glm::vec3(1.0f, 0.0f, 1.0f);
-	glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+
 	glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 	glm::mat4 view;
 	glUseProgram(shader_programme);
 
-
-
 	float near = 0.1;
 	float far = 100.0;
-	float range = tan(90 * 0.5) * near;
+	
 	float aspect = 640.0 / 480.0;
+	
+	// render loop
 
-	float Sx = (2 * near) / (range / aspect + range / aspect);
-	float Sy = near / range;
-	float Sz = -(far + near) / (far - near);
-	float Pz = -(2 * far * near) / (far - near);
+	while (!glfwWindowShouldClose(window)) {			
+		
+		float range = tan(fov * 0.5) * near;
+		float Sx = (2 * near) / (range / aspect + range / aspect);
+		float Sy = near / range;
+		float Sz = -(far + near) / (far - near);
+		float Pz = -(2 * far * near) / (far - near);
 
+		float projection[] = {
+			Sx, 0.0f, 0.0f, 0.0f,
+			0.0f, Sy, 0.0f, 0.0f,
+			0.0f, 0.0f, Sz, Pz,
+			0.0f, 0.0f, -1.0f, 1.0f
+		};
 
-	float projection[] = {
-	Sx, 0.0f, 0.0f, 0.0f,
-	0.0f, Sy, 0.0f, 0.0f,
-	0.0f, 0.0f, Sz, Pz,
-	0.0f, 0.0f, -1.0f, 1.0f
-	};
-
-
-	while (!glfwWindowShouldClose(window)) {
 		view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
 		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 
-		const float cameraSpeed = 0.05f; // adjust accordingly
+		const float cameraSpeed = 0.0005f; // adjust accordingly
 		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 			cameraPos += cameraSpeed * cameraFront;
 		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
@@ -368,11 +439,9 @@ int main() {
 			cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 			cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
-		
-		
+
 		glUniformMatrix4fv(projLoc, 1, GL_FALSE, projection);
-
-
+		
 		//glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 		/* wipe the drawing surface clear */
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -389,9 +458,65 @@ int main() {
 		if (GLFW_PRESS == glfwGetKey(window, GLFW_KEY_ESCAPE)) {
 			glfwSetWindowShouldClose(window, 1);
 		}
+
 	}
 
 	/* close GL context and any other GLFW resources */
 	glfwTerminate();
 	return 0;
+}
+
+void processInput(GLFWwindow* window)
+{
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+		glfwSetWindowShouldClose(window, true);
+}
+
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+	glViewport(0, 0, width, height);
+}
+
+// glfw: whenever the mouse moves, this callback is called
+// -------------------------------------------------------
+void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
+{
+	float xpos = static_cast<float>(xposIn);
+	float ypos = static_cast<float>(yposIn);
+
+	if (firstMouse)
+	{
+		lastX = xpos;
+		lastY = ypos;
+		firstMouse = false;
+	}
+
+	float xoffset = xpos - lastX;
+	float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
+	lastX = xpos;
+	lastY = ypos;
+
+	float sensitivity = 0.1f; // change this value to your liking
+	xoffset *= sensitivity;
+	yoffset *= sensitivity;
+
+	yaw += xoffset;
+	pitch += yoffset;
+
+	// make sure that when pitch is out of bounds, screen doesn't get flipped
+	if (pitch > 89.0f)
+		pitch = 89.0f;
+	if (pitch < -89.0f)
+		pitch = -89.0f;
+
+	glm::vec3 front;
+	front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+	front.y = sin(glm::radians(pitch));
+	front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+	cameraFront = glm::normalize(front);
+}
+
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+{
+	fov -= (float)yoffset*0.1;
 }
