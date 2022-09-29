@@ -24,6 +24,8 @@ glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 */
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+glm::vec3 cameraPos = glm::vec3(1.0f, 0.0f, 1.0f);
 bool firstMouse = true;
 float yaw = -90.0f;	// yaw is initialized to -90.0 degrees since a yaw of 0.0 results in a direction vector pointing to the right so we initially rotate a bit to the left.
 float pitch = 0.0f;
@@ -47,7 +49,14 @@ Mesh* read(string filename) {
 			sline >> x >> y >> z;
 			glm::vec3* vertex = new glm::vec3(x, y, z);
 			mesh->vertex.push_back(vertex);
-		}else if (temp == "f") {
+		}
+		else if (temp == "vt") {
+			float x, y;
+			sline >> x >> y;
+			glm::vec3* texture = new glm::vec3(x, y, 0);
+			mesh->mappings.push_back(texture);
+		}
+		else if (temp == "f") {
 			// implementar lógica de varições
 			// para face: v, v/t/n, v/t e v//n
 			// while enquanto tem tokens em sline:
@@ -59,15 +68,177 @@ Mesh* read(string filename) {
 				stringstream stoken;
 				stoken << x;
 				string aux;
+
+				int faceValues[3] = { -1, -1, -1 };
+				int i = 0;
+
 				while (getline(stoken, aux, '/')) {
-					face->verts.push_back(stoi(aux));
+					if (aux != "") {
+						faceValues[i] = stoi(aux);
+					}
+					i++;
 				}
+				face->verts.push_back(faceValues[0]);
+
+				if (faceValues[1] != -1) {
+					face->textures.push_back(faceValues[1]);
+				}
+
+				if (faceValues[2] != -1) {
+					face->norms.push_back(faceValues[2]);
+				}
+
 				Face* face = new Face;
 			}
 			group->faces.push_back(face);
 		}
 	}
 	mesh->groups.push_back(group);
+	return mesh;
+}
+
+Mesh* read() {
+	Mesh* mesh = new Mesh;
+	glm::vec3* vec = new glm::vec3(0.5f, -0.5f, 0.0f);
+	mesh->vertex.push_back(vec);
+	glm::vec3* vec1 = new glm::vec3(-0.5f, -0.5f, 0.0f);
+	mesh->vertex.push_back(vec1);
+	glm::vec3* vec2 = new glm::vec3(0.5f, 0.5f, 0.0f);
+	mesh->vertex.push_back(vec2);
+	glm::vec3* vec3 = new glm::vec3(-0.5f, 0.5f, 0.0f);
+	mesh->vertex.push_back(vec3);
+
+	glm::vec3* vec4 = new glm::vec3(0.5f, -0.5f, -1.0f);
+	mesh->vertex.push_back(vec4);
+	glm::vec3* vec5 = new glm::vec3(-0.5f, -0.5f, -1.0f);
+	mesh->vertex.push_back(vec5);
+	glm::vec3* vec6 = new glm::vec3(0.5f, 0.5f, -1.0f);
+	mesh->vertex.push_back(vec6);
+	glm::vec3* vec7 = new glm::vec3(-0.5f, 0.5f, -1.0f);
+	mesh->vertex.push_back(vec7);
+
+	glm::vec3* color = new glm::vec3(1.0f, 0.0f, 0.0f);
+	mesh->mappings.push_back(color);
+	glm::vec3* color1 = new glm::vec3(0.0f, 1.0f, 0.0f);
+	mesh->mappings.push_back(color1);
+	glm::vec3* color2 = new glm::vec3(0.0f, 0.0f, 1.0f);
+	mesh->mappings.push_back(color2);
+
+	Face* face = new Face;
+	face->verts.push_back(0);
+	face->verts.push_back(1);
+	face->verts.push_back(2);
+	face->textures.push_back(0);
+	face->textures.push_back(1);
+	face->textures.push_back(2);
+	string t = "teste";
+	/*
+	Face* face2 = new Face;
+	face2->verts.push_back(1);
+	face2->verts.push_back(2);
+	face2->verts.push_back(3);
+	face2->textures.push_back(0);
+	face2->textures.push_back(1);
+	face2->textures.push_back(2);
+
+	Face* face3 = new Face;
+	face3->verts.push_back(0);
+	face3->verts.push_back(2);
+	face3->verts.push_back(6);
+	face3->textures.push_back(0);
+	face3->textures.push_back(1);
+	face3->textures.push_back(2);
+
+	Face* face4 = new Face;
+	face4->verts.push_back(0);
+	face4->verts.push_back(4);
+	face4->verts.push_back(6);
+	face4->textures.push_back(0);
+	face4->textures.push_back(1);
+	face4->textures.push_back(2);
+
+	Face* face5 = new Face;
+	face5->verts.push_back(3);
+	face5->verts.push_back(7);
+	face5->verts.push_back(6);
+	face5->textures.push_back(0);
+	face5->textures.push_back(1);
+	face5->textures.push_back(2);
+
+	Face* face6 = new Face;
+	face6->verts.push_back(3);
+	face6->verts.push_back(2);
+	face6->verts.push_back(6);
+	face6->textures.push_back(0);
+	face6->textures.push_back(1);
+	face6->textures.push_back(2);
+
+	Face* face7 = new Face;
+	face7->verts.push_back(5);
+	face7->verts.push_back(7);
+	face7->verts.push_back(6);
+	face7->textures.push_back(0);
+	face7->textures.push_back(1);
+	face7->textures.push_back(2);
+
+	Face* face8 = new Face;
+	face8->verts.push_back(5);
+	face8->verts.push_back(4);
+	face8->verts.push_back(6);
+	face8->textures.push_back(0);
+	face8->textures.push_back(1);
+	face8->textures.push_back(2);
+
+	Face* face9 = new Face;
+	face9->verts.push_back(1);
+	face9->verts.push_back(5);
+	face9->verts.push_back(4);
+	face9->textures.push_back(0);
+	face9->textures.push_back(1);
+	face9->textures.push_back(2);
+
+	Face* face10 = new Face;
+	face10->verts.push_back(1);
+	face10->verts.push_back(5);
+	face10->verts.push_back(7);
+	face10->textures.push_back(0);
+	face10->textures.push_back(1);
+	face10->textures.push_back(2);
+
+	Face* face11 = new Face;
+	face11->verts.push_back(1);
+	face11->verts.push_back(3);
+	face11->verts.push_back(7);
+	face11->textures.push_back(0);
+	face11->textures.push_back(1);
+	face11->textures.push_back(2);
+
+	Face* face12 = new Face;
+	face12->verts.push_back(1);
+	face12->verts.push_back(5);
+	face12->verts.push_back(7);
+	face12->textures.push_back(0);
+	face12->textures.push_back(1);
+	face12->textures.push_back(2);
+	*/
+	Group* group = new Group(t, t);
+
+	group->faces.push_back(face);
+	/*
+	group->faces.push_back(face2);
+	group->faces.push_back(face3);
+	group->faces.push_back(face4);
+	group->faces.push_back(face5);
+	group->faces.push_back(face6);
+	group->faces.push_back(face7);
+	group->faces.push_back(face8);
+	group->faces.push_back(face9);
+	group->faces.push_back(face10);
+	group->faces.push_back(face11);
+	group->faces.push_back(face12);
+	*/
+	mesh->groups.push_back(group);
+
 	return mesh;
 }
 
@@ -89,177 +260,20 @@ int main() {
 	}
 
 	glfwMakeContextCurrent(window);
+
+	//Define callbacks
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 	glfwSetCursorPosCallback(window, mouse_callback);
 	glfwSetScrollCallback(window, scroll_callback);
 	// tell GLFW to capture our mouse
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-	
+
 	const GLubyte* renderer;
 	const GLubyte* version;
-	GLuint vao, vao2;
-	GLuint vbo, vbo2;
-	/* geometry to use. these are 3 xyz points (9 floats total) to make a triangle
-	*/
+	GLuint vao;
+	GLuint vbo;
 
-	Mesh* mesh2 = read("C:\\Users\\usuar\\Desktop\\cube.txt");
-
-
-	float matrix[] = {
-		1.0f, 0.0f, 0.0f, 0.0f,
-		0.0f, 1.0f, 0.0f, 0.0f,
-		0.0f, 0.0f, 1.0f, 0.0f,
-		0.0f, 0.0f, 0.0f, 1.0f
-	};
-
-	Mesh* mesh = new Mesh;
-	glm::vec3* vec = new glm::vec3(0.5f, -0.5f, 0.0f);
-	mesh->vertex.push_back(vec);
-	glm::vec3* vec1 = new glm::vec3(-0.5f, -0.5f, 0.0f);
-	mesh->vertex.push_back(vec1);
-	glm::vec3* vec2 = new glm::vec3(0.5f, 0.5f, 0.0f);
-	mesh->vertex.push_back(vec2);
-	glm::vec3* vec3 = new glm::vec3(-0.5f, 0.5f, 0.0f);
-	mesh->vertex.push_back(vec3);
-	
-	glm::vec3* vec4 = new glm::vec3(0.5f, -0.5f, -1.0f);
-	mesh->vertex.push_back(vec4);
-	glm::vec3* vec5 = new glm::vec3(-0.5f, -0.5f, -1.0f);
-	mesh->vertex.push_back(vec5);
-	glm::vec3* vec6 = new glm::vec3(0.5f, 0.5f, -1.0f);
-	mesh->vertex.push_back(vec6);
-	glm::vec3* vec7 = new glm::vec3(-0.5f, 0.5f, -1.0f);
-	mesh->vertex.push_back(vec7);
-
-	glm::vec3* color = new glm::vec3(1.0f, 0.0f, 0.0f);
-	mesh->mappings.push_back(color);
-	glm::vec3* color1 = new glm::vec3(0.0f, 1.0f, 0.0f);
-	mesh->mappings.push_back(color1);
-	glm::vec3* color2 = new glm::vec3(0.0f, 0.0f, 1.0f);
-	mesh->mappings.push_back(color2);
-
-	Face* face = new Face;
-	face->verts.push_back(0);
-	face->verts.push_back(1);
-	face->verts.push_back(2);
-	face->texts.push_back(0);
-	face->texts.push_back(1);
-	face->texts.push_back(2);
-	string t = "teste";
-
-	Face* face2 = new Face;
-	face2->verts.push_back(1);
-	face2->verts.push_back(2);
-	face2->verts.push_back(3);
-	face2->texts.push_back(0);
-	face2->texts.push_back(1);
-	face2->texts.push_back(2);
-
-	/*
-		12
-		34
-		56
-		78
-		910
-		1112
-	*/
-
-	Face* face3 = new Face;
-	face3->verts.push_back(0);
-	face3->verts.push_back(2);
-	face3->verts.push_back(6);
-	face3->texts.push_back(0);
-	face3->texts.push_back(1);
-	face3->texts.push_back(2);
-
-	Face* face4 = new Face;
-	face4->verts.push_back(0);
-	face4->verts.push_back(4);
-	face4->verts.push_back(6);
-	face4->texts.push_back(0);
-	face4->texts.push_back(1);
-	face4->texts.push_back(2);
-
-	Face* face5 = new Face;
-	face5->verts.push_back(3);
-	face5->verts.push_back(7);
-	face5->verts.push_back(6);
-	face5->texts.push_back(0);
-	face5->texts.push_back(1);
-	face5->texts.push_back(2);
-
-	Face* face6 = new Face;
-	face6->verts.push_back(3);
-	face6->verts.push_back(2);
-	face6->verts.push_back(6);
-	face6->texts.push_back(0);
-	face6->texts.push_back(1);
-	face6->texts.push_back(2);
-
-	Face* face7 = new Face;
-	face7->verts.push_back(5);
-	face7->verts.push_back(7);
-	face7->verts.push_back(6);
-	face7->texts.push_back(0);
-	face7->texts.push_back(1);
-	face7->texts.push_back(2);
-
-	Face* face8 = new Face;
-	face8->verts.push_back(5);
-	face8->verts.push_back(4);
-	face8->verts.push_back(6);
-	face8->texts.push_back(0);
-	face8->texts.push_back(1);
-	face8->texts.push_back(2);
-
-	Face* face9 = new Face;
-	face9->verts.push_back(1);
-	face9->verts.push_back(5);
-	face9->verts.push_back(4);
-	face9->texts.push_back(0);
-	face9->texts.push_back(1);
-	face9->texts.push_back(2);
-
-	Face* face10 = new Face;
-	face10->verts.push_back(1);
-	face10->verts.push_back(5);
-	face10->verts.push_back(7);
-	face10->texts.push_back(0);
-	face10->texts.push_back(1);
-	face10->texts.push_back(2);
-
-	Face* face11 = new Face;
-	face11->verts.push_back(1);
-	face11->verts.push_back(3);
-	face11->verts.push_back(7);
-	face11->texts.push_back(0);
-	face11->texts.push_back(1);
-	face11->texts.push_back(2);
-
-	Face* face12 = new Face;
-	face12->verts.push_back(1);
-	face12->verts.push_back(5);
-	face12->verts.push_back(7);
-	face12->texts.push_back(0);
-	face12->texts.push_back(1);
-	face12->texts.push_back(2);
-
-	Group* group = new Group(t, t);
-
-	group->faces.push_back(face);
-	group->faces.push_back(face2);
-	group->faces.push_back(face3);
-	group->faces.push_back(face4);
-	group->faces.push_back(face5);
-	group->faces.push_back(face6);
-	group->faces.push_back(face7);
-	group->faces.push_back(face8);
-	group->faces.push_back(face9);
-	group->faces.push_back(face10);
-	group->faces.push_back(face11);
-	group->faces.push_back(face12);
-
-	mesh->groups.push_back(group);
+	Mesh* mesh = read();
 
 	vector<float> vs1;
 	vector<float> vts;
@@ -271,7 +285,7 @@ int main() {
 				vs1.push_back(v->x);
 				vs1.push_back(v->y);
 				vs1.push_back(v->z);
-				glm::vec3* vt = mesh->mappings[f->texts[i]];
+				glm::vec3* vt = mesh->mappings[f->textures[i]];
 				vts.push_back(vt->x);
 				vts.push_back(vt->y);
 				vts.push_back(vt->z);
@@ -296,11 +310,14 @@ int main() {
 		"#version 410\n"
 		"layout(location=0) in vec3 vp;"
 		"layout(location=1) in vec3 vc;"
+		"layout(location=2) in vec2 aTexCoord;"
 		"uniform mat4 view;"
 		"uniform mat4 projection;"
 		"out vec3 color;"
+		"out vec2 TexCoord;"
 		"void main () {"
 		"   color = vc;"
+		"   TexCoord = aTexCoord;"
 		"	gl_Position = projection * view * vec4 (vp, 1.0);"
 		"}";
 
@@ -309,14 +326,17 @@ int main() {
 	const char* fragment_shader =
 		"#version 410\n"
 		"in vec3 color;"
+		"in vec2 TexCoord;"
+		"uniform sampler2D texture1;"
 		"out vec4 frag_color;"
 		"void main () {"
-		"	frag_color = vec4 (color, 1.0);"
+		//"	frag_color = vec4 (color, 1.0);"
+		"	frag_color = texture(texture1, TexCoord);"
 		"}";
 	/* GL shader objects for vertex and fragment shader [components] */
-	GLuint vs, fs, fs2;
+	GLuint vs, fs;
 	/* GL shader programme object [combined, to link] */
-	GLuint shader_programme, shader_programme2;
+	GLuint shader_programme;
 
 	/* start GL context and O/S window using the GLFW helper library */
 	if (!glfwInit()) {
@@ -337,6 +357,40 @@ int main() {
 	/* tell GL to only draw onto a pixel if the shape is closer to the viewer */
 	glEnable(GL_DEPTH_TEST); /* enable depth-testing */
 	glDepthFunc(GL_LESS);/*depth-testing interprets a smaller value as "closer"*/
+
+	unsigned int texture1;
+	// texture 1
+	// ---------
+	glGenTextures(1, &texture1);
+	glBindTexture(GL_TEXTURE_2D, texture1);
+	//glActiveTexture(GL_TEXTURE0);
+	// set the texture wrapping parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	// set texture filtering parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	// load and generate the texture
+	int width, height, nrChannels;
+	unsigned char* data = stbi_load("/home/felipe/unisinos/2022-2-Computacao-Grafica/cube/src/loud.png", &width, &height, &nrChannels, 0);
+	if (data)
+	{
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+	{
+		std::cout << "Failed to load texture" << std::endl;
+	}
+	stbi_image_free(data);
+
+	float textuturesCoords[] = {
+		// texture coords
+		0.0f, 0.0f,   // top right
+		1.0f, 0.0f,   // bottom right
+		1.0f, 1.0f   // bottom left 
+	};
 
 	/* a vertex buffer object (VBO) is created here. this stores an array of data
 	on the graphics adapter's memory. in our case - the vertex points */
@@ -365,6 +419,15 @@ int main() {
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 	glEnableVertexAttribArray(1); // habilitado segundo atributo do vbo bound atual
 
+	GLuint texturesVBO;
+	glGenBuffers(1, &texturesVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, texturesVBO);
+	glBufferData(GL_ARRAY_BUFFER, 6 * sizeof(GLfloat), textuturesCoords, GL_STATIC_DRAW);
+
+	// texture coord attribute
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float), (void*)0);
+	glEnableVertexAttribArray(2);
+
 	/* here we copy the shader strings into GL shaders, and compile them. we then
 	create an executable shader 'program' and attach both of the compiled shaders.
 	we link this, which matches the outputs of the vertex shader to the inputs of
@@ -383,8 +446,9 @@ int main() {
 
 	int viewLoc = glGetUniformLocation(shader_programme, "view");
 	int projLoc = glGetUniformLocation(shader_programme, "projection");
-	//glUseProgram (shader_programme);
-	//glUniformMatrix4fv(matrixLocation, 1, GL_FALSE, matrix);
+	glUseProgram(shader_programme);
+
+	//glUniform1i(glGetUniformLocation(shader_programme, "texture1"), 0);
 
 	glClearColor(0.6f, 0.6f, 0.8f, 1.0f);
 
@@ -396,23 +460,14 @@ int main() {
 	the 'swap' idea. in a single-buffering system we would see stuff being drawn
 	one-after-the-other */
 
-	float speed = 1.0f;
-	float lastPosition = 0.0f;
-	glm::vec3 cameraPos = glm::vec3(1.0f, 0.0f, 1.0f);
-
-	glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 	glm::mat4 view;
-	glUseProgram(shader_programme);
-
 	float near = 0.1;
 	float far = 100.0;
-	
 	float aspect = 640.0 / 480.0;
-	
-	// render loop
 
-	while (!glfwWindowShouldClose(window)) {			
-		
+	// render loop
+	while (!glfwWindowShouldClose(window)) {
+
 		float range = tan(fov * 0.5) * near;
 		float Sx = (2 * near) / (range / aspect + range / aspect);
 		float Sy = near / range;
@@ -427,26 +482,18 @@ int main() {
 		};
 
 		view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-
 		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-
-		const float cameraSpeed = 0.0005f; // adjust accordingly
-		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-			cameraPos += cameraSpeed * cameraFront;
-		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-			cameraPos -= cameraSpeed * cameraFront;
-		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-			cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
-		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-			cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
-
 		glUniformMatrix4fv(projLoc, 1, GL_FALSE, projection);
-		
-		//glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
+
 		/* wipe the drawing surface clear */
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		//		glUseProgram (shader_programme);
 
+		//glUseProgram(shader_programme);
+		glBindTexture(GL_TEXTURE_2D, texture1);
+		//glActiveTexture(GL_TEXTURE0);
+
+		//glUseProgram(shader_programme);
 		glBindVertexArray(vao);
 		/* draw points 0-3 from the currently bound VAO with current in-use shader*/
 		glDrawArrays(GL_TRIANGLES, 0, vs1.size() / 3);
@@ -455,9 +502,8 @@ int main() {
 		glfwPollEvents();
 		/* put the stuff we've been drawing onto the display */
 		glfwSwapBuffers(window);
-		if (GLFW_PRESS == glfwGetKey(window, GLFW_KEY_ESCAPE)) {
-			glfwSetWindowShouldClose(window, 1);
-		}
+
+		processInput(window);
 
 	}
 
@@ -470,6 +516,15 @@ void processInput(GLFWwindow* window)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
+	const float cameraSpeed = 0.0005f; // adjust accordingly
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+		cameraPos += cameraSpeed * cameraFront;
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+		cameraPos -= cameraSpeed * cameraFront;
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+		cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
@@ -518,5 +573,5 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-	fov -= (float)yoffset*0.1;
+	fov -= (float)yoffset * 0.1;
 }
