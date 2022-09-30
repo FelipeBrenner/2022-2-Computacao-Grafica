@@ -25,19 +25,41 @@ Cube::Cube() {}
 void Cube::start() {
 	initialize();
 
-	mesh = new Mesh;
+	mesh = new Mesh("/home/felipe/unisinos/2022-2-Computacao-Grafica/cube/obj/pyramid.obj");
 
 	for (Group* g : mesh->groups) {
 		for (Face* f : g->faces) {
 			for (int i = 0; i < f->verts.size(); i++) {
-				glm::vec3* v = mesh->vertex[f->verts[i]];
+				glm::vec3* v = mesh->vertex[f->verts[i]-1];
 				vs1.push_back(v->x);
 				vs1.push_back(v->y);
 				vs1.push_back(v->z);
-				glm::vec3* vt = mesh->mappings[f->textures[i]];
-				vts.push_back(vt->x);
-				vts.push_back(vt->y);
-				vts.push_back(vt->z);
+				if (f->textures.size()) {
+					glm::vec2* vt = mesh->mappings[f->textures[i] - 1];
+					vts.push_back(vt->x);
+					vts.push_back(vt->y);
+				}
+
+				if (i > 2) {
+					glm::vec3* v1 = mesh->vertex[f->verts[2]-1];
+					vs1.push_back(v1->x);
+					vs1.push_back(v1->y);
+					vs1.push_back(v1->z);
+					if (f->textures.size()) {
+						glm::vec2* vt1 = mesh->mappings[f->textures[2]-1];
+						vts.push_back(vt1->x);
+						vts.push_back(vt1->y);
+					}
+					glm::vec3* v2 = mesh->vertex[f->verts[0]-1];
+					vs1.push_back(v2->x);
+					vs1.push_back(v2->y);
+					vs1.push_back(v2->z);
+					if (f->textures.size()) {
+						glm::vec2* vt2 = mesh->mappings[f->textures[0]-1];
+						vts.push_back(vt2->x);
+						vts.push_back(vt2->y);
+					}
+				}
 				//auto vn = mesh->normals[f->norms[i]];
 				//vns.push_back(vn->x);
 				//vns.push_back(vn->y);
@@ -213,7 +235,9 @@ void Cube::start() {
 	float far = 100.0;
 	float aspect = 640.0 / 480.0;
 
+	// render loop
 	while (!glfwWindowShouldClose(window)) {
+
 		float range = tan(fov * 0.5) * near;
 		float Sx = (2 * near) / (range / aspect + range / aspect);
 		float Sy = near / range;

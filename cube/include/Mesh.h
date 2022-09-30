@@ -14,11 +14,10 @@ using namespace std;
 
 class Mesh {
 	public:
-		Mesh();
 		Mesh(string filename);
 
 		vector <Group*> groups;
 		vector <glm::vec3*> vertex;
 		vector <glm::vec3*> normals;
-		vector <glm::vec3*> mappings;
+		vector <glm::vec2*> mappings;
 };
