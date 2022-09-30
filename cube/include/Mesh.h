@@ -1,10 +1,18 @@
-#include "Includes.h"
+#pragma once
 #include "Group.h"
+#include <vector>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
+using namespace std;
 
 class Mesh {
 	public:
+		Mesh();
+
 		vector <Group*> groups;
-		vector <vec3*> vertex;
-		vector <vec3*> normals;
-		vector <vec3*> mappings;
+		vector <glm::vec3*> vertex;
+		vector <glm::vec3*> normals;
+		vector <glm::vec3*> mappings;
 };
