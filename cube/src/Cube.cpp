@@ -25,16 +25,8 @@ Cube::Cube() {}
 void Cube::start() {
 	initialize();
 
-	const GLubyte* renderer;
-	const GLubyte* version;
-	GLuint vao;
-	GLuint vbo;
+	mesh = new Mesh;
 
-	Mesh* mesh = new Mesh;
-
-	vector<float> vs1;
-	vector<float> vts;
-	vector<float> vns;
 	for (Group* g : mesh->groups) {
 		for (Face* f : g->faces) {
 			for (int i = 0; i < f->verts.size(); i++) {

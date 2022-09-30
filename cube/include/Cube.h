@@ -29,6 +29,12 @@ class Cube {
     static void mouse_callback(GLFWwindow* window, double xpos, double ypos);
     static void processInput(GLFWwindow* window);
     static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
-    Mesh* read();
     Mesh* mesh;
+    GLuint vao;
+	  GLuint vbo;
+    vector<float> vs1;
+    vector<float> vts;
+    vector<float> vns;
+    const GLubyte* renderer;
+	  const GLubyte* version;
 };
