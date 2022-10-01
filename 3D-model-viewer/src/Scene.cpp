@@ -20,7 +20,7 @@ Scene::Scene() {}
 void Scene::start() {
 	initialize();
 
-	mesh = new Mesh("/home/felipe/unisinos/2022-2-Computacao-Grafica/3D-model-viewer/obj/pyramid.obj");
+	mesh = new Mesh("obj/pyramid.obj");
 
 	for (Group* g : mesh->groups) {
 		for (Face* f : g->faces) {
@@ -104,7 +104,7 @@ void Scene::start() {
 
 	// load and generate the texture
 	int width, height, nrChannels;
-	unsigned char* data = stbi_load("/home/felipe/unisinos/2022-2-Computacao-Grafica/3D-model-viewer/images/grey.jpg", &width, &height, &nrChannels, 0);
+	unsigned char* data = stbi_load("images/grey.jpg", &width, &height, &nrChannels, 0);
 	if (data)
 	{
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
