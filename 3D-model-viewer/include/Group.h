@@ -18,4 +18,8 @@ class Group {
     string material;
     vector <Face*> faces;
     GLuint vao;
+	  GLuint vbo, vbot;
+    vector<float> vs1;
+    vector<float> vts;
+    vector<float> vns;
 };

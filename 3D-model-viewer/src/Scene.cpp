@@ -28,33 +28,33 @@ void Scene::start() {
 		for (Face* f : g->faces) {
 			for (int i = 0; i < f->verts.size(); i++) {
 				glm::vec3* v = mesh->vertex[f->verts[i] - 1];
-				vs1.push_back(v->x);
-				vs1.push_back(v->y);
-				vs1.push_back(v->z);
+				g->vs1.push_back(v->x);
+				g->vs1.push_back(v->y);
+				g->vs1.push_back(v->z);
 				if (f->textures.size()) {
 					glm::vec2* vt = mesh->mappings[f->textures[i] - 1];
-					vts.push_back(vt->x);
-					vts.push_back(vt->y);
+					g->vts.push_back(vt->x);
+					g->vts.push_back(vt->y);
 				}
 
 				if (i > 2) {
 					glm::vec3* v1 = mesh->vertex[f->verts[2] - 1];
-					vs1.push_back(v1->x);
-					vs1.push_back(v1->y);
-					vs1.push_back(v1->z);
+					g->vs1.push_back(v1->x);
+					g->vs1.push_back(v1->y);
+					g->vs1.push_back(v1->z);
 					if (f->textures.size()) {
 						glm::vec2* vt1 = mesh->mappings[f->textures[2] - 1];
-						vts.push_back(vt1->x);
-						vts.push_back(vt1->y);
+						g->vts.push_back(vt1->x);
+						g->vts.push_back(vt1->y);
 					}
 					glm::vec3* v2 = mesh->vertex[f->verts[0] - 1];
-					vs1.push_back(v2->x);
-					vs1.push_back(v2->y);
-					vs1.push_back(v2->z);
+					g->vs1.push_back(v2->x);
+					g->vs1.push_back(v2->y);
+					g->vs1.push_back(v2->z);
 					if (f->textures.size()) {
 						glm::vec2* vt2 = mesh->mappings[f->textures[0] - 1];
-						vts.push_back(vt2->x);
-						vts.push_back(vt2->y);
+						g->vts.push_back(vt2->x);
+						g->vts.push_back(vt2->y);
 					}
 				}
 				//auto vn = mesh->normals[f->norms[i]];
@@ -63,6 +63,28 @@ void Scene::start() {
 				//vns.push_back(vn->z);
 			}
 		}
+
+		/* a vertex buffer object (VBO) is created here. this stores an array of data
+		on the graphics adapter's memory. in our case - the vertex points */
+		glGenBuffers(1, &g->vbo);
+		glBindBuffer(GL_ARRAY_BUFFER, g->vbo);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * g->vs1.size(), g->vs1.data(), GL_STATIC_DRAW);
+
+		glGenVertexArrays(1, &g->vao);
+		glBindVertexArray(g->vao);
+		glEnableVertexAttribArray(0); // habilitado primeiro atributo do vbo bound atual
+		glBindBuffer(GL_ARRAY_BUFFER, g->vbo); // identifica vbo atual
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+
+		glGenBuffers(1, &g->vbot);
+		glBindBuffer(GL_ARRAY_BUFFER, g->vbot);
+		glBufferData(GL_ARRAY_BUFFER, g->vts.size() * sizeof(GLfloat), g->vts.data(), GL_STATIC_DRAW);
+
+		// texture coord attribute
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float), (void*)0);
+		glEnableVertexAttribArray(1);
+
+		glBindVertexArray(0);
 		// 1) criar VAO para o grupo
 		// 2) associar VAO criado com grupo
 		// 3) criar um VBO para vs
@@ -91,7 +113,7 @@ void Scene::start() {
 	glEnable(GL_DEPTH_TEST); /* enable depth-testing */
 	glDepthFunc(GL_LESS);/*depth-testing interprets a smaller value as "closer"*/
 
-	unsigned int texture1;
+	texture1;
 	// texture 1
 	// ---------
 	glGenTextures(1, &texture1);
@@ -117,30 +139,6 @@ void Scene::start() {
 		std::cout << "Failed to load texture" << std::endl;
 	}
 	stbi_image_free(data);
-
-	/* a vertex buffer object (VBO) is created here. this stores an array of data
-	on the graphics adapter's memory. in our case - the vertex points */
-	glGenBuffers(1, &vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vs1.size(), vs1.data(), GL_STATIC_DRAW);
-
-	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
-	glEnableVertexAttribArray(0); // habilitado primeiro atributo do vbo bound atual
-	glBindBuffer(GL_ARRAY_BUFFER, vbo); // identifica vbo atual
-	// associa��o do vbo atual com primeiro atributo
-	// 0 identifica que o primeiro atributo est� sendo definido
-	// 3, GL_FLOAT identifica que dados s�o vec3 e est�o a cada 3 float.
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-
-	GLuint texturesVBO;
-	glGenBuffers(1, &texturesVBO);
-	glBindBuffer(GL_ARRAY_BUFFER, texturesVBO);
-	glBufferData(GL_ARRAY_BUFFER, vts.size() * sizeof(GLfloat), vts.data(), GL_STATIC_DRAW);
-
-	// texture coord attribute
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float), (void*)0);
-	glEnableVertexAttribArray(1);
 
 	configureShaders();
 
@@ -179,16 +177,8 @@ void Scene::start() {
 
 		/* wipe the drawing surface clear */
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		//		glUseProgram (shader_programme);
 
-		//glUseProgram(shader_programme);
-		glBindTexture(GL_TEXTURE_2D, texture1);
-		//glActiveTexture(GL_TEXTURE0);
-
-		//glUseProgram(shader_programme);
-		glBindVertexArray(vao);
-		/* draw points 0-3 from the currently bound VAO with current in-use shader*/
-		glDrawArrays(GL_TRIANGLES, 0, vs1.size() / 3);
+		render();
 
 		/* update other events like input handling */
 		glfwPollEvents();
@@ -200,6 +190,20 @@ void Scene::start() {
 
 	/* close GL context and any other GLFW resources */
 	glfwTerminate();
+}
+
+void Scene::render() {
+	for(Group* g : mesh->groups) {
+		//glUseProgram(shader_programme);
+		glBindTexture(GL_TEXTURE_2D, texture1);
+		//glActiveTexture(GL_TEXTURE0);
+
+		//glUseProgram(shader_programme);
+		glBindVertexArray(g->vao);
+		/* draw points 0-3 from the currently bound VAO with current in-use shader*/
+		glDrawArrays(GL_TRIANGLES, 0, g->vs1.size() / 3);
+		glBindVertexArray(0);
+	}
 }
 
 void Scene::initialize() {
