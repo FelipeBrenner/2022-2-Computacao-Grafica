@@ -1,5 +1,6 @@
 #pragma once
 #include "Face.h"
+#include "Texture.h"
 #include <string>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -18,4 +19,6 @@ class Group {
     string material;
     vector <Face*> faces;
     GLuint vao;
+    vector <Texture*> textures;
+    void loadTextures();
 };

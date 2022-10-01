@@ -19,33 +19,6 @@ Scene::Scene() {}
 void Scene::start() {
 	initialize();
 
-	texture1;
-	// texture 1
-	// ---------
-	glGenTextures(1, &texture1);
-	glBindTexture(GL_TEXTURE_2D, texture1);
-	//glActiveTexture(GL_TEXTURE0);
-	// set the texture wrapping parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	// set texture filtering parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	// load and generate the texture
-	int width, height, nrChannels;
-	unsigned char* data = stbi_load("images/loud.jpeg", &width, &height, &nrChannels, 0);
-	if (data)
-	{
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
-	}
-	else
-	{
-		std::cout << "Failed to load texture" << std::endl;
-	}
-	stbi_image_free(data);
-
 	vector <string> filenames;
 	filenames.push_back("obj/pyramid.obj");
 	filenames.push_back("obj/pikachu.obj");
@@ -97,33 +70,35 @@ void Scene::start() {
 		// 5) criar um VBO para vns
 		// 6) definir layout e atributos do VAO 
 		// para leitura dos VBOs
-	
-		GLuint vbo;
 
-		/* a vertex buffer object (VBO) is created here. this stores an array of data
-		on the graphics adapter's memory. in our case - the vertex points */
-		glGenBuffers(1, &vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, vbo);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vs1.size(), vs1.data(), GL_STATIC_DRAW);
+			g->loadTextures();
 
-		glGenVertexArrays(1, &g->vao);
-		glBindVertexArray(g->vao);
-		glEnableVertexAttribArray(0); // habilitado primeiro atributo do vbo bound atual
-		glBindBuffer(GL_ARRAY_BUFFER, vbo); // identifica vbo atual
-		// associa��o do vbo atual com primeiro atributo
-		// 0 identifica que o primeiro atributo est� sendo definido
-		// 3, GL_FLOAT identifica que dados s�o vec3 e est�o a cada 3 float.
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+			GLuint vbo;
 
-		GLuint texturesVBO;
-		glGenBuffers(1, &texturesVBO);
-		glBindBuffer(GL_ARRAY_BUFFER, texturesVBO);
-		glBufferData(GL_ARRAY_BUFFER, vts.size() * sizeof(GLfloat), vts.data(), GL_STATIC_DRAW);
+			/* a vertex buffer object (VBO) is created here. this stores an array of data
+			on the graphics adapter's memory. in our case - the vertex points */
+			glGenBuffers(1, &vbo);
+			glBindBuffer(GL_ARRAY_BUFFER, vbo);
+			glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vs1.size(), vs1.data(), GL_STATIC_DRAW);
 
-		// texture coord attribute
-		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float), (void*)0);
-		glEnableVertexAttribArray(1);
-	}
+			glGenVertexArrays(1, &g->vao);
+			glBindVertexArray(g->vao);
+			glEnableVertexAttribArray(0); // habilitado primeiro atributo do vbo bound atual
+			glBindBuffer(GL_ARRAY_BUFFER, vbo); // identifica vbo atual
+			// associa��o do vbo atual com primeiro atributo
+			// 0 identifica que o primeiro atributo est� sendo definido
+			// 3, GL_FLOAT identifica que dados s�o vec3 e est�o a cada 3 float.
+			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+
+			GLuint texturesVBO;
+			glGenBuffers(1, &texturesVBO);
+			glBindBuffer(GL_ARRAY_BUFFER, texturesVBO);
+			glBufferData(GL_ARRAY_BUFFER, vts.size() * sizeof(GLfloat), vts.data(), GL_STATIC_DRAW);
+
+			// texture coord attribute
+			glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float), (void*)0);
+			glEnableVertexAttribArray(1);
+		}
 
 	configureShaders();
 
