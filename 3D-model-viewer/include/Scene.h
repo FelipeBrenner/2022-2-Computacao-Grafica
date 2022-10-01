@@ -16,9 +16,9 @@
 
 using namespace std;
 
-class Scenery {
+class Scene {
   public:
-    Scenery();
+    Scene();
 
     void start();
 

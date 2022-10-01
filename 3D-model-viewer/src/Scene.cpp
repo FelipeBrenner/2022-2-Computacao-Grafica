@@ -1,4 +1,4 @@
-#include "Scenery.h"
+#include "Scene.h"
 #include "Mesh.h"
 
 // settings
@@ -15,9 +15,9 @@ float lastX = 800.0f / 2.0;
 float lastY = 600.0 / 2.0;
 float fov = 45.0f;
 
-Scenery::Scenery() {}
+Scene::Scene() {}
 
-void Scenery::start() {
+void Scene::start() {
 	initialize();
 
 	mesh = new Mesh("/home/felipe/unisinos/2022-2-Computacao-Grafica/3D-model-viewer/obj/pyramid.obj");
@@ -200,7 +200,7 @@ void Scenery::start() {
 	glfwTerminate();
 }
 
-void Scenery::initialize() {
+void Scene::initialize() {
 	// glfw: initialize and configure
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -225,7 +225,7 @@ void Scenery::initialize() {
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
-void Scenery::configureShaders() {
+void Scene::configureShaders() {
 		/* these are the strings of code for the shaders
 	the vertex shader positions each vertex point */
 	/* these are the strings of code for the shaders
@@ -280,7 +280,7 @@ void Scenery::configureShaders() {
 	glUseProgram(shader_programme);
 }
 
-void Scenery::processInput(GLFWwindow* window)
+void Scene::processInput(GLFWwindow* window)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
@@ -295,12 +295,12 @@ void Scenery::processInput(GLFWwindow* window)
 		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 }
 
-void Scenery::framebuffer_size_callback(GLFWwindow* window, int width, int height)
+void Scene::framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
 	glViewport(0, 0, width, height);
 }
 
-void Scenery::mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
+void Scene::mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 {
 	float xpos = static_cast<float>(xposIn);
 	float ypos = static_cast<float>(yposIn);
@@ -337,7 +337,7 @@ void Scenery::mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 	cameraFront = glm::normalize(front);
 }
 
-void Scenery::scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+void Scene::scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
 	fov -= (float)yoffset * 0.1;
 }
