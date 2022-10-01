@@ -16,14 +16,15 @@
 
 using namespace std;
 
-class Cube {
+class Scenery {
   public:
-    Cube();
+    Scenery();
 
     void start();
 
   private:
     void initialize();
+    void configureShaders();
     GLFWwindow* window;
     static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
     static void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -37,4 +38,6 @@ class Cube {
     vector<float> vns;
     const GLubyte* renderer;
 	  const GLubyte* version;
+    int viewLoc;
+	  int projLoc;
 };

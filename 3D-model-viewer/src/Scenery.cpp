@@ -1,15 +1,10 @@
-#include "Cube.h"
+#include "Scenery.h"
 #include "Mesh.h"
 
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
-// camera
-/*glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
-glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
-*/
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 glm::vec3 cameraPos = glm::vec3(1.0f, 0.0f, 1.0f);
@@ -20,9 +15,9 @@ float lastX = 800.0f / 2.0;
 float lastY = 600.0 / 2.0;
 float fov = 45.0f;
 
-Cube::Cube() {}
+Scenery::Scenery() {}
 
-void Cube::start() {
+void Scenery::start() {
 	initialize();
 
 	mesh = new Mesh("/home/felipe/unisinos/2022-2-Computacao-Grafica/3D-model-viewer/obj/pyramid.obj");
@@ -74,40 +69,6 @@ void Cube::start() {
 		// 6) definir layout e atributos do VAO 
 		// para leitura dos VBOs
 	}
-
-	/* these are the strings of code for the shaders
-	the vertex shader positions each vertex point */
-	const char* vertex_shader =
-		"#version 410\n"
-		"layout(location=0) in vec3 vp;"
-		"layout(location=1) in vec3 vc;"
-		"layout(location=2) in vec2 aTexCoord;"
-		"uniform mat4 view;"
-		"uniform mat4 projection;"
-		"out vec3 color;"
-		"out vec2 TexCoord;"
-		"void main () {"
-		"   color = vc;"
-		"   TexCoord = aTexCoord;"
-		"	gl_Position = projection * view * vec4 (vp, 1.0);"
-		"}";
-
-	/* the fragment shader colours each fragment (pixel-sized area of the
-	triangle) */
-	const char* fragment_shader =
-		"#version 410\n"
-		"in vec3 color;"
-		"in vec2 TexCoord;"
-		"uniform sampler2D texture1;"
-		"out vec4 frag_color;"
-		"void main () {"
-		//"	frag_color = vec4 (color, 1.0);"
-		"	frag_color = texture(texture1, TexCoord);"
-		"}";
-	/* GL shader objects for vertex and fragment shader [components] */
-	GLuint vs, fs;
-	/* GL shader programme object [combined, to link] */
-	GLuint shader_programme;
 
 	/* start GL context and O/S window using the GLFW helper library */
 	if (!glfwInit()) {
@@ -198,27 +159,7 @@ void Cube::start() {
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float), (void*)0);
 	glEnableVertexAttribArray(2);
 
-	/* here we copy the shader strings into GL shaders, and compile them. we then
-	create an executable shader 'program' and attach both of the compiled shaders.
-	we link this, which matches the outputs of the vertex shader to the inputs of
-	the fragment shader, etc. and it is then ready to use */
-	vs = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vs, 1, &vertex_shader, NULL);
-	glCompileShader(vs);
-	fs = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fs, 1, &fragment_shader, NULL);
-	glCompileShader(fs);
-
-	shader_programme = glCreateProgram();
-	glAttachShader(shader_programme, fs);
-	glAttachShader(shader_programme, vs);
-	glLinkProgram(shader_programme);
-
-	int viewLoc = glGetUniformLocation(shader_programme, "view");
-	int projLoc = glGetUniformLocation(shader_programme, "projection");
-	glUseProgram(shader_programme);
-
-	//glUniform1i(glGetUniformLocation(shader_programme, "texture1"), 0);
+	configureShaders();
 
 	glClearColor(0.6f, 0.6f, 0.8f, 1.0f);
 
@@ -235,7 +176,6 @@ void Cube::start() {
 	float far = 100.0;
 	float aspect = 640.0 / 480.0;
 
-	// render loop
 	while (!glfwWindowShouldClose(window)) {
 
 		float range = tan(fov * 0.5) * near;
@@ -274,14 +214,13 @@ void Cube::start() {
 		glfwSwapBuffers(window);
 
 		processInput(window);
-
 	}
 
 	/* close GL context and any other GLFW resources */
 	glfwTerminate();
 }
 
-void Cube::initialize() {
+void Scenery::initialize() {
 	// glfw: initialize and configure
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -306,7 +245,64 @@ void Cube::initialize() {
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
-void Cube::processInput(GLFWwindow* window)
+void Scenery::configureShaders() {
+		/* these are the strings of code for the shaders
+	the vertex shader positions each vertex point */
+	const char* vertex_shader =
+		"#version 410\n"
+		"layout(location=0) in vec3 vp;"
+		"layout(location=1) in vec3 vc;"
+		"layout(location=2) in vec2 aTexCoord;"
+		"uniform mat4 view;"
+		"uniform mat4 projection;"
+		"out vec3 color;"
+		"out vec2 TexCoord;"
+		"void main () {"
+		"   color = vc;"
+		"   TexCoord = aTexCoord;"
+		"	gl_Position = projection * view * vec4 (vp, 1.0);"
+		"}";
+
+	/* the fragment shader colours each fragment (pixel-sized area of the
+	triangle) */
+	const char* fragment_shader =
+		"#version 410\n"
+		"in vec3 color;"
+		"in vec2 TexCoord;"
+		"uniform sampler2D texture1;"
+		"out vec4 frag_color;"
+		"void main () {"
+		//"	frag_color = vec4 (color, 1.0);"
+		"	frag_color = texture(texture1, TexCoord);"
+		"}";
+
+	/* GL shader objects for vertex and fragment shader [components] */
+	GLuint vs, fs;
+	/* GL shader programme object [combined, to link] */
+	GLuint shader_programme;
+
+	/* here we copy the shader strings into GL shaders, and compile them. we then
+	create an executable shader 'program' and attach both of the compiled shaders.
+	we link this, which matches the outputs of the vertex shader to the inputs of
+	the fragment shader, etc. and it is then ready to use */
+	vs = glCreateShader(GL_VERTEX_SHADER);
+	glShaderSource(vs, 1, &vertex_shader, NULL);
+	glCompileShader(vs);
+	fs = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(fs, 1, &fragment_shader, NULL);
+	glCompileShader(fs);
+
+	shader_programme = glCreateProgram();
+	glAttachShader(shader_programme, fs);
+	glAttachShader(shader_programme, vs);
+	glLinkProgram(shader_programme);
+
+	viewLoc = glGetUniformLocation(shader_programme, "view");
+	projLoc = glGetUniformLocation(shader_programme, "projection");
+	glUseProgram(shader_programme);
+}
+
+void Scenery::processInput(GLFWwindow* window)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
@@ -321,12 +317,12 @@ void Cube::processInput(GLFWwindow* window)
 		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 }
 
-void Cube::framebuffer_size_callback(GLFWwindow* window, int width, int height)
+void Scenery::framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
 	glViewport(0, 0, width, height);
 }
 
-void Cube::mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
+void Scenery::mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 {
 	float xpos = static_cast<float>(xposIn);
 	float ypos = static_cast<float>(yposIn);
@@ -363,7 +359,7 @@ void Cube::mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 	cameraFront = glm::normalize(front);
 }
 
-void Cube::scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+void Scenery::scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
 	fov -= (float)yoffset * 0.1;
 }

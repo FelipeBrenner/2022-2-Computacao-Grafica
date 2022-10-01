@@ -1,6 +1,6 @@
-#include "Cube.h"
+#include "Scenery.h"
 
 int main() {
-	Cube* cube = new Cube;
+	Scenery* cube = new Scenery;
 	cube->start();
 }
