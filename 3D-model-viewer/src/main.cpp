@@ -1,6 +1,6 @@
 #include "Scene.h"
 
 int main() {
-	Scene* cube = new Scene;
-	cube->start();
+	Scene* scene = new Scene;
+	scene->start();
 }
