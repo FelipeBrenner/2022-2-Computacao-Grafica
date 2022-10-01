@@ -19,6 +19,33 @@ Scene::Scene() {}
 void Scene::start() {
 	initialize();
 
+	texture1;
+	// texture 1
+	// ---------
+	glGenTextures(1, &texture1);
+	glBindTexture(GL_TEXTURE_2D, texture1);
+	//glActiveTexture(GL_TEXTURE0);
+	// set the texture wrapping parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	// set texture filtering parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	// load and generate the texture
+	int width, height, nrChannels;
+	unsigned char* data = stbi_load("images/loud.jpeg", &width, &height, &nrChannels, 0);
+	if (data)
+	{
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+	{
+		std::cout << "Failed to load texture" << std::endl;
+	}
+	stbi_image_free(data);
+
 	vector <string> filenames;
 	filenames.push_back("obj/pyramid.obj");
 	filenames.push_back("obj/pikachu.obj");
@@ -70,77 +97,33 @@ void Scene::start() {
 		// 5) criar um VBO para vns
 		// 6) definir layout e atributos do VAO 
 		// para leitura dos VBOs
+	
+		GLuint vbo;
+
+		/* a vertex buffer object (VBO) is created here. this stores an array of data
+		on the graphics adapter's memory. in our case - the vertex points */
+		glGenBuffers(1, &vbo);
+		glBindBuffer(GL_ARRAY_BUFFER, vbo);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vs1.size(), vs1.data(), GL_STATIC_DRAW);
+
+		glGenVertexArrays(1, &g->vao);
+		glBindVertexArray(g->vao);
+		glEnableVertexAttribArray(0); // habilitado primeiro atributo do vbo bound atual
+		glBindBuffer(GL_ARRAY_BUFFER, vbo); // identifica vbo atual
+		// associa��o do vbo atual com primeiro atributo
+		// 0 identifica que o primeiro atributo est� sendo definido
+		// 3, GL_FLOAT identifica que dados s�o vec3 e est�o a cada 3 float.
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+
+		GLuint texturesVBO;
+		glGenBuffers(1, &texturesVBO);
+		glBindBuffer(GL_ARRAY_BUFFER, texturesVBO);
+		glBufferData(GL_ARRAY_BUFFER, vts.size() * sizeof(GLfloat), vts.data(), GL_STATIC_DRAW);
+
+		// texture coord attribute
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float), (void*)0);
+		glEnableVertexAttribArray(1);
 	}
-
-	/* start GL context and O/S window using the GLFW helper library */
-	if (!glfwInit()) {
-		fprintf(stderr, "ERROR: could not start GLFW3\n");
-	}
-
-	/* start GLEW extension handler */
-	glewExperimental = GL_TRUE;
-	glewInit();
-
-	/* get version info */
-	renderer = glGetString(GL_RENDERER); /* get renderer string */
-	version = glGetString(GL_VERSION); /* version as a string */
-	printf("Renderer: %s\n", renderer);
-	printf("OpenGL version supported %s\n", version);
-
-	/* tell GL to only draw onto a pixel if the shape is closer to the viewer */
-	glEnable(GL_DEPTH_TEST); /* enable depth-testing */
-	glDepthFunc(GL_LESS);/*depth-testing interprets a smaller value as "closer"*/
-
-	unsigned int texture1;
-	// texture 1
-	// ---------
-	glGenTextures(1, &texture1);
-	glBindTexture(GL_TEXTURE_2D, texture1);
-	//glActiveTexture(GL_TEXTURE0);
-	// set the texture wrapping parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	// set texture filtering parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	// load and generate the texture
-	int width, height, nrChannels;
-	unsigned char* data = stbi_load("images/loud.jpeg", &width, &height, &nrChannels, 0);
-	if (data)
-	{
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
-	}
-	else
-	{
-		std::cout << "Failed to load texture" << std::endl;
-	}
-	stbi_image_free(data);
-
-	/* a vertex buffer object (VBO) is created here. this stores an array of data
-	on the graphics adapter's memory. in our case - the vertex points */
-	glGenBuffers(1, &vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vs1.size(), vs1.data(), GL_STATIC_DRAW);
-
-	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
-	glEnableVertexAttribArray(0); // habilitado primeiro atributo do vbo bound atual
-	glBindBuffer(GL_ARRAY_BUFFER, vbo); // identifica vbo atual
-	// associa��o do vbo atual com primeiro atributo
-	// 0 identifica que o primeiro atributo est� sendo definido
-	// 3, GL_FLOAT identifica que dados s�o vec3 e est�o a cada 3 float.
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-
-	GLuint texturesVBO;
-	glGenBuffers(1, &texturesVBO);
-	glBindBuffer(GL_ARRAY_BUFFER, texturesVBO);
-	glBufferData(GL_ARRAY_BUFFER, vts.size() * sizeof(GLfloat), vts.data(), GL_STATIC_DRAW);
-
-	// texture coord attribute
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float), (void*)0);
-	glEnableVertexAttribArray(1);
 
 	configureShaders();
 
@@ -181,14 +164,7 @@ void Scene::start() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		//		glUseProgram (shader_programme);
 
-		//glUseProgram(shader_programme);
-		glBindTexture(GL_TEXTURE_2D, texture1);
-		//glActiveTexture(GL_TEXTURE0);
-
-		//glUseProgram(shader_programme);
-		glBindVertexArray(vao);
-		/* draw points 0-3 from the currently bound VAO with current in-use shader*/
-		glDrawArrays(GL_TRIANGLES, 0, vs1.size() / 3);
+		render();
 
 		/* update other events like input handling */
 		glfwPollEvents();
@@ -225,6 +201,25 @@ void Scene::initialize() {
 	glfwSetScrollCallback(window, scroll_callback);
 	// tell GLFW to capture our mouse
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+		/* start GL context and O/S window using the GLFW helper library */
+	if (!glfwInit()) {
+		fprintf(stderr, "ERROR: could not start GLFW3\n");
+	}
+
+	/* start GLEW extension handler */
+	glewExperimental = GL_TRUE;
+	glewInit();
+
+	/* get version info */
+	renderer = glGetString(GL_RENDERER); /* get renderer string */
+	version = glGetString(GL_VERSION); /* version as a string */
+	printf("Renderer: %s\n", renderer);
+	printf("OpenGL version supported %s\n", version);
+
+	/* tell GL to only draw onto a pixel if the shape is closer to the viewer */
+	glEnable(GL_DEPTH_TEST); /* enable depth-testing */
+	glDepthFunc(GL_LESS);/*depth-testing interprets a smaller value as "closer"*/
 }
 
 void Scene::configureShaders() {
@@ -280,6 +275,20 @@ void Scene::configureShaders() {
 	viewLoc = glGetUniformLocation(shader_programme, "view");
 	projLoc = glGetUniformLocation(shader_programme, "projection");
 	glUseProgram(shader_programme);
+}
+
+void Scene::render() {
+	for(Group* g : mesh->groups) {
+		//glUseProgram(shader_programme);
+		glBindTexture(GL_TEXTURE_2D, texture1);
+		//glActiveTexture(GL_TEXTURE0);
+
+		//glUseProgram(shader_programme);
+		glBindVertexArray(g->vao);
+		/* draw points 0-3 from the currently bound VAO with current in-use shader*/
+		glDrawArrays(GL_TRIANGLES, 0, vs1.size() / 3);
+		glBindVertexArray(0);
+	}
 }
 
 void Scene::processInput(GLFWwindow* window)
