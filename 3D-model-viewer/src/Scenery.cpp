@@ -25,7 +25,7 @@ void Scenery::start() {
 	for (Group* g : mesh->groups) {
 		for (Face* f : g->faces) {
 			for (int i = 0; i < f->verts.size(); i++) {
-				glm::vec3* v = mesh->vertex[f->verts[i]-1];
+				glm::vec3* v = mesh->vertex[f->verts[i] - 1];
 				vs1.push_back(v->x);
 				vs1.push_back(v->y);
 				vs1.push_back(v->z);
@@ -36,21 +36,21 @@ void Scenery::start() {
 				}
 
 				if (i > 2) {
-					glm::vec3* v1 = mesh->vertex[f->verts[2]-1];
+					glm::vec3* v1 = mesh->vertex[f->verts[2] - 1];
 					vs1.push_back(v1->x);
 					vs1.push_back(v1->y);
 					vs1.push_back(v1->z);
 					if (f->textures.size()) {
-						glm::vec2* vt1 = mesh->mappings[f->textures[2]-1];
+						glm::vec2* vt1 = mesh->mappings[f->textures[2] - 1];
 						vts.push_back(vt1->x);
 						vts.push_back(vt1->y);
 					}
-					glm::vec3* v2 = mesh->vertex[f->verts[0]-1];
+					glm::vec3* v2 = mesh->vertex[f->verts[0] - 1];
 					vs1.push_back(v2->x);
 					vs1.push_back(v2->y);
 					vs1.push_back(v2->z);
 					if (f->textures.size()) {
-						glm::vec2* vt2 = mesh->mappings[f->textures[0]-1];
+						glm::vec2* vt2 = mesh->mappings[f->textures[0] - 1];
 						vts.push_back(vt2->x);
 						vts.push_back(vt2->y);
 					}
@@ -104,10 +104,10 @@ void Scenery::start() {
 
 	// load and generate the texture
 	int width, height, nrChannels;
-	unsigned char* data = stbi_load("/home/felipe/unisinos/2022-2-Computacao-Grafica/3D-model-viewer/images/loud.png", &width, &height, &nrChannels, 0);
+	unsigned char* data = stbi_load("/home/felipe/unisinos/2022-2-Computacao-Grafica/3D-model-viewer/images/loud.jpeg", &width, &height, &nrChannels, 0);
 	if (data)
 	{
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
 	else
@@ -115,13 +115,6 @@ void Scenery::start() {
 		std::cout << "Failed to load texture" << std::endl;
 	}
 	stbi_image_free(data);
-
-	float textuturesCoords[] = {
-		// texture coords
-		0.0f, 0.0f,   // top right
-		1.0f, 0.0f,   // bottom right
-		1.0f, 1.0f   // bottom left 
-	};
 
 	/* a vertex buffer object (VBO) is created here. this stores an array of data
 	on the graphics adapter's memory. in our case - the vertex points */
@@ -138,26 +131,14 @@ void Scenery::start() {
 	// 3, GL_FLOAT identifica que dados s�o vec3 e est�o a cada 3 float.
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
-	// � poss�vel associar outros atributos, como normais, mapeamento e cores
-	// lembre-se: um por v�rtice!
-	GLuint colorsVBO;
-	glGenBuffers(1, &colorsVBO);
-	glBindBuffer(GL_ARRAY_BUFFER, colorsVBO);
-	glBufferData(GL_ARRAY_BUFFER, vts.size() * sizeof(GLfloat), vts.data(), GL_STATIC_DRAW);
-
-	glBindBuffer(GL_ARRAY_BUFFER, colorsVBO);
-	// note que agora o atributo 1 est� definido
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-	glEnableVertexAttribArray(1); // habilitado segundo atributo do vbo bound atual
-
 	GLuint texturesVBO;
 	glGenBuffers(1, &texturesVBO);
 	glBindBuffer(GL_ARRAY_BUFFER, texturesVBO);
-	glBufferData(GL_ARRAY_BUFFER, 6 * sizeof(GLfloat), textuturesCoords, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vts.size() * sizeof(GLfloat), vts.data(), GL_STATIC_DRAW);
 
 	// texture coord attribute
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float), (void*)0);
-	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float), (void*)0);
+	glEnableVertexAttribArray(1);
 
 	configureShaders();
 
@@ -177,7 +158,6 @@ void Scenery::start() {
 	float aspect = 640.0 / 480.0;
 
 	while (!glfwWindowShouldClose(window)) {
-
 		float range = tan(fov * 0.5) * near;
 		float Sx = (2 * near) / (range / aspect + range / aspect);
 		float Sy = near / range;
@@ -248,17 +228,16 @@ void Scenery::initialize() {
 void Scenery::configureShaders() {
 		/* these are the strings of code for the shaders
 	the vertex shader positions each vertex point */
+	/* these are the strings of code for the shaders
+	the vertex shader positions each vertex point */
 	const char* vertex_shader =
 		"#version 410\n"
 		"layout(location=0) in vec3 vp;"
-		"layout(location=1) in vec3 vc;"
-		"layout(location=2) in vec2 aTexCoord;"
+		"layout(location=1) in vec2 aTexCoord;"
 		"uniform mat4 view;"
 		"uniform mat4 projection;"
-		"out vec3 color;"
 		"out vec2 TexCoord;"
 		"void main () {"
-		"   color = vc;"
 		"   TexCoord = aTexCoord;"
 		"	gl_Position = projection * view * vec4 (vp, 1.0);"
 		"}";
@@ -267,7 +246,6 @@ void Scenery::configureShaders() {
 	triangle) */
 	const char* fragment_shader =
 		"#version 410\n"
-		"in vec3 color;"
 		"in vec2 TexCoord;"
 		"uniform sampler2D texture1;"
 		"out vec4 frag_color;"
