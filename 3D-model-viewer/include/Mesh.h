@@ -14,7 +14,7 @@ using namespace std;
 
 class Mesh {
 	public:
-		Mesh(string filename);
+		Mesh(vector <string> filename);
 
 		vector <Group*> groups;
 		vector <glm::vec3*> vertex;

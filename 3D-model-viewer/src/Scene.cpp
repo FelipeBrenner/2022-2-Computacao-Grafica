@@ -1,7 +1,6 @@
 #include "Scene.h"
 #include "Mesh.h"
 
-// settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
@@ -20,7 +19,10 @@ Scene::Scene() {}
 void Scene::start() {
 	initialize();
 
-	mesh = new Mesh("obj/pyramid.obj");
+	vector <string> filenames;
+	filenames.push_back("obj/pyramid.obj");
+	filenames.push_back("obj/pikachu.obj");
+	mesh = new Mesh(filenames);
 
 	for (Group* g : mesh->groups) {
 		for (Face* f : g->faces) {
@@ -104,7 +106,7 @@ void Scene::start() {
 
 	// load and generate the texture
 	int width, height, nrChannels;
-	unsigned char* data = stbi_load("images/grey.jpg", &width, &height, &nrChannels, 0);
+	unsigned char* data = stbi_load("images/loud.jpeg", &width, &height, &nrChannels, 0);
 	if (data)
 	{
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
