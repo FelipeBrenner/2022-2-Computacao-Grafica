@@ -33,7 +33,7 @@ void Texture::Load(char* path, char* textureUniformName, GLuint shaderProgram, G
 void Texture::loadImage(char* path) {
     // load and generate the texture
 	int width, height, nrChannels;
-	unsigned char* data = stbi_load("images/loud.jpeg", &width, &height, &nrChannels, 0);
+	unsigned char* data = stbi_load(path, &width, &height, &nrChannels, 0);
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
     glGenerateMipmap(GL_TEXTURE_2D);

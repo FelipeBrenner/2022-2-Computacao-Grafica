@@ -1,7 +1,9 @@
 #include "Mesh.h"
 #include "Group.h"
+#include "MtlReader.h"
 
 Mesh::Mesh(vector <string> filenames) {
+	string lastmtl;
 	for (string filename : filenames) {
 		Group* group = new Group;
 		ifstream archive(filename);
@@ -26,7 +28,7 @@ Mesh::Mesh(vector <string> filenames) {
 				this->mappings.push_back(texture);
 			}
 			else if (temp == "f") {
-				// implementar lógica de varições
+				// implementar l�gica de vari��es
 				// para face: v, v/t/n, v/t e v//n
 				// while enquanto tem tokens em sline:
 				//cout << sline << endl;
@@ -59,7 +61,18 @@ Mesh::Mesh(vector <string> filenames) {
 
 					Face* face = new Face;
 				}
+				face->mtl = lastmtl;
 				group->faces.push_back(face);
+			}
+			else if (temp == "usemtl") {
+				string x;
+				sline >> x;
+				lastmtl = x;
+			} else if (temp == "mtllib") {
+				string mtlFilename;
+				sline >> mtlFilename;
+				MtlReader::read(group, mtlFilename);
+
 			}
 		}
 

@@ -23,14 +23,16 @@ void Scene::start() {
 	shader = new Shader;
 
 	vector <string> filenames;
-	filenames.push_back("obj/pyramid.obj");
 	filenames.push_back("obj/pikachu.obj");
 	mesh = new Mesh(filenames);
 
 	for (Group* g : mesh->groups) {
 		for (Face* f : g->faces) {
-			shader->loadTexture(strdup(g->material.c_str()), strdup("texture1"), g->name);
+			//shader->loadTexture(_strdup(g->material.c_str()), _strdup("texture1"), g->name);
 
+			string path2 = g->material.getTexture();
+			// string path2 = "images/loud.jpeg";
+			shader->loadTexture(strdup(path2.c_str()), strdup("texture1"), g->name);
 			for (int i = 0; i < f->verts.size(); i++) {
 				glm::vec3* v = mesh->vertex[f->verts[i] - 1];
 				vs1.push_back(v->x);
@@ -211,7 +213,7 @@ void Scene::processInput(GLFWwindow* window)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
-	const float cameraSpeed = 0.0005f; // adjust accordingly
+	const float cameraSpeed = 0.1f; // adjust accordingly
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 		cameraPos += cameraSpeed * cameraFront;
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
