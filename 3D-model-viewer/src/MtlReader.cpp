@@ -44,8 +44,7 @@ void MtlReader::read(Group* group, string filename)
                 firstMtl = 0;
             }
             else {
-                //group->setMaterial(material->getName());
-                group->setMaterial(material);
+                group->addMaterial(material->name, material);
                 Material* material = new Material();
             }
 
@@ -66,53 +65,48 @@ void MtlReader::read(Group* group, string filename)
         else if (temp == "map_Kd") {
             texture(material, sline);
         }
-
-        // cout << endl;
     }
 
     arq.close();
 
-    group->setMaterial(material);
-
-
-    //group->setMaterial(material->getName());
+    group->addMaterial(material->name, material);
 }
 
 void MtlReader::name(Material* material, stringstream& sline) {
     string name;
     sline >> name;
-    material->setName(name);
+    material->name = name;
 }
 
 void MtlReader::ambient(Material* material, stringstream& sline) {
     float x, y, z;
     sline >> x >> y >> z;
     // cout << "  Resultado: vec3(" << x << ", " << y << ", " << z << ")" << endl;
-    material->setAmbient(new glm::vec3(x, y, z));
+    material->ambient = new glm::vec3(x, y, z);
 }
 
 void MtlReader::diffuse(Material* material, stringstream& sline) {
     float x, y, z;
     sline >> x >> y >> z;
     // cout << "  Resultado: vec3(" << x << ", " << y << ", " << z << ")" << endl;
-    material->setDiffuse(new glm::vec3(x, y, z));
+    material->diffuse = new glm::vec3(x, y, z);
 }
 
 void MtlReader::specular(Material* material, stringstream& sline) {
     float x, y, z;
     sline >> x >> y >> z;
     // cout << "  Resultado: vec3(" << x << ", " << y << ", " << z << ")" << endl;
-    material->setSpecular(new glm::vec3(x, y, z));
+    material->specular = new glm::vec3(x, y, z);
 }
 
 void MtlReader::shininess(Material* material, stringstream& sline) {
     float shininess;
     sline >> shininess;
-    material->setShininess(shininess);
+    material->shininess = shininess;
 }
 
 void MtlReader::texture(Material* material, stringstream& sline) {
     string texture;
     sline >> texture;
-    material->setTexture(texture);
+    material->texture = texture;
 }

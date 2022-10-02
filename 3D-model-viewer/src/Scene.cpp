@@ -28,11 +28,12 @@ void Scene::start() {
 
 	for (Group* g : mesh->groups) {
 		for (Face* f : g->faces) {
-			//shader->loadTexture(_strdup(g->material.c_str()), _strdup("texture1"), g->name);
+			Material* material = g->materials[f->mtl];
+			string path = material->texture;
+			printf("%s ", f->mtl.c_str());
+			printf("%s\n", path.c_str());
+			shader->loadTexture(strdup(path.c_str()), strdup("texture1"), g->name);
 
-			string path2 = g->material.getTexture();
-			// string path2 = "images/loud.jpeg";
-			shader->loadTexture(strdup(path2.c_str()), strdup("texture1"), g->name);
 			for (int i = 0; i < f->verts.size(); i++) {
 				glm::vec3* v = mesh->vertex[f->verts[i] - 1];
 				vs1.push_back(v->x);
@@ -64,46 +65,35 @@ void Scene::start() {
 						vts.push_back(vt2->y);
 					}
 				}
-				//auto vn = mesh->normals[f->norms[i]];
-				//vns.push_back(vn->x);
-				//vns.push_back(vn->y);
-				//vns.push_back(vn->z);
 			}
 		}
-		// 1) criar VAO para o grupo
-		// 2) associar VAO criado com grupo
-		// 3) criar um VBO para vs
-		// 4) criar um VBO para vts
-		// 5) criar um VBO para vns
-		// 6) definir layout e atributos do VAO 
-		// para leitura dos VBOs
 
-			GLuint vbo;
+		GLuint vbo;
 
-			/* a vertex buffer object (VBO) is created here. this stores an array of data
-			on the graphics adapter's memory. in our case - the vertex points */
-			glGenBuffers(1, &vbo);
-			glBindBuffer(GL_ARRAY_BUFFER, vbo);
-			glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vs1.size(), vs1.data(), GL_STATIC_DRAW);
+		/* a vertex buffer object (VBO) is created here. this stores an array of data
+		on the graphics adapter's memory. in our case - the vertex points */
+		glGenBuffers(1, &vbo);
+		glBindBuffer(GL_ARRAY_BUFFER, vbo);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vs1.size(), vs1.data(), GL_STATIC_DRAW);
 
-			glGenVertexArrays(1, &g->vao);
-			glBindVertexArray(g->vao);
-			glEnableVertexAttribArray(0); // habilitado primeiro atributo do vbo bound atual
-			glBindBuffer(GL_ARRAY_BUFFER, vbo); // identifica vbo atual
-			// associa��o do vbo atual com primeiro atributo
-			// 0 identifica que o primeiro atributo est� sendo definido
-			// 3, GL_FLOAT identifica que dados s�o vec3 e est�o a cada 3 float.
-			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+		glGenVertexArrays(1, &g->vao);
+		glBindVertexArray(g->vao);
+		glEnableVertexAttribArray(0); // habilitado primeiro atributo do vbo bound atual
+		glBindBuffer(GL_ARRAY_BUFFER, vbo); // identifica vbo atual
+		// associa��o do vbo atual com primeiro atributo
+		// 0 identifica que o primeiro atributo est� sendo definido
+		// 3, GL_FLOAT identifica que dados s�o vec3 e est�o a cada 3 float.
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
-			GLuint texturesVBO;
-			glGenBuffers(1, &texturesVBO);
-			glBindBuffer(GL_ARRAY_BUFFER, texturesVBO);
-			glBufferData(GL_ARRAY_BUFFER, vts.size() * sizeof(GLfloat), vts.data(), GL_STATIC_DRAW);
+		GLuint texturesVBO;
+		glGenBuffers(1, &texturesVBO);
+		glBindBuffer(GL_ARRAY_BUFFER, texturesVBO);
+		glBufferData(GL_ARRAY_BUFFER, vts.size() * sizeof(GLfloat), vts.data(), GL_STATIC_DRAW);
 
-			// texture coord attribute
-			glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float), (void*)0);
-			glEnableVertexAttribArray(1);
-		}
+		// texture coord attribute
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float), (void*)0);
+		glEnableVertexAttribArray(1);
+	}
 
 	glClearColor(0.6f, 0.6f, 0.8f, 1.0f);
 
@@ -116,7 +106,7 @@ void Scene::start() {
 	one-after-the-other */
 
 	glm::mat4 view;
-	float near = 0.1;
+	float near = 0.5;
 	float far = 100.0;
 	float aspect = 640.0 / 480.0;
 
