@@ -13,6 +13,7 @@
 #include "stb_image.h"
 
 #include "Mesh.h"
+#include "Shader.h"
 
 using namespace std;
 
@@ -21,6 +22,7 @@ class Scene {
     Scene();
 
     void start();
+    Shader* shader;
 
   private:
     void initialize();
@@ -37,7 +39,4 @@ class Scene {
     vector<float> vns;
     const GLubyte* renderer;
 	  const GLubyte* version;
-    int viewLoc;
-	  int projLoc;
-    unsigned int texture1;
 };

@@ -1,5 +1,6 @@
 #include "Scene.h"
 #include "Mesh.h"
+#include "Shader.h"
 
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
@@ -19,6 +20,8 @@ Scene::Scene() {}
 void Scene::start() {
 	initialize();
 
+	shader = new Shader;
+
 	vector <string> filenames;
 	filenames.push_back("obj/pyramid.obj");
 	filenames.push_back("obj/pikachu.obj");
@@ -26,6 +29,8 @@ void Scene::start() {
 
 	for (Group* g : mesh->groups) {
 		for (Face* f : g->faces) {
+			shader->loadTexture(strdup(g->material.c_str()), strdup("texture1"), g->name);
+
 			for (int i = 0; i < f->verts.size(); i++) {
 				glm::vec3* v = mesh->vertex[f->verts[i] - 1];
 				vs1.push_back(v->x);
@@ -71,8 +76,6 @@ void Scene::start() {
 		// 6) definir layout e atributos do VAO 
 		// para leitura dos VBOs
 
-			g->loadTextures();
-
 			GLuint vbo;
 
 			/* a vertex buffer object (VBO) is created here. this stores an array of data
@@ -100,8 +103,6 @@ void Scene::start() {
 			glEnableVertexAttribArray(1);
 		}
 
-	configureShaders();
-
 	glClearColor(0.6f, 0.6f, 0.8f, 1.0f);
 
 	/* this loop clears the drawing surface, then draws the geometry described by
@@ -124,16 +125,15 @@ void Scene::start() {
 		float Sz = -(far + near) / (far - near);
 		float Pz = -(2 * far * near) / (far - near);
 
+		view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+		shader->setUniformMatrix4fv("view", view);
 		float projection[] = {
 			Sx, 0.0f, 0.0f, 0.0f,
 			0.0f, Sy, 0.0f, 0.0f,
 			0.0f, 0.0f, Sz, Pz,
 			0.0f, 0.0f, -1.0f, 1.0f
 		};
-
-		view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-		glUniformMatrix4fv(projLoc, 1, GL_FALSE, projection);
+		shader->setUniformMatrix4fvFloat("projection", projection);
 
 		/* wipe the drawing surface clear */
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -197,68 +197,9 @@ void Scene::initialize() {
 	glDepthFunc(GL_LESS);/*depth-testing interprets a smaller value as "closer"*/
 }
 
-void Scene::configureShaders() {
-		/* these are the strings of code for the shaders
-	the vertex shader positions each vertex point */
-	/* these are the strings of code for the shaders
-	the vertex shader positions each vertex point */
-	const char* vertex_shader =
-		"#version 410\n"
-		"layout(location=0) in vec3 vp;"
-		"layout(location=1) in vec2 aTexCoord;"
-		"uniform mat4 view;"
-		"uniform mat4 projection;"
-		"out vec2 TexCoord;"
-		"void main () {"
-		"   TexCoord = aTexCoord;"
-		"	gl_Position = projection * view * vec4 (vp, 1.0);"
-		"}";
-
-	/* the fragment shader colours each fragment (pixel-sized area of the
-	triangle) */
-	const char* fragment_shader =
-		"#version 410\n"
-		"in vec2 TexCoord;"
-		"uniform sampler2D texture1;"
-		"out vec4 frag_color;"
-		"void main () {"
-		//"	frag_color = vec4 (color, 1.0);"
-		"	frag_color = texture(texture1, TexCoord);"
-		"}";
-
-	/* GL shader objects for vertex and fragment shader [components] */
-	GLuint vs, fs;
-	/* GL shader programme object [combined, to link] */
-	GLuint shader_programme;
-
-	/* here we copy the shader strings into GL shaders, and compile them. we then
-	create an executable shader 'program' and attach both of the compiled shaders.
-	we link this, which matches the outputs of the vertex shader to the inputs of
-	the fragment shader, etc. and it is then ready to use */
-	vs = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vs, 1, &vertex_shader, NULL);
-	glCompileShader(vs);
-	fs = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fs, 1, &fragment_shader, NULL);
-	glCompileShader(fs);
-
-	shader_programme = glCreateProgram();
-	glAttachShader(shader_programme, fs);
-	glAttachShader(shader_programme, vs);
-	glLinkProgram(shader_programme);
-
-	viewLoc = glGetUniformLocation(shader_programme, "view");
-	projLoc = glGetUniformLocation(shader_programme, "projection");
-	glUseProgram(shader_programme);
-}
-
 void Scene::render() {
 	for(Group* g : mesh->groups) {
-		//glUseProgram(shader_programme);
-		glBindTexture(GL_TEXTURE_2D, texture1);
-		//glActiveTexture(GL_TEXTURE0);
-
-		//glUseProgram(shader_programme);
+		shader->useTexture(g->name);
 		glBindVertexArray(g->vao);
 		/* draw points 0-3 from the currently bound VAO with current in-use shader*/
 		glDrawArrays(GL_TRIANGLES, 0, vs1.size() / 3);
