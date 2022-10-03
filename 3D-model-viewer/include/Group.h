@@ -5,7 +5,6 @@
 #include <string>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include <map>
 
 using namespace std;
 
@@ -14,13 +13,8 @@ class Group {
     Group();
 
     string name;
-    vector <Face*> faces;
     GLuint vao;
+    vector <Face*> faces;
     Texture* texture;
-    map<string, Material*> materials;
-
-    int addMaterial(string name, Material* material) {
-      materials[name] = material;
-      return materials.size() - 1;
-    }
+    string material;
 };

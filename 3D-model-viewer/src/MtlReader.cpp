@@ -6,21 +6,16 @@
 
 using namespace std;
 
-void MtlReader::read(Group* group, string filename)
+void MtlReader::read(Mesh* mesh, string filename)
 {
     int firstMtl = 1;
     Material* material = new Material();
 
     ifstream arq(filename);
 
-    // cout << "Lendo arquivo: " << filename << endl;
-
     if (!arq) {
-        // cout << "- Arquivo de objeto nao encontrado" << endl;
         exit(EXIT_FAILURE);
     }
-
-    // cout << endl;
 
     while (!arq.eof()) {
         string line;
@@ -28,7 +23,6 @@ void MtlReader::read(Group* group, string filename)
 
         stringstream sline(line);
 
-        // l� tipo de elemento
         string temp;
         sline >> temp;
 
@@ -36,16 +30,13 @@ void MtlReader::read(Group* group, string filename)
             continue;
         }
 
-        // cout << "Linha lida: " << line << endl;
-        // cout << "- Tipo: " << temp << endl;
-
         if (temp == "newmtl") {
             if (firstMtl == 1) {
                 firstMtl = 0;
             }
             else {
-                group->addMaterial(material->name, material);
-                Material* material = new Material();
+                mesh->addMaterial(material->name, material);
+                material = new Material();
             }
 
             name(material, sline);
@@ -69,7 +60,7 @@ void MtlReader::read(Group* group, string filename)
 
     arq.close();
 
-    group->addMaterial(material->name, material);
+    mesh->addMaterial(material->name, material);
 }
 
 void MtlReader::name(Material* material, stringstream& sline) {

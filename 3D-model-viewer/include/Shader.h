@@ -16,7 +16,7 @@ class Shader {
     GLuint shader_programme;
     GLint textureQtd;
     Shader();
-    map<string, Texture> textures;
+    map<string, Texture*> textures;
 
     void useTexture(string textureName);
     void loadTexture(char* path, char* textureUniformName, string textureName);

@@ -4,7 +4,7 @@ Texture::Texture() {
     
 }
 
-void Texture::Load(char* path, char* textureUniformName, GLuint shaderProgram, GLint textureNum )
+void Texture::load(char* path, char* textureUniformName, GLuint shaderProgram, GLint textureNum )
 {
     this->textureNum = textureNum;
 

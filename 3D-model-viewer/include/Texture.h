@@ -9,7 +9,7 @@ class Texture {
     public:
     Texture();
 
-    void Load( char* path, char* textureUniformName, GLuint shaderProgram, GLint textureNum );
+    void load( char* path, char* textureUniformName, GLuint shaderProgram, GLint textureNum );
 
     GLuint textureID;
     GLint textureLocation;

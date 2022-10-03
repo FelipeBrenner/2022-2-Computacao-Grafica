@@ -10,5 +10,4 @@ class Face {
     vector <int> verts;
     vector <int> norms;
     vector <int> textures;
-    string mtl;
 };

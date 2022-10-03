@@ -3,7 +3,7 @@
 Shader::Shader() {
 	textureQtd = 0;
 	
-		/* these are the strings of code for the shaders
+	/* these are the strings of code for the shaders
 	the vertex shader positions each vertex point */
 	/* these are the strings of code for the shaders
 	the vertex shader positions each vertex point */
@@ -55,14 +55,14 @@ Shader::Shader() {
 
 void Shader::useTexture( string textureName )
 {
-	glActiveTexture( GL_TEXTURE0 + textures[textureName].textureNum );
-	glBindTexture( GL_TEXTURE_2D, textures[textureName].textureID );
+	glActiveTexture( GL_TEXTURE0 + textures[textureName]->textureNum );
+	glBindTexture( GL_TEXTURE_2D, textures[textureName]->textureID );
 }
 
 void Shader::loadTexture( char* path, char* textureUniformName, string textureName )
 {
-	Texture tmpTexture;
-	tmpTexture.Load( path, textureUniformName, shader_programme, textureQtd );
+	Texture* tmpTexture;
+	tmpTexture->load( path, textureUniformName, shader_programme, textureQtd );
 	textures[textureName] = tmpTexture;
 	textureQtd += 1;
 }

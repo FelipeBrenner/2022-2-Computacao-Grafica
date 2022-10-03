@@ -28,17 +28,14 @@ void Scene::start() {
 
 	for (Group* g : mesh->groups) {
 		for (Face* f : g->faces) {
-			Material* material = g->materials[f->mtl];
-			string path = material->texture;
-			printf("%s ", f->mtl.c_str());
-			printf("%s\n", path.c_str());
-			shader->loadTexture(strdup(path.c_str()), strdup("texture1"), g->name);
-
+			Material* material = mesh->materials[g->material];
+			shader->loadTexture(strdup(material->texture.c_str()), strdup("texture1"), g->name);
 			for (int i = 0; i < f->verts.size(); i++) {
 				glm::vec3* v = mesh->vertex[f->verts[i] - 1];
 				vs1.push_back(v->x);
 				vs1.push_back(v->y);
 				vs1.push_back(v->z);
+				
 				if (f->textures.size()) {
 					glm::vec2* vt = mesh->mappings[f->textures[i] - 1];
 					vts.push_back(vt->x);
@@ -106,7 +103,7 @@ void Scene::start() {
 	one-after-the-other */
 
 	glm::mat4 view;
-	float near = 0.5;
+	float near = 0.1;
 	float far = 100.0;
 	float aspect = 640.0 / 480.0;
 

@@ -9,6 +9,7 @@
 #include <fstream> 
 #include <sstream>
 #include <bitset>
+#include <map>
 
 using namespace std;
 
@@ -20,4 +21,10 @@ class Mesh {
 		vector <glm::vec3*> vertex;
 		vector <glm::vec3*> normals;
 		vector <glm::vec2*> mappings;
+		map<string, Material*> materials;
+
+		int addMaterial(string name, Material* material) {
+      materials[name] = material;
+      return materials.size() - 1;
+    }
 };

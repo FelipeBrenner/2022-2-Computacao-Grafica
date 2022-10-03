@@ -3,9 +3,10 @@
 #include "MtlReader.h"
 
 Mesh::Mesh(vector <string> filenames) {
-	string lastmtl;
 	for (string filename : filenames) {
+		int firstGroup = 1;
 		Group* group = new Group;
+		group->name = "default";
 		ifstream archive(filename);
 		
 		while (!archive.eof()) {
@@ -28,10 +29,6 @@ Mesh::Mesh(vector <string> filenames) {
 				this->mappings.push_back(texture);
 			}
 			else if (temp == "f") {
-				// implementar l�gica de vari��es
-				// para face: v, v/t/n, v/t e v//n
-				// while enquanto tem tokens em sline:
-				//cout << sline << endl;
 				string x;
 
 				Face* face = new Face;
@@ -61,18 +58,29 @@ Mesh::Mesh(vector <string> filenames) {
 
 					Face* face = new Face;
 				}
-				face->mtl = lastmtl;
 				group->faces.push_back(face);
 			}
+			else if (temp == "g") {
+				if (firstGroup == 1) {
+					firstGroup = 0;
+				}
+				else {
+					this->groups.push_back(group);
+					group = new Group();
+				}
+
+				string name;
+				sline >> name;
+				group->name = name;
+			}
 			else if (temp == "usemtl") {
-				string x;
-				sline >> x;
-				lastmtl = x;
+				string name;
+				sline >> name;
+				group->material = name;
 			} else if (temp == "mtllib") {
 				string mtlFilename;
 				sline >> mtlFilename;
-				MtlReader::read(group, mtlFilename);
-
+				MtlReader::read(this, mtlFilename);
 			}
 		}
 
