@@ -41,18 +41,6 @@ void MtlReader::read(Mesh* mesh, string filename)
 
             name(material, sline);
         }
-        else if (temp == "Ka") {
-            ambient(material, sline);
-        }
-        else if (temp == "Kd") {
-            diffuse(material, sline);
-        }
-        else if (temp == "Ks") {
-            specular(material, sline);
-        }
-        else if (temp == "Ns") {
-            shininess(material, sline);
-        }
         else if (temp == "map_Kd") {
             texture(material, sline);
         }
@@ -67,33 +55,6 @@ void MtlReader::name(Material* material, stringstream& sline) {
     string name;
     sline >> name;
     material->name = name;
-}
-
-void MtlReader::ambient(Material* material, stringstream& sline) {
-    float x, y, z;
-    sline >> x >> y >> z;
-    // cout << "  Resultado: vec3(" << x << ", " << y << ", " << z << ")" << endl;
-    material->ambient = new glm::vec3(x, y, z);
-}
-
-void MtlReader::diffuse(Material* material, stringstream& sline) {
-    float x, y, z;
-    sline >> x >> y >> z;
-    // cout << "  Resultado: vec3(" << x << ", " << y << ", " << z << ")" << endl;
-    material->diffuse = new glm::vec3(x, y, z);
-}
-
-void MtlReader::specular(Material* material, stringstream& sline) {
-    float x, y, z;
-    sline >> x >> y >> z;
-    // cout << "  Resultado: vec3(" << x << ", " << y << ", " << z << ")" << endl;
-    material->specular = new glm::vec3(x, y, z);
-}
-
-void MtlReader::shininess(Material* material, stringstream& sline) {
-    float shininess;
-    sline >> shininess;
-    material->shininess = shininess;
 }
 
 void MtlReader::texture(Material* material, stringstream& sline) {

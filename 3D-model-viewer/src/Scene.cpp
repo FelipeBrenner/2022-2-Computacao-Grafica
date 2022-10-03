@@ -27,9 +27,10 @@ void Scene::start() {
 	mesh = new Mesh(filenames);
 
 	for (Group* g : mesh->groups) {
+		Material* material = mesh->materials[g->material];
+		shader->loadTexture(strdup(material->texture.c_str()), strdup("texture1"), g->name);
+		
 		for (Face* f : g->faces) {
-			Material* material = mesh->materials[g->material];
-			shader->loadTexture(strdup(material->texture.c_str()), strdup("texture1"), g->name);
 			for (int i = 0; i < f->verts.size(); i++) {
 				glm::vec3* v = mesh->vertex[f->verts[i] - 1];
 				vs1.push_back(v->x);
