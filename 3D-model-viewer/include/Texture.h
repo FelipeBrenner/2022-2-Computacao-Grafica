@@ -1,18 +1,22 @@
 #pragma once
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include "stb_image.h"
 
-using namespace std;
+#include "AssetManager.h"
 
-class Texture {
-    public:
-    Texture();
-
-    void load( char* path, char* textureUniformName, GLuint shaderProgram, GLint textureNum );
-
+class Texture
+{
+private:
     GLuint textureID;
     GLint textureLocation;
     GLshort textureNum;
-    void loadImage(char* path);
+
+public:
+    Texture();
+
+    void Load( char* path, char* textureUniformName, GLuint shaderProgram, GLint textureNum );
+
+    GLuint GetTextureId() { return textureID; }
+    GLshort GetTextureNum() { return textureNum; }
+
 };

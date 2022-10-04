@@ -1,10 +1,13 @@
 #include "Texture.h"
 
-Texture::Texture() {
-    
+
+
+Texture::Texture()
+{
 }
 
-void Texture::load(char* path, char* textureUniformName, GLuint shaderProgram, GLint textureNum )
+
+void Texture::Load(char* path, char* textureUniformName, GLuint shaderProgram, GLint textureNum )
 {
     this->textureNum = textureNum;
 
@@ -18,7 +21,7 @@ void Texture::load(char* path, char* textureUniformName, GLuint shaderProgram, G
     glActiveTexture( GL_TEXTURE0 + this->textureNum );
     glBindTexture( GL_TEXTURE_2D, textureID );
 
-    loadImage(path);
+    AssetManager::LoadImage( path );
 
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
@@ -28,15 +31,4 @@ void Texture::load(char* path, char* textureUniformName, GLuint shaderProgram, G
     glUniform1i( textureLocation, this->textureNum );
 
     glBindTexture( GL_TEXTURE_2D, 0 );
-}
-
-void Texture::loadImage(char* path) {
-    // load and generate the texture
-	int width, height, nrChannels;
-	unsigned char* data = stbi_load(path, &width, &height, &nrChannels, 0);
-
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-    glGenerateMipmap(GL_TEXTURE_2D);
-
-	stbi_image_free(data);
 }

@@ -1,0 +1,28 @@
+#a
+#newobj
+#i objs/pikachu.obj
+#ii 0 0 0 1 0 0 1 1 1
+#iii
+#newobj
+#i objs/pikachu.obj
+#ii -5 0 1 0 4 1 2 2 2
+#iii
+
+#newobj
+#i objs/pikachu.obj
+#ii -15 0 2 2 5 1 3 3 3
+#iii
+
+#newobj
+#i objs/pikachu.obj
+#ii -35 0 4 5 3 1 4 4 4
+#iii
+
+#newobj
+#i objs/pikachu.obj
+#ii -60 0 3 1 0 1 5 5 5
+#iii
+
+
+#b
+#c 0 0 20

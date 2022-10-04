@@ -1,30 +1,47 @@
 #pragma once
-#include "Group.h"
 #include <vector>
-#include <string>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <iostream>     
-#include <fstream> 
-#include <sstream>
-#include <bitset>
 #include <map>
+#include "Group.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include "Material.h"
 
 using namespace std;
+using namespace glm;
 
-class Mesh {
-	public:
-		Mesh(vector <string> filename);
+class Mesh
+{
 
-		vector <Group*> groups;
-		vector <glm::vec3*> vertex;
-		vector <glm::vec3*> normals;
-		vector <glm::vec2*> mappings;
-		map<string, Material*> materials;
+private:
+    vector<Group*> groups;
+    vector<vec3*> vertices;
+    vector<vec3*> normais;
+    vector<vec2*> textures;
+    map<string, Material*> materials;
 
-		int addMaterial(string name, Material* material) {
-      materials[name] = material;
-      return materials.size() - 1;
+public:
+    Mesh();
+    ~Mesh();
+    vec3* vertice(int id);
+    vec3* normal(int id);
+    vec2* texture(int id);
+    int addVertice(vec3*);
+    int addNormal(vec3*);
+    int addTexture(vec2*);
+    int addGroup(Group*);
+    int addMaterial(string name, Material* material);
+    void translateModel(vec3 initialTrans);
+    void scaleModel(vec3 initalScale);
+    void rotateModel(vec3 initalRotation);
+    glm::mat4 model;
+    
+    vector<Group*> getGroups() {
+        return groups;
+    }
+
+    Material* getMaterial(string name) {
+        return materials[name];
     }
 };
+
