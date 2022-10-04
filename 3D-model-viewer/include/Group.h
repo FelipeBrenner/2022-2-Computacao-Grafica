@@ -15,6 +15,5 @@ class Group {
     string name;
     GLuint vao;
     vector <Face*> faces;
-    Texture* texture;
     string material;
 };
