@@ -61,7 +61,7 @@ void Shader::useTexture( string textureName )
 
 void Shader::loadTexture( char* path, char* textureUniformName, string textureName )
 {
-	Texture* tmpTexture;
+	Texture* tmpTexture = new Texture;
 	tmpTexture->load( path, textureUniformName, shader_programme, textureQtd );
 	textures[textureName] = tmpTexture;
 	textureQtd += 1;

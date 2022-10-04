@@ -21,9 +21,10 @@ void Scene::start() {
 	initialize();
 
 	shader = new Shader;
-
+	
 	vector <string> filenames;
 	filenames.push_back("obj/pikachu.obj");
+	
 	mesh = new Mesh(filenames);
 
 	for (Group* g : mesh->groups) {
@@ -127,7 +128,6 @@ void Scene::start() {
 
 		/* wipe the drawing surface clear */
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		//		glUseProgram (shader_programme);
 
 		render();
 
@@ -191,7 +191,6 @@ void Scene::render() {
 	for(Group* g : mesh->groups) {
 		shader->useTexture(g->name);
 		glBindVertexArray(g->vao);
-		/* draw points 0-3 from the currently bound VAO with current in-use shader*/
 		glDrawArrays(GL_TRIANGLES, 0, vs1.size() / 3);
 		glBindVertexArray(0);
 	}

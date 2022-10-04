@@ -3,10 +3,11 @@
 #include "MtlReader.h"
 
 Mesh::Mesh(vector <string> filenames) {
-	for (string filename : filenames) {
-		int firstGroup = 1;
-		Group* group = new Group;
-		group->name = "default";
+	int firstGroup = 1;
+	Group* group = new Group;
+	group->name = "default";
+	
+	for (string filename : filenames) {	
 		ifstream archive(filename);
 		
 		while (!archive.eof()) {
