@@ -20,8 +20,6 @@ enum RotationStatus {
 
 System::System() {}
 
-System::~System() {}
-
 int System::GLFWInit()
 {
     

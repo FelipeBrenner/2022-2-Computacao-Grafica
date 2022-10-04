@@ -2,9 +2,6 @@
  
 Mesh::Mesh() {
     model = mat4(1.0f);
-}
-
-Mesh::~Mesh() {
     groups.clear();
     vertices.clear();
     normais.clear();

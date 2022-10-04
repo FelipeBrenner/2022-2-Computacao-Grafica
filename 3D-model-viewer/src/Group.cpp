@@ -1,9 +1,7 @@
 #include "Group.h"
 
-Group::Group() {}
-
-Group::~Group() {
-    faces.clear();
+Group::Group() {
+     faces.clear();
 }
 
 int Group::addFace(Face* face) {

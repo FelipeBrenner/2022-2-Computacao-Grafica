@@ -1,12 +1,9 @@
 #pragma once
 #include <GL/glew.h>
+#include <string>
 #include "stb_image.h"
 
-#include <string>
-
-namespace AssetManager
-{
-
+namespace AssetManager {
 	static unsigned char* LoadImage(char* path) {
 		int width, height, numComp;
 		unsigned char *image;
@@ -17,5 +14,4 @@ namespace AssetManager
 
 		return nullptr;
 	};
-
 };

@@ -10,38 +10,35 @@
 using namespace std;
 using namespace glm;
 
-class Mesh
-{
+class Mesh {
+    private:
+        vector<Group*> groups;
+        vector<vec3*> vertices;
+        vector<vec3*> normais;
+        vector<vec2*> textures;
+        map<string, Material*> materials;
 
-private:
-    vector<Group*> groups;
-    vector<vec3*> vertices;
-    vector<vec3*> normais;
-    vector<vec2*> textures;
-    map<string, Material*> materials;
+    public:
+        Mesh();
+        vec3* vertice(int id);
+        vec3* normal(int id);
+        vec2* texture(int id);
+        int addVertice(vec3*);
+        int addNormal(vec3*);
+        int addTexture(vec2*);
+        int addGroup(Group*);
+        int addMaterial(string name, Material* material);
+        void translateModel(vec3 initialTrans);
+        void scaleModel(vec3 initalScale);
+        void rotateModel(vec3 initalRotation);
+        glm::mat4 model;
+        
+        vector<Group*> getGroups() {
+            return groups;
+        }
 
-public:
-    Mesh();
-    ~Mesh();
-    vec3* vertice(int id);
-    vec3* normal(int id);
-    vec2* texture(int id);
-    int addVertice(vec3*);
-    int addNormal(vec3*);
-    int addTexture(vec2*);
-    int addGroup(Group*);
-    int addMaterial(string name, Material* material);
-    void translateModel(vec3 initialTrans);
-    void scaleModel(vec3 initalScale);
-    void rotateModel(vec3 initalRotation);
-    glm::mat4 model;
-    
-    vector<Group*> getGroups() {
-        return groups;
-    }
-
-    Material* getMaterial(string name) {
-        return materials[name];
-    }
+        Material* getMaterial(string name) {
+            return materials[name];
+        }
 };
 

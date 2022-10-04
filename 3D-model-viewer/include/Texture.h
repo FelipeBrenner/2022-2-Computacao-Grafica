@@ -4,19 +4,17 @@
 
 #include "AssetManager.h"
 
-class Texture
-{
-private:
-    GLuint textureID;
-    GLint textureLocation;
-    GLshort textureNum;
+class Texture {
+    private:
+        GLuint textureID;
+        GLint textureLocation;
+        GLshort textureNum;
 
-public:
-    Texture();
+    public:
+        Texture();
 
-    void Load( char* path, char* textureUniformName, GLuint shaderProgram, GLint textureNum );
+        void Load( char* path, char* textureUniformName, GLuint shaderProgram, GLint textureNum );
 
-    GLuint GetTextureId() { return textureID; }
-    GLshort GetTextureNum() { return textureNum; }
-
+        GLuint GetTextureId() { return textureID; }
+        GLshort GetTextureNum() { return textureNum; }
 };

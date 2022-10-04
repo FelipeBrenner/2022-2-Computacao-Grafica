@@ -23,31 +23,28 @@
 #include "TranslatePointsReader.h"
 #include "ObjReader.h"
 
-class System
-{
-private:
-    // Screen
-    const GLint WIDTH = 1920, HEIGHT = 1080;
-    int screenWidth, screenHeight;
+class System {
+    private:
+        // Screen
+        const GLint WIDTH = 1920, HEIGHT = 1080;
+        int screenWidth, screenHeight;
 
-public:
-    GLFWwindow* window;
-    Shader coreShader;
+    public:
+        GLFWwindow* window;
+        Shader coreShader;
 
-public:
-    System();
-    ~System();
+    public:
+        System();
 
-    int GLFWInit();
-    int OpenGLSetup();
-    int SystemSetup();
+        int GLFWInit();
+        int OpenGLSetup();
+        int SystemSetup();
 
-    void Run(vector<Mesh*> meshs);
-    static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-    static void mouse_callback(GLFWwindow* window, double xpos, double ypos);
-    static void processInput(GLFWwindow* window);
-    static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+        void Run(vector<Mesh*> meshs);
+        static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+        static void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+        static void processInput(GLFWwindow* window);
+        static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 
-    void Finish();
-
+        void Finish();
 };
