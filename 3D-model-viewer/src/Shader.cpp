@@ -55,8 +55,8 @@ Shader::Shader() {
 
 void Shader::useTexture( string textureName )
 {
-	glActiveTexture( GL_TEXTURE0 + textures[textureName]->textureNum );
-	glBindTexture( GL_TEXTURE_2D, textures[textureName]->textureID );
+	// glActiveTexture( GL_TEXTURE0 + textures[textureName]->textureNum );
+	glBindTexture( GL_TEXTURE_2D, textures[textureName]->textureID);
 }
 
 void Shader::loadTexture( char* path, char* textureUniformName, string textureName )

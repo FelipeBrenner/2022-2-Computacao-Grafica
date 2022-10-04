@@ -16,4 +16,5 @@ class Group {
     GLuint vao;
     vector <Face*> faces;
     string material;
+    int numVertices;
 };

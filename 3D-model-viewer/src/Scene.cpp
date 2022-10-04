@@ -31,67 +31,50 @@ void Scene::start() {
 		Material* material = mesh->materials[g->material];
 		shader->loadTexture(strdup(material->texture.c_str()), strdup("texture1"), g->name);
 		
-		for (Face* f : g->faces) {
-			for (int i = 0; i < f->verts.size(); i++) {
-				glm::vec3* v = mesh->vertex[f->verts[i] - 1];
-				vs1.push_back(v->x);
-				vs1.push_back(v->y);
-				vs1.push_back(v->z);
-				
-				if (f->textures.size()) {
-					glm::vec2* vt = mesh->mappings[f->textures[i] - 1];
-					vts.push_back(vt->x);
-					vts.push_back(vt->y);
-				}
+		vector<float> vertices;
+    vector<float> textures;
 
-				if (i > 2) {
-					glm::vec3* v1 = mesh->vertex[f->verts[2] - 1];
-					vs1.push_back(v1->x);
-					vs1.push_back(v1->y);
-					vs1.push_back(v1->z);
-					if (f->textures.size()) {
-						glm::vec2* vt1 = mesh->mappings[f->textures[2] - 1];
-						vts.push_back(vt1->x);
-						vts.push_back(vt1->y);
-					}
-					glm::vec3* v2 = mesh->vertex[f->verts[0] - 1];
-					vs1.push_back(v2->x);
-					vs1.push_back(v2->y);
-					vs1.push_back(v2->z);
-					if (f->textures.size()) {
-						glm::vec2* vt2 = mesh->mappings[f->textures[0] - 1];
-						vts.push_back(vt2->x);
-						vts.push_back(vt2->y);
-					}
-				}
+		for (Face* f : g->faces) {
+			for (int verticeID : f->verts) {
+				glm::vec3* vertice = mesh->vertex[verticeID - 1];
+				vertices.push_back(vertice->x);
+				vertices.push_back(vertice->y);
+				vertices.push_back(vertice->z);
+
+				g->numVertices++;
+			}
+
+			for (int textureID : f->textures) {
+				glm::vec2* texture = mesh->mappings[textureID - 1];
+				textures.push_back(texture->x);
+				textures.push_back(texture->y);
 			}
 		}
 
-		GLuint vbo;
-
-		/* a vertex buffer object (VBO) is created here. this stores an array of data
-		on the graphics adapter's memory. in our case - the vertex points */
-		glGenBuffers(1, &vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, vbo);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vs1.size(), vs1.data(), GL_STATIC_DRAW);
-
-		glGenVertexArrays(1, &g->vao);
-		glBindVertexArray(g->vao);
-		glEnableVertexAttribArray(0); // habilitado primeiro atributo do vbo bound atual
-		glBindBuffer(GL_ARRAY_BUFFER, vbo); // identifica vbo atual
-		// associa��o do vbo atual com primeiro atributo
-		// 0 identifica que o primeiro atributo est� sendo definido
-		// 3, GL_FLOAT identifica que dados s�o vec3 e est�o a cada 3 float.
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-
-		GLuint texturesVBO;
-		glGenBuffers(1, &texturesVBO);
-		glBindBuffer(GL_ARRAY_BUFFER, texturesVBO);
-		glBufferData(GL_ARRAY_BUFFER, vts.size() * sizeof(GLfloat), vts.data(), GL_STATIC_DRAW);
-
-		// texture coord attribute
-		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float), (void*)0);
-		glEnableVertexAttribArray(1);
+		GLuint VBOvertices, VBOtextures, VAO;
+		glGenVertexArrays(1, &VAO);
+		glGenBuffers(1, &VBOvertices);
+		glGenBuffers(1, &VBOtextures);
+		
+		// Bind the Vertex Array Object first, then bind and set vertex buffer(s) and attribute pointer(s).
+		glBindVertexArray(VAO);
+		
+		// Vertices
+		glBindBuffer(GL_ARRAY_BUFFER, VBOvertices);
+		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
+		
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
+		glEnableVertexAttribArray(0);
+		
+		// Textures
+		glBindBuffer(GL_ARRAY_BUFFER, VBOtextures);
+		glBufferData(GL_ARRAY_BUFFER, textures.size() * sizeof(float), textures.data(), GL_STATIC_DRAW);
+		
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), (GLvoid*)0);
+		glEnableVertexAttribArray(2);
+		
+		g->vao = VAO;
+		glBindVertexArray(0);
 	}
 
 	glClearColor(0.6f, 0.6f, 0.8f, 1.0f);
@@ -189,10 +172,10 @@ void Scene::initialize() {
 
 void Scene::render() {
 	for(Group* g : mesh->groups) {
-		shader->useTexture(g->name);
 		glBindVertexArray(g->vao);
-		glDrawArrays(GL_TRIANGLES, 0, vs1.size() / 3);
-		glBindVertexArray(0);
+		shader->useTexture(g->name);
+		glDrawArrays(GL_TRIANGLES, 0, g->numVertices);
+		glBindTexture( GL_TEXTURE_2D, 0);
 	}
 }
 

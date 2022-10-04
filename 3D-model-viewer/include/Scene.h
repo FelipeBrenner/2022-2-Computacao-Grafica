@@ -34,9 +34,6 @@ class Scene {
     static void processInput(GLFWwindow* window);
     static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
     Mesh* mesh;
-    vector<float> vs1;
-    vector<float> vts;
-    vector<float> vns;
     const GLubyte* renderer;
 	  const GLubyte* version;
 };
