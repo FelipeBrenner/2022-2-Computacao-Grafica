@@ -1,9 +1,5 @@
 #include "TranslatePointsReader.h"
 
-#include <fstream>
-#include <iostream>
-#include <sstream>
-
 using namespace std;
 
 vector<vec3*> TranslatePointsReader::read(string filename)

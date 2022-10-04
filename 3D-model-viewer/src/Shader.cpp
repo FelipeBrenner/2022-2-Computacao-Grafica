@@ -1,5 +1,4 @@
 #include "Shader.h"
-#include <string>
 
 void Shader::UseTexture( std::string textureName )
 {

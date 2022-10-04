@@ -2,6 +2,9 @@
 #include <string>
 #include <vector>
 #include <glm/glm.hpp>
+#include <fstream>
+#include <iostream>
+#include <sstream>
 
 using namespace std;
 using namespace glm;
