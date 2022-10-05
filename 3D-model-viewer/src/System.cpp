@@ -88,7 +88,6 @@ void System::Run(vector<Mesh*> meshs) {
                     
                     group->increaseNumVertices();
                 }
-              
                 
                 for (int textureID : face->getTextures()) {
                     glm::vec2* texture = mesh->texture(textureID - 1);
@@ -103,14 +102,14 @@ void System::Run(vector<Mesh*> meshs) {
             glGenBuffers(1, &VBOtextures);
             glBindVertexArray(VAO);
             
-            //Vertices
+            // Vertices
             glBindBuffer(GL_ARRAY_BUFFER, VBOvertices);
             glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
             
             glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
             glEnableVertexAttribArray(0);
             
-            //Textures
+            // Textures
             glBindBuffer(GL_ARRAY_BUFFER, VBOtextures);
             glBufferData(GL_ARRAY_BUFFER, textures.size() * sizeof(float), textures.data(), GL_STATIC_DRAW);
             

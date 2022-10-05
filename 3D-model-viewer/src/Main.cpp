@@ -21,7 +21,6 @@ int main() {
         mesh->scaleModel(sceneObj->initalEscale);
         meshs.push_back(mesh);
     }
-    
 
     system.Run(meshs);
     

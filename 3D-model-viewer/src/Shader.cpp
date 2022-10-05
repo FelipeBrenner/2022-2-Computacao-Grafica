@@ -1,7 +1,6 @@
 #include "Shader.h"
 
 void Shader::UseTexture( std::string textureName ) {
-	//glActiveTexture( GL_TEXTURE0 + textures[textureName].GetTextureNum() );
 	glBindTexture( GL_TEXTURE_2D, textures[textureName].GetTextureId() );
 }
 
