@@ -7,6 +7,13 @@ static const float widthTriangle = 0.25f, pi = 3.14159;
 static const float angle = 60.0f / 180.0f * pi;
 static float widthWindow = 640.0f, heightWindow = 480.0f;
 
+float fixMarginError(float lastPosition) {
+	if(lastPosition + widthTriangle > 1.0f)
+		return 1.0f - widthTriangle;
+	else
+		return -1.0f + widthTriangle;
+};
+
 int main() {
 	GLFWwindow* window = NULL;
 	const GLubyte* renderer;
@@ -163,8 +170,8 @@ int main() {
 	the 'swap' idea. in a single-buffering system we would see stuff being drawn
 	one-after-the-other */
 
-	float speedX = cosf(angle);
-	float speedY = sinf(angle);
+	float vectorX = cosf(angle);
+	float vectorY = sinf(angle);
 	float lastPositionX = 0.0f;
 	float lastPositionY = 0.0f;
 	glUseProgram(shader_programme);
@@ -175,29 +182,23 @@ int main() {
 		double currentSeconds = glfwGetTime();
 		double elapsedSeconds = currentSeconds - previousSeconds;
 		
-		if (elapsedSeconds > 0.05) {
+		if (elapsedSeconds > 0.01) {
 			previousSeconds = currentSeconds;
 
 			if (abs(lastPositionX) + widthTriangle > 1.0f) {
-				speedX = -speedX;
+				vectorX = -vectorX;
 
-				if(lastPositionX > 0)
-					lastPositionX = 1.0f - widthTriangle;
-				else
-					lastPositionX = -1.0f + widthTriangle;
+				lastPositionX = fixMarginError(lastPositionX);
 			}
 
 			if (abs(lastPositionY) + widthTriangle > 1.0f) {
-				speedY = -speedY;
+				vectorY = -vectorY;
 
-				if(lastPositionY > 0)
-					lastPositionY = 1.0f - widthTriangle;
-				else
-					lastPositionY = -1.0f + widthTriangle;
+				lastPositionY = fixMarginError(lastPositionY);
 			}
-
-			lastPositionX += elapsedSeconds * speedX;
-			lastPositionY += elapsedSeconds * speedY;
+			
+			lastPositionX += elapsedSeconds * vectorX;
+			lastPositionY += elapsedSeconds * vectorY;
 			
 			matrix[12] = lastPositionX;
 			matrix[13] = lastPositionY;
