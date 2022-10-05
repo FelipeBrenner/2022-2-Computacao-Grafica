@@ -12,7 +12,6 @@ private:
 
 public:
     Face();
-    ~Face();
     int addVertice(int v);
     void push(int v, int n, int t);
 

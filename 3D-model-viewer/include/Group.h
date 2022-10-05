@@ -17,7 +17,6 @@ private:
 
 public:
     Group();
-    ~Group();
     int addFace(Face* face);
 
     vector<Face*> getFaces() {

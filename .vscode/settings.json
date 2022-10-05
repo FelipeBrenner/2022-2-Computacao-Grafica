@@ -38,6 +38,9 @@
     "map": "cpp",
     "bit": "cpp",
     "functional": "cpp",
-    "memory": "cpp"
+    "memory": "cpp",
+    "chrono": "cpp",
+    "ctime": "cpp",
+    "ratio": "cpp"
   }
 }

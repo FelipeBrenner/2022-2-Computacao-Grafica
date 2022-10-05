@@ -21,7 +21,6 @@ private:
 
 public:
     Mesh();
-    ~Mesh();
     vec3* vertice(int id);
     vec2* texture(int id);
     int addVertice(vec3*);
