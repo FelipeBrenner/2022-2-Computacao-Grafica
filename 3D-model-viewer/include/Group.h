@@ -1,21 +1,59 @@
 #pragma once
-#include "Face.h"
+#include <vector>
 #include <string>
+#include "Face.h"
 #include <GL/glew.h>
-#include <GLFW/glfw3.h>
 
 using namespace std;
 
-class Group {
-  public:
-    Group();
-    Group(string n, string m) {
-      name = n;
-      material = m;
-    };
-
+class Group
+{
+private:
+    GLuint VAO;
+    int numVertices;
     string name;
     string material;
-    vector <Face*> faces;
-    GLuint vao;
+    vector<Face*> faces;
+
+public:
+    Group();
+    ~Group();
+    int addFace(Face* face);
+
+    vector<Face*> getFaces() {
+        return faces;
+    }
+
+    GLuint& getVAO() {
+        return VAO;
+    }
+
+    void setVAO(GLuint* v) {
+        VAO = *v;
+    }
+
+    int getNumVertices() {
+        return numVertices;
+    }
+
+    void increaseNumVertices() {
+        numVertices++;
+    }
+    
+    void setName(string n) {
+        name = n;
+    }
+
+    string getName() {
+        return name;
+    }
+
+    void setMaterial(string n) {
+        material = n;
+    }
+
+    string getMaterial() {
+        return material;
+    }
 };
+
