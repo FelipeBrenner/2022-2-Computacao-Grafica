@@ -1,6 +1,6 @@
 # This file uses centimeters as units for non-parametric coordinates.
 
-mtllib mtl/pyramid.mtl
+mtllib mtls/pyramid.mtl
 g default
 v -1.000000 -1.000000 -1.000000
 v -1.000000 -1.000000 1.000000

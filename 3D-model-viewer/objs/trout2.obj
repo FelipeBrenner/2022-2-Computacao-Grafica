@@ -2,7 +2,7 @@
 # NumVerts/NumTVerts/NumVNormals/NumFacets   10984/11305/11299/10355
 # NumGroups/NumMaterials/NumRegions   20/5/0
 # x/y/color/ppu   1024/300/0/50.00000000
-mtllib mtl/trout.mtl
+mtllib mtls/trout.mtl
 v -1.30147803  0.45100600  1.51975095
 v -1.30147195  0.44233999  1.52100503
 v -1.30134702  0.43403301  1.52260005

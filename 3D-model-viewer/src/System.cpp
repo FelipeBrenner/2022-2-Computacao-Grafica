@@ -62,8 +62,7 @@ int System::Init()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_DEPTH_TEST);
     
-    coreShader = Shader("core.vert",
-                        "core.frag");
+    coreShader = Shader("shaders/core.vert", "shaders/core.frag");
     coreShader.Use();
 
     return EXIT_SUCCESS;
