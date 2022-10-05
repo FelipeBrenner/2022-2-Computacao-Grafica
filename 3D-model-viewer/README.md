@@ -12,3 +12,9 @@ Compilar e rodar:
 make
 ./app
 ```
+
+## 💻 Dyagram
+
+<p align="center">
+  <img src="dyagram.png">
+</p>
