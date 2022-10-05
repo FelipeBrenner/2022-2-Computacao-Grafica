@@ -33,5 +33,7 @@ $(ODIR)/%.o: $(SOURCES)
 	
 .PHONY: clean
 
-clean:
+run:
 	-rm -rfv app app.dSYM
+	make
+	./app
