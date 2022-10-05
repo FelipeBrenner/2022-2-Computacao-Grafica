@@ -1,13 +1,9 @@
 #include "Texture.h"
 #include "stb_image.h"
 
+Texture::Texture() {}
 
-Texture::Texture()
-{
-}
-
-void Texture::Load(char* path, char* textureUniformName, GLuint shaderProgram, GLint textureNum )
-{
+void Texture::Load(char* path, char* textureUniformName, GLuint shaderProgram, GLint textureNum ) {
     this->textureNum = textureNum;
 
     glGenTextures( 1, &textureID );

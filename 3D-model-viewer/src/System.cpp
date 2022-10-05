@@ -1,7 +1,6 @@
 #include "System.h"
 #include "Mesh.h"
 
-
 const unsigned int SCR_WIDTH = 1920;
 const unsigned int SCR_HEIGHT = 1080;
 
@@ -22,8 +21,7 @@ enum RotationStatus {
 
 System::System() {}
 
-int System::Init()
-{
+int System::Init() {
     
     glfwInit();
     glfwWindowHint( GLFW_CONTEXT_VERSION_MAJOR, 3 );
@@ -68,8 +66,7 @@ int System::Init()
     return EXIT_SUCCESS;
 }
 
-void System::Run(vector<Mesh*> meshs)
-{
+void System::Run(vector<Mesh*> meshs) {
     glfwSetFramebufferSizeCallback(window, System::framebuffer_size_callback);
     glfwSetCursorPosCallback (window, System::mouse_callback);
     glfwSetScrollCallback(window, System::scroll_callback);
@@ -172,15 +169,13 @@ void System::Run(vector<Mesh*> meshs)
     }
 }
 
-void System::Finish()
-{
+void System::Finish() {
     coreShader.Delete();
     
     glfwTerminate();
 }
 
-void System::processInput(GLFWwindow* window)
-{
+void System::processInput(GLFWwindow* window) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
     const float cameraSpeed = 0.05f; // adjust accordingly
@@ -194,13 +189,11 @@ void System::processInput(GLFWwindow* window)
         cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 }
 
-void System::framebuffer_size_callback(GLFWwindow* window, int width, int height)
-{
+void System::framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
 }
 
-void System::mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
-{
+void System::mouse_callback(GLFWwindow* window, double xposIn, double yposIn) {
     float xpos = static_cast<float>(xposIn);
     float ypos = static_cast<float>(yposIn);
 
@@ -236,7 +229,6 @@ void System::mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
     cameraFront = glm::normalize(front);
 }
 
-void System::scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
-{
+void System::scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
     fov -= (float)yoffset * 10;
 }

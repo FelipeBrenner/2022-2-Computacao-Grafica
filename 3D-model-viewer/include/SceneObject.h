@@ -3,6 +3,9 @@
 #include <glm/glm.hpp>
 #include <vector>
 #include <map>
+#include <fstream>
+#include <iostream>
+#include <sstream>
 
 using namespace std;
 using namespace glm;

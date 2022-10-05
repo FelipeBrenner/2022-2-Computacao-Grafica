@@ -1,16 +1,9 @@
 #include "SceneReader.h"
 #include "SceneObject.h"
-#include <fstream>
-#include <iostream>
-#include <sstream>
-using namespace std;
 
-
-SceneReader::SceneReader() {
-}
+SceneReader::SceneReader() {}
 
 void SceneReader::read(string filename) {
-
     int objCount = 0;
     SceneObject* sceneObject = new SceneObject();
     bool firstObj = true;

@@ -1,8 +1,6 @@
 #include "Group.h"
 
-Group::Group() {}
-
-Group::~Group() {
+Group::Group() {
     faces.clear();
 }
 

@@ -1,8 +1,6 @@
 #include "Face.h"
 
-Face::Face() {}
-
-Face::~Face() {
+Face::Face() {
 	vertices.clear();
 	normais.clear();
 	textures.clear();

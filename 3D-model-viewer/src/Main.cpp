@@ -1,6 +1,5 @@
 #include "System.h"
 #include "SceneReader.h"
-#include <string>
 
 int main() {
     System system;

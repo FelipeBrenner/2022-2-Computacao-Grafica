@@ -2,9 +2,6 @@
  
 Mesh::Mesh() {
     model = mat4(1.0f);
-}
-
-Mesh::~Mesh() {
     groups.clear();
     vertices.clear();
     textures.clear();
@@ -19,14 +16,12 @@ glm::vec2* Mesh::texture(int id) {
     return textures[id];
 }
 
-int Mesh::addVertice(vec3* vec)
-{
+int Mesh::addVertice(vec3* vec) {
     vertices.push_back(vec);
     return vertices.size() - 1;
 }
 
-int Mesh::addTexture(vec2* vec)
-{
+int Mesh::addTexture(vec2* vec) {
     textures.push_back(vec);
     return textures.size() - 1;
 }
