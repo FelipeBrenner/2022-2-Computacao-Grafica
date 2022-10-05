@@ -6,7 +6,7 @@ const unsigned int SCR_HEIGHT = 1080;
 
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
-glm::vec3 cameraPos = glm::vec3(1.0f, 0.0f, 1.0f);
+glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 20.0f);
 bool firstMouse = true;
 float yawVariable = -90.0f;
 float pitchVariable = 0.0f;
@@ -162,7 +162,7 @@ void System::Run(vector<Mesh*> meshs) {
                 glBindTexture(GL_TEXTURE_2D, 0);
             }
         }
-        
+        std::cout << "cameraPos: " << glm::to_string(cameraPos) << std::endl;
         glfwSwapBuffers(window);
         processInput(window);
     }
@@ -177,7 +177,7 @@ void System::Finish() {
 void System::processInput(GLFWwindow* window) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
-    const float cameraSpeed = 0.05f; // adjust accordingly
+    const float cameraSpeed = 0.2f; // adjust accordingly
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         cameraPos += cameraSpeed * cameraFront;
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)

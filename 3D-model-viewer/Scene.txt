@@ -1,24 +1,24 @@
 newobj
 objpath objs/Pikachu.obj
+position 10 0 0 0 1 0 1 1 1
+eliminable
+
+newobj
+objpath objs/Pikachu.obj
+position 5 0 0 0 1 0 1 1 1
+eliminable
+
+newobj
+objpath objs/Pikachu.obj
+position 0 0 0 0 1 0 1 1 1
+eliminable
+
+newobj
+objpath objs/Pikachu.obj
 position -5 0 0 0 1 0 1 1 1
 eliminable
 
 newobj
 objpath objs/Pikachu.obj
 position -10 0 0 0 1 0 1 1 1
-eliminable
-
-newobj
-objpath objs/Pikachu.obj
-position -15 0 0 0 1 0 1 1 1
-eliminable
-
-newobj
-objpath objs/trout.obj
-position -20 0 0 0 1 0 1 1 1
-eliminable
-
-newobj
-objpath objs/fish.obj
-position -25 0 0 0 1 0 1 1 1
 eliminable
