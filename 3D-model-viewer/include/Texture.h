@@ -2,8 +2,7 @@
 #include <GLFW/glfw3.h>
 
 
-class Texture
-{
+class Texture {
 private:
     GLuint textureID;
     GLint textureLocation;

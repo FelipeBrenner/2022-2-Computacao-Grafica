@@ -8,8 +8,7 @@
 
 using namespace std;
 
-class SceneReader
-{
+class SceneReader {
 public:
     SceneReader();
     float cameraInicialX;

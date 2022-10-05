@@ -13,8 +13,7 @@
 #include "Mesh.h"
 #include "ObjReader.h"
 
-class System
-{
+class System {
 
 public:
     GLFWwindow* window;

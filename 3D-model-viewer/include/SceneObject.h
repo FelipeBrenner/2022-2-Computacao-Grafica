@@ -10,8 +10,7 @@
 using namespace std;
 using namespace glm;
 
-class SceneObject
-{
+class SceneObject {
 public:
     SceneObject();
 

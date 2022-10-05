@@ -10,8 +10,7 @@
 #include <string>
 #include "Texture.h"
 
-class Shader
-{
+class Shader {
 public:
     GLuint program;
     std::map<std::string, Texture> textures;

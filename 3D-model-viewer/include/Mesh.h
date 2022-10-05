@@ -10,8 +10,7 @@
 using namespace std;
 using namespace glm;
 
-class Mesh
-{
+class Mesh {
 
 private:
     vector<Group*> groups;

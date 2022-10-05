@@ -5,8 +5,7 @@
 using namespace std;
 using namespace glm;
 
-class Material
-{
+class Material {
 private:
     string name;
     string texture;

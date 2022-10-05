@@ -3,8 +3,7 @@
 
 using namespace std;
 
-class Face
-{
+class Face {
 private:
     vector<int> vertices;
     vector<int> normais;

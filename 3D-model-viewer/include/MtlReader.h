@@ -8,8 +8,7 @@
 
 using namespace std;
 
-class MtlReader
-{
+class MtlReader {
 public:
     static void read(Mesh* mesh, string filename);
 

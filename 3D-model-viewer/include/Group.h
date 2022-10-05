@@ -6,8 +6,7 @@
 
 using namespace std;
 
-class Group
-{
+class Group {
 private:
     GLuint VAO;
     int numVertices;
