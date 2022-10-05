@@ -83,7 +83,6 @@ public:
             std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
         }
 
-
         // Fragment Shader
         fragment = glCreateShader( GL_FRAGMENT_SHADER );
         glShaderSource( fragment, 1, &fShaderCode, nullptr );
@@ -94,7 +93,6 @@ public:
             glGetShaderInfoLog( fragment, 512, nullptr, infoLog );
             std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
         }
-
 
         // Shader Program
         this->program = glCreateProgram();

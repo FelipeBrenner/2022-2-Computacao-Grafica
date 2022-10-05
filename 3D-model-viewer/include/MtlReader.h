@@ -20,4 +20,3 @@ public:
     static void texture(Material* material, stringstream& sline);
 };
 
-

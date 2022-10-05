@@ -118,7 +118,6 @@ int main() {
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBufferData(GL_ARRAY_BUFFER, 9 * sizeof(GLfloat), points, GL_STATIC_DRAW);
 
-
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
 	glEnableVertexAttribArray(0); // habilitado primeiro atributo do vbo bound atual

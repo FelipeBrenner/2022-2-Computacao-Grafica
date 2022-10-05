@@ -16,7 +16,6 @@ void Texture::Load(char* path, char* textureUniformName, GLuint shaderProgram, G
     glActiveTexture( GL_TEXTURE0 + this->textureNum );
     glBindTexture( GL_TEXTURE_2D, textureID );
 
-
     image = stbi_load(path, &width, &height, &numComp, 4);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
     stbi_image_free(image);

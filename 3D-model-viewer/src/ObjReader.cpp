@@ -99,7 +99,6 @@ void ObjReader::face(Group* group, stringstream& sline) {
 
         face->push(v, n, t);
 
-
     }
 
     group->addFace(face);

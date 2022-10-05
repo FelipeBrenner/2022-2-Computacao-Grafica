@@ -48,4 +48,3 @@ void Mesh::rotateModel(vec3 initalRotation) {
     model = glm::rotate(model, 2.0f, initalRotation);
 }
 
-

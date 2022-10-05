@@ -16,4 +16,3 @@ class ObjReader {
         static void face(Group* group, stringstream& sline);
 };
 
-
