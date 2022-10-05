@@ -35,3 +35,8 @@ $(ODIR)/%.o: $(SOURCES)
 
 clean:
 	-rm -rfv app app.dSYM
+
+run:
+	make clean
+	make
+	./app
