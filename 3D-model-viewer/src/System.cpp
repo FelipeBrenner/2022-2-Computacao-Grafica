@@ -162,7 +162,7 @@ void System::Run(vector<Mesh*> meshs) {
                 glBindTexture(GL_TEXTURE_2D, 0);
             }
         }
-        std::cout << "cameraPos: " << glm::to_string(cameraPos) << std::endl;
+        
         glfwSwapBuffers(window);
         processInput(window);
     }
