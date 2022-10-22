@@ -2,10 +2,6 @@
  
 Mesh::Mesh() {
     model = mat4(1.0f);
-    groups.clear();
-    vertices.clear();
-    textures.clear();
-    materials.clear();
 }
 
 glm::vec3* Mesh::vertice(int id) {
@@ -16,14 +12,26 @@ glm::vec2* Mesh::texture(int id) {
     return textures[id];
 }
 
-int Mesh::addVertice(vec3* vec) {
+glm::vec3* Mesh::normal(int id) {
+    return normais[id];
+}
+
+int Mesh::addVertice(vec3* vec)
+{
     vertices.push_back(vec);
     return vertices.size() - 1;
 }
 
-int Mesh::addTexture(vec2* vec) {
+int Mesh::addTexture(vec2* vec)
+{
     textures.push_back(vec);
     return textures.size() - 1;
+}
+
+int Mesh::addNormal(vec3* vec)
+{
+    normais.push_back(vec);
+    return normais.size() - 1;
 }
 
 int Mesh::addGroup(Group* group) {
@@ -47,4 +55,5 @@ void Mesh::scaleModel(vec3 initalScale) {
 void Mesh::rotateModel(vec3 initalRotation) {
     model = glm::rotate(model, 2.0f, initalRotation);
 }
+
 

@@ -1,6 +1,12 @@
 #include "ObjReader.h"
+#include <fstream>
+#include <iostream>
+#include <sstream>
 
-Mesh* ObjReader::read(string filename) {
+using namespace std;
+
+Mesh* ObjReader::read(string filename)
+{
     Mesh* mesh = new Mesh();
 
     bool firstGroup = 1;
@@ -31,6 +37,10 @@ Mesh* ObjReader::read(string filename) {
         else if (temp == "vt") {
             sline >> x >> y;
             mesh->addTexture(new glm::vec2(x, y));
+        }
+        else if (temp == "vn") {
+            sline >> x >> y;
+            mesh->addNormal(new glm::vec3(x, y, z));
         }
         else if (temp == "f") {
             face(group, sline);
@@ -98,6 +108,7 @@ void ObjReader::face(Group* group, stringstream& sline) {
         else n = stoi(aux);
 
         face->push(v, n, t);
+
 
     }
 

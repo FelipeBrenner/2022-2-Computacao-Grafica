@@ -1,8 +1,6 @@
 #include "Group.h"
 
-Group::Group() {
-    faces.clear();
-}
+Group::Group() {}
 
 int Group::addFace(Face* face) {
     faces.push_back(face);
