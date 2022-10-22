@@ -22,3 +22,8 @@ void Shader::setVec3(const std::string& name, const glm::vec3& vec3) {
 void Shader::setUniformMatrix4fvFloat(const std::string& name, float* matrix) {
 	glUniformMatrix4fv(glGetUniformLocation(this->program, name.c_str()), 1, GL_FALSE, matrix);
 }
+
+void Shader::setFloat(const std::string& name, float f)
+{
+	glUniform1f(glGetUniformLocation(this->program, name.c_str()), f);
+}

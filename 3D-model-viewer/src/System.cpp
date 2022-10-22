@@ -60,7 +60,7 @@ int System::Init() {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_DEPTH_TEST);
     
-    coreShader = Shader("shaders/core.vert", "shaders/core.frag");
+    coreShader = Shader("core.vert", "core.frag");
     coreShader.Use();
 
     return EXIT_SUCCESS;
@@ -75,9 +75,14 @@ void System::Run(vector<Mesh*> meshs) {
         for (Group* group : mesh->getGroups()) {
             
             Material* material = mesh->getMaterial(group->getMaterial());
-            coreShader.LoadTexture(strdup(material->getTexture().c_str()), strdup("texture1"), group->getName());
+            coreShader.LoadTexture(_strdup(material->getTexture().c_str()), _strdup("texture1"), group->getName());
+            coreShader.setVec3("materialAmbient", vec3(material->getAmbient()->x, material->getAmbient()->y, material->getAmbient()->z));
+            coreShader.setVec3("materialDiffuse", vec3(material->getDiffuse()->x, material->getDiffuse()->y, material->getDiffuse()->z));
+            coreShader.setVec3("materialSpecular", vec3(material->getSpecular()->x, material->getSpecular()->y, material->getSpecular()->z));
+            coreShader.setFloat("materialShininess", material->getShininess());
             vector<float> vertices;
             vector<float> textures;
+            vector<float> normais;
             
             for (Face* face : group->getFaces()) {
                 for (int verticeID : face->getVertices()) {
@@ -94,12 +99,22 @@ void System::Run(vector<Mesh*> meshs) {
                     textures.push_back(texture->x);
                     textures.push_back(texture->y);
                 }
+                
+                for (int normalID : face->getNormais()) {
+                    glm::vec3* normal = mesh->normal(normalID - 1);
+                    if (normal != NULL) {
+                        normais.push_back(normal->x);
+                        normais.push_back(normal->y);
+                        normais.push_back(normal->z);
+                    }
+                }
             }
             
-            GLuint VBOvertices, VBOtextures, VAO;
+            GLuint VBOvertices, VBOtextures, VBOnormais, VAO;
             glGenVertexArrays(1, &VAO);
             glGenBuffers(1, &VBOvertices);
             glGenBuffers(1, &VBOtextures);
+            glGenBuffers(1, &VBOnormais);
             glBindVertexArray(VAO);
             
             // Vertices
@@ -115,6 +130,13 @@ void System::Run(vector<Mesh*> meshs) {
             
             glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), (GLvoid*)0);
             glEnableVertexAttribArray(1);
+
+            // Normais
+            glBindBuffer(GL_ARRAY_BUFFER, VBOnormais);
+            glBufferData(GL_ARRAY_BUFFER, normais.size() * sizeof(float), normais.data(), GL_STATIC_DRAW);
+
+            glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
+            glEnableVertexAttribArray(2);
             
             group->setVAO(&VAO);
             glBindVertexArray(0);
@@ -146,6 +168,10 @@ void System::Run(vector<Mesh*> meshs) {
 
         glm::mat4 proj = glm::perspective(glm::radians(fov), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
         coreShader.setMatrix4fv("projection", proj);
+
+        coreShader.setVec3("lightColor", vec3(1.0f, 1.0f, 1.0f));
+        coreShader.setVec3("lightPos", vec3(100.0f, 1.0f, 100.0f));
+        coreShader.setVec3("viewPos", vec3(camX, camY, camZ));
 
         for (Mesh* mesh : meshs) {
             mesh->model = glm::translate(mesh->model, glm::vec3(translateX, translateY, translateZ));
