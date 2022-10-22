@@ -1,12 +1,6 @@
 #include "MtlReader.h"
-#include <fstream>
-#include <iostream>
-#include <sstream>
 
-using namespace std;
-
-void MtlReader::read(Mesh* mesh, string filename)
-{
+void MtlReader::read(Mesh* mesh, string filename) {
     bool firstMtl = 1;
 
     Material* material = new Material();

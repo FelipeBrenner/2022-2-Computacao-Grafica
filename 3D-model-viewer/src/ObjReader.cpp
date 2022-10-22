@@ -1,12 +1,6 @@
 #include "ObjReader.h"
-#include <fstream>
-#include <iostream>
-#include <sstream>
 
-using namespace std;
-
-Mesh* ObjReader::read(string filename)
-{
+Mesh* ObjReader::read(string filename) {
     Mesh* mesh = new Mesh();
 
     bool firstGroup = 1;

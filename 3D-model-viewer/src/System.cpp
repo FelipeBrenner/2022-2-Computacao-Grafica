@@ -60,7 +60,7 @@ int System::Init() {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_DEPTH_TEST);
     
-    coreShader = Shader("core.vert", "core.frag");
+    coreShader = Shader("shaders/core.vert", "shaders/core.frag");
     coreShader.Use();
 
     return EXIT_SUCCESS;
@@ -75,7 +75,7 @@ void System::Run(vector<Mesh*> meshs) {
         for (Group* group : mesh->getGroups()) {
             
             Material* material = mesh->getMaterial(group->getMaterial());
-            coreShader.LoadTexture(_strdup(material->getTexture().c_str()), _strdup("texture1"), group->getName());
+            coreShader.LoadTexture(strdup(material->getTexture().c_str()), strdup("texture1"), group->getName());
             coreShader.setVec3("materialAmbient", vec3(material->getAmbient()->x, material->getAmbient()->y, material->getAmbient()->z));
             coreShader.setVec3("materialDiffuse", vec3(material->getDiffuse()->x, material->getDiffuse()->y, material->getDiffuse()->z));
             coreShader.setVec3("materialSpecular", vec3(material->getSpecular()->x, material->getSpecular()->y, material->getSpecular()->z));

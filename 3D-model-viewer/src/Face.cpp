@@ -1,7 +1,7 @@
 
 #include "Face.h"
-Face::Face() {}
 
+Face::Face() {}
 
 int Face::addVertice(int v) {
     vertices.push_back(v);
