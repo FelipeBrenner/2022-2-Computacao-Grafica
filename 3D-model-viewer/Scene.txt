@@ -1,24 +1,34 @@
 newobj
 objpath objs/Pikachu.obj
-position 10 0 0 0 1 0 1 1 1
+translation 10 0 0 
+rotation 0 1 0 
+scale 1 1 1
 eliminable
 
 newobj
 objpath objs/Pikachu.obj
-position 5 0 0 0 1 0 1 1 1
+translation 5 0 0 
+rotation 0 1 0 
+scale 1 1 1
 eliminable
 
 newobj
 objpath objs/Pikachu.obj
-position 0 0 0 0 1 0 1 1 1
+translation 0 0 0 
+rotation 0 1 0 
+scale 1 1 1
 eliminable
 
 newobj
 objpath objs/Pikachu.obj
-position -5 0 0 0 1 0 1 1 1
+translation -5 0 0 
+rotation 0 1 0 
+scale 1 1 1
 eliminable
 
 newobj
 objpath objs/Pikachu.obj
-position -10 0 0 0 1 0 1 1 1
+translation -10 0 0 
+rotation 0 1 0 
+scale 1 1 1
 eliminable

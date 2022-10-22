@@ -38,11 +38,19 @@ void SceneReader::read(string filename) {
             sline >> path;
             sceneObject->path = path;
         }
-        else if (identifier == "position") {
-            string transx, transy, transz, rotx, roty, rotz, scalex, scaley, scalez;
-            sline >> transx >> transy >> transz >> rotx >> roty >> rotz >> scalex >> scaley >> scalez;
+        else if (identifier == "translation") {
+            string transx, transy, transz;
+            sline >> transx >> transy >> transz;
             sceneObject->initalTrans = vec3(stof(transx), stof(transy), stof(transz));
+        }
+        else if (identifier == "rotation") {
+            string rotx, roty, rotz;
+            sline >> rotx >> roty >> rotz;
             sceneObject->initalRot = vec3(stof(rotx), stof(roty), stof(rotz));
+        }
+        else if (identifier == "scale") {
+            string scalex, scaley, scalez;
+            sline >> scalex >> scaley >> scalez;
             sceneObject->initalEscale = vec3(stof(scalex), stof(scaley), stof(scalez));
         }
         else if (identifier == "eliminable") {
