@@ -63,6 +63,10 @@ int System::Init() {
     coreShader = Shader("shaders/core.vert", "shaders/core.frag");
     coreShader.Use();
 
+    glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
+	glFrontFace(GL_CCW);
+
     return EXIT_SUCCESS;
 }
 
@@ -95,9 +99,11 @@ void System::Run(vector<Mesh*> meshs) {
                 }
                 
                 for (int textureID : face->getTextures()) {
-                    glm::vec2* texture = mesh->texture(textureID - 1);
-                    textures.push_back(texture->x);
-                    textures.push_back(texture->y);
+                    if (textureID > 0) {
+                        glm::vec2* texture = mesh->texture(textureID - 1);
+                        textures.push_back(texture->x);
+                        textures.push_back(texture->y);
+                    }
                 }
                 
                 for (int normalID : face->getNormais()) {
