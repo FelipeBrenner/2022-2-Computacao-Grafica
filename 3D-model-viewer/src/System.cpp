@@ -63,9 +63,9 @@ int System::Init() {
     coreShader = Shader("shaders/core.vert", "shaders/core.frag");
     coreShader.Use();
 
-    glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
-	glFrontFace(GL_CCW);
+    // glEnable(GL_CULL_FACE);
+	// glCullFace(GL_BACK);
+	// glFrontFace(GL_CCW);
 
     return EXIT_SUCCESS;
 }
@@ -77,12 +77,11 @@ void System::Run(vector<Mesh*> meshs) {
     
     for (Mesh* mesh : meshs) {
         for (Group* group : mesh->getGroups()) {
-            
             Material* material = mesh->getMaterial(group->getMaterial());
             coreShader.LoadTexture(strdup(material->getTexture().c_str()), strdup("texture1"), group->getName());
             coreShader.setVec3("materialAmbient", vec3(material->getAmbient()->x, material->getAmbient()->y, material->getAmbient()->z));
             coreShader.setVec3("materialDiffuse", vec3(material->getDiffuse()->x, material->getDiffuse()->y, material->getDiffuse()->z));
-            coreShader.setVec3("materialSpecular", vec3(material->getSpecular()->x, material->getSpecular()->y, material->getSpecular()->z));
+            // coreShader.setVec3("materialSpecular", vec3(material->getSpecular()->x, material->getSpecular()->y, material->getSpecular()->z));
             coreShader.setFloat("materialShininess", material->getShininess());
             vector<float> vertices;
             vector<float> textures;
@@ -91,16 +90,18 @@ void System::Run(vector<Mesh*> meshs) {
             for (Face* face : group->getFaces()) {
                 for (int verticeID : face->getVertices()) {
                     glm::vec3* vertice = mesh->vertice(verticeID - 1);
-                    vertices.push_back(vertice->x);
-                    vertices.push_back(vertice->y);
-                    vertices.push_back(vertice->z);
+                    if(vertice != NULL) {
+                        vertices.push_back(vertice->x);
+                        vertices.push_back(vertice->y);
+                        vertices.push_back(vertice->z);
+                    }
                     
                     group->increaseNumVertices();
                 }
                 
                 for (int textureID : face->getTextures()) {
-                    if (textureID > 0) {
-                        glm::vec2* texture = mesh->texture(textureID - 1);
+                    glm::vec2* texture = mesh->texture(textureID - 1);
+                    if (texture != NULL) {
                         textures.push_back(texture->x);
                         textures.push_back(texture->y);
                     }

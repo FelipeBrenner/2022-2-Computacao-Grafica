@@ -66,11 +66,10 @@ Mesh* ObjReader::read(string filename) {
 
 void ObjReader::face(Group* group, stringstream& sline) {
     Face* face = new Face();
-
     string token;
     int i = 0;
+    
     while (getline(sline, token, ' ')) {
-
         if (token.empty()) {
             continue;
         }
@@ -79,32 +78,30 @@ void ObjReader::face(Group* group, stringstream& sline) {
             Face* face2 = face;
             face = new Face();
             face->push(face2->getVertices()[0], face2->getNormais()[0], face2->getTextures()[0]);
-            face->push(face2->getVertices()[1], face2->getNormais()[1], face2->getTextures()[1]);
+            face->push(face2->getVertices()[2], face2->getNormais()[2], face2->getTextures()[2]);
             group->addFace(face2);
         }
 
         stringstream stoken(token);
-
+        
         string aux;
         getline(stoken, aux, '/');
         int v;
-        if (aux.empty()) v = 0;
+        if (aux.empty()) v = -1;
         else v = stoi(aux);
 
         getline(stoken, aux, '/');
         int t;
-        if (aux.empty()) t = 0;
+        if (aux.empty()) t = -1;
         else t = stoi(aux);
 
         getline(stoken, aux, '/');
         int n;
-        if (aux.empty()) n = 0;
+        if (aux.empty()) n = -1;
         else n = stoi(aux);
 
         face->push(v, n, t);
-
-
     }
-
+    
     group->addFace(face);
 }
