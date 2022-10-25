@@ -16,6 +16,8 @@ int main() {
     for(SceneObject* sceneObj : sceneReader->sceneObjects) {
         string meshPath = sceneObj->path;
         Mesh* mesh = ObjReader::read(meshPath);
+
+        mesh->objectName = sceneObj->name;
         mesh->translateModel(sceneObj->initalTrans);
         mesh->rotateModel(sceneObj->initalRot);
         mesh->scaleModel(sceneObj->initalEscale);

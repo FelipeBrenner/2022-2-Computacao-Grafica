@@ -33,6 +33,11 @@ void SceneReader::read(string filename) {
                 sceneObject = new SceneObject();
             }
         }
+        else if (identifier == "name") {
+            string name;
+            sline >> name;
+            sceneObject->name = name;
+        }
         else if (identifier == "objpath") {
             string path;
             sline >> path;

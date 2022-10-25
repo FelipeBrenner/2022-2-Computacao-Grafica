@@ -13,6 +13,8 @@ float pitchVariable = 0.0f;
 float lastX = 1920 / 2.0;
 float lastY = 1080 / 2.0;
 
+bool bulletWasFired = false, targetHasBeenHit = false;
+
 float fov = 45.0f;
 
 enum RotationStatus {
@@ -151,9 +153,6 @@ void System::Run(vector<Mesh*> meshs) {
     }
     
     float angle = 0.0f;
-    float translateX = 0.0f;
-    float translateY = 0.0f;
-    float translateZ = 0.0f;
     float camX = 1.0f;
     float camY = 0.5f;
     float camZ = 1.0f;
@@ -161,6 +160,7 @@ void System::Run(vector<Mesh*> meshs) {
     glm::mat4 view;
 
     RotationStatus rotationStatus = none;
+
     while ( !glfwWindowShouldClose( window ) ) {
         
         glfwPollEvents();
@@ -179,21 +179,21 @@ void System::Run(vector<Mesh*> meshs) {
         coreShader.setVec3("lightColor", vec3(1.0f, 1.0f, 1.0f));
         coreShader.setVec3("lightPos", vec3(100.0f, 1.0f, 100.0f));
         coreShader.setVec3("viewPos", vec3(camX, camY, camZ));
-
-        for (Mesh* mesh : meshs) {
-            mesh->model = glm::translate(mesh->model, glm::vec3(translateX, translateY, translateZ));
-        }
         
         for (Mesh* mesh : meshs) {
+            if (mesh->objectName == "bullet" && bulletWasFired) {
+                mesh->translateModel(vec3(0.0f, 0.0f, 0.01f));
+            }
+
             coreShader.setMatrix4fv("model", mesh->model);
-            
+
             for (Group* group : mesh->getGroups()) {
                 coreShader.UseTexture(group->getName());
                 glBindVertexArray(group->getVAO());
                 glDrawArrays(GL_TRIANGLES, 0, group->getNumVertices());
                 glBindVertexArray(0);
                 glBindTexture(GL_TEXTURE_2D, 0);
-            }
+            }   
         }
         
         glfwSwapBuffers(window);
@@ -210,6 +210,7 @@ void System::Finish() {
 void System::processInput(GLFWwindow* window) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
+
     const float cameraSpeed = 0.01f; // adjust accordingly
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         cameraPos += cameraSpeed * cameraFront;
@@ -219,6 +220,9 @@ void System::processInput(GLFWwindow* window) {
         cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+        bulletWasFired = true;
 }
 
 void System::framebuffer_size_callback(GLFWwindow* window, int width, int height) {

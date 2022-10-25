@@ -34,6 +34,8 @@ public:
     void rotateModel(vec3 initalRotation);
     glm::mat4 model;
     
+    string objectName;
+    
     vector<Group*> getGroups() {
         return groups;
     }
