@@ -6,7 +6,7 @@ const unsigned int SCR_HEIGHT = 1080;
 
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
-glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 20.0f);
+glm::vec3 cameraPos = glm::vec3(0.0f, 4.0f, 20.0f);
 bool firstMouse = true;
 float yawVariable = -90.0f;
 float pitchVariable = 0.0f;
@@ -179,10 +179,27 @@ void System::Run(vector<Mesh*> meshs) {
         coreShader.setVec3("lightColor", vec3(1.0f, 1.0f, 1.0f));
         coreShader.setVec3("lightPos", vec3(100.0f, 1.0f, 100.0f));
         coreShader.setVec3("viewPos", vec3(camX, camY, camZ));
+
+        Mesh* bullet;
+        Mesh* target;
+        for (Mesh* mesh : meshs) {
+            if(mesh->objectName == "bullet") {
+                bullet = mesh;
+            };
+
+            if(mesh->objectName == "target") {
+                target = mesh;
+            }
+        }
+
+        if(target->z * target->scale > bullet->z * bullet->scale) {
+            bulletWasFired = false;
+            meshs.clear();
+        }
         
         for (Mesh* mesh : meshs) {
             if (mesh->objectName == "bullet" && bulletWasFired) {
-                mesh->translateModel(vec3(0.0f, 0.0f, 0.01f));
+                mesh->translateModel(vec3(0.0f, 0.0f, -0.01f));
             }
 
             coreShader.setMatrix4fv("model", mesh->model);

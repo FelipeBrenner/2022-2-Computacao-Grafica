@@ -2,6 +2,7 @@ newobj
 name target
 objpath objs/Pikachu.obj
 translation 0 0 -30
+angle 2
 rotation 0 1 0 
 scale 1 1 1
 eliminable
@@ -9,7 +10,8 @@ eliminable
 newobj
 name bullet
 objpath objs/sphere.obj
-translation 0 -2 15
+translation 0 2 15
+angle 0
 rotation 0 1 0
 scale 0.6 0.6 0.6
 eliminable

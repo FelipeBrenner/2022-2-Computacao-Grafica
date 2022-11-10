@@ -19,7 +19,7 @@ int main() {
 
         mesh->objectName = sceneObj->name;
         mesh->translateModel(sceneObj->initalTrans);
-        mesh->rotateModel(sceneObj->initalRot);
+        mesh->rotateModel(sceneObj->angle, sceneObj->initalRot);
         mesh->scaleModel(sceneObj->initalEscale);
         meshs.push_back(mesh);
     }

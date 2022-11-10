@@ -48,6 +48,11 @@ void SceneReader::read(string filename) {
             sline >> transx >> transy >> transz;
             sceneObject->initalTrans = vec3(stof(transx), stof(transy), stof(transz));
         }
+        else if (identifier == "angle") {
+            string angle;
+            sline >> angle;
+            sceneObject->angle = stof(angle);
+        }
         else if (identifier == "rotation") {
             string rotx, roty, rotz;
             sline >> rotx >> roty >> rotz;

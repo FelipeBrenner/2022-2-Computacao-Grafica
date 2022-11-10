@@ -19,5 +19,6 @@ public:
     vec3 initalEscale;
     vec3 initalTrans;
     vec3 initalRot;
+    float angle;
     string name;
 };

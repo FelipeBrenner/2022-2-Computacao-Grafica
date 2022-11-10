@@ -31,10 +31,11 @@ public:
     int addMaterial(string name, Material* material);
     void translateModel(vec3 initialTrans);
     void scaleModel(vec3 initalScale);
-    void rotateModel(vec3 initalRotation);
+    void rotateModel(float angle, vec3 initalRotation);
     glm::mat4 model;
     
     string objectName;
+    float x, y, z, scale;
     
     vector<Group*> getGroups() {
         return groups;
