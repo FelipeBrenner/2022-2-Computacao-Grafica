@@ -1,8 +1,4 @@
-#pragma once
 #include "Includes.h"
-
-#ifndef OBJWRITER_H
-#define OBJWRITER_H
 
 using namespace std;
 
@@ -70,5 +66,3 @@ public:
 		OBJFile.close();
 	}
 };
-
-#endif

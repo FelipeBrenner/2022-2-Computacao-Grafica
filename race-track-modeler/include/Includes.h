@@ -1,3 +1,4 @@
+#pragma once
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
@@ -17,3 +18,5 @@
 #include "MTLWriter.h"
 #include "TXTWriter.h"
 #include "OBJWriter.h"
+
+using namespace std;

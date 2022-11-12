@@ -1,20 +1,18 @@
 #include "Includes.h"
 #include "Shader.h"
 
-#define PI  3.14159265359
+#define PI 3.14159265359
 #define HALF_PI PI/2.0
 
-using namespace std;
-
-// Tamanho da tela
 const GLint WIDTH = 1200, HEIGHT = 900;
 
-vector<glm::vec3*>* pontosSelecionados = new vector<glm::vec3*>();
+vector<glm::vec3*>* selectedPoints = new vector<glm::vec3*>();
 vector<glm::vec3*>* curvaOriginal = new vector<glm::vec3*>();
 vector<glm::vec3*>* curvaExterna = new vector<glm::vec3*>();
 vector<glm::vec3*>* curvaInterna = new vector<glm::vec3*>();
-vector<glm::vec3*>* pontosFinais = new vector<glm::vec3*>();
-vector<GLfloat>* pontosFinaisFloat = new vector<GLfloat>();
+vector<glm::vec3*>* curveFinal = new vector<glm::vec3*>();
+vector<GLfloat>* curveFinalFloat = new vector<GLfloat>();
+vector<GLfloat>* selectedPointsFloat = new vector<GLfloat>();
 
 int tamanhoCurvaInterna = 0;
 int tamanhoCurvaExterna = 0;
@@ -65,8 +63,10 @@ int main() {
 
 	glViewport(0, 0, screenWidth, screenHeight);
 
-	Shader coreShader("Shaders/Core/core.vert", "Shaders/Core/core.frag");
+	Shader coreShader("shaders/core.vert", "shaders/core.frag");
 	coreShader.Use();
+
+	GLint colorLoc = glGetUniformLocation(coreShader.program, "inputColor");
 
 	glGenVertexArrays(1, &vao);
 	glGenBuffers(1, &vbo);
@@ -82,7 +82,7 @@ int main() {
 
 	while (!glfwWindowShouldClose(window)) {
 
-		glClearColor(0.2f, 0.5f, 0.3f, 1.0f);
+		glClearColor(0.6f, 0.6f, 0.8f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glfwPollEvents();
 
@@ -91,12 +91,22 @@ int main() {
 		}
 
 		if (draw) {
-
 			glBindVertexArray(vao);
 
-			// Desenha os tri�ngulos, enviando para o vetor de pontos finais
-			glDrawArrays(GL_TRIANGLES, 0, pontosFinaisFloat->size());
+			// Desenha os triângulos, enviando para o vetor de pontos finais
+			glUniform4f(colorLoc, 0.5f, 0.6f, 0.9f, 1.0f);
+			glDrawArrays(GL_TRIANGLES, 0, curveFinalFloat->size());
 		}
+
+		if (selectedPointsFloat->size() > 0) {
+			glPointSize(10);
+			glBindVertexArray(vao);
+
+			// Desenha os pontos
+			glUniform4f(colorLoc, 0.3f, 0.2f, 0.5f, 1.0f);
+			glDrawArrays(GL_POINTS, 0, selectedPointsFloat->size());
+		}
+
 		// gera o desenho na tela
 		glfwSwapBuffers(window);
 	}
@@ -107,14 +117,14 @@ int main() {
 
 // convertendo de vec3 para GLfloat
 std::vector<GLfloat>* ConvertToFloat(std::vector<glm::vec3*>* points) {
-
-std:vector<GLfloat>* temp = new std::vector<GLfloat>();
+	std:vector<GLfloat>* temp = new std::vector<GLfloat>();
 
 	for (int i = 0; i < points->size(); i++) {
 		temp->push_back(points->at(i)->x);
 		temp->push_back(points->at(i)->y);
 		temp->push_back(points->at(i)->z);
 	}
+
 	return temp;
 }
 
@@ -186,19 +196,29 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 		glm::vec3* point = new glm::vec3(xpos, ypos, 0.0);
 		// adiciona ao vetor de pontos selecionados
 
-		pontosSelecionados->push_back(point);
+		selectedPoints->push_back(point);
 
 		cout << "- Ponto de Controle Computado:" << endl;
 		cout << "x = " << xpos << endl;
 		cout << "y = " << ypos << endl;
 
 		SetCoordinatesByZone(xpos, ypos);
+
+		selectedPointsFloat = ConvertToFloat(selectedPoints);
+
+		glBindVertexArray(vao);
+		glBindBuffer(GL_ARRAY_BUFFER, vbo);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * selectedPointsFloat->size(), &selectedPointsFloat->at(0), GL_STATIC_DRAW);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)0);
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
 	}
 
 	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
 		draw = true;
 
-		curvaOriginal = gerarCurva(pontosSelecionados);
+		curvaOriginal = gerarCurva(selectedPoints);
 		curvaExterna = GerarCurva(curvaOriginal, true);
 		curvaInterna = GerarCurva(curvaOriginal, false);
 
@@ -210,13 +230,13 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 		OBJWriter OBJWriter;
 		OBJWriter.saveTextureValuesToOBJ();
 
-		pontosFinais = gerarCurvaFinal(curvaInterna, curvaExterna);
+		curveFinal = gerarCurvaFinal(curvaInterna, curvaExterna);
 
-		pontosFinaisFloat = ConvertToFloat(pontosFinais);
+		curveFinalFloat = ConvertToFloat(curveFinal);
 
 		glBindVertexArray(vao);
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * pontosFinaisFloat->size(), &pontosFinaisFloat->at(0), GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * curveFinalFloat->size(), &curveFinalFloat->at(0), GL_STATIC_DRAW);
 		glEnableVertexAttribArray(0);
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)0);
 		glEnableVertexAttribArray(1);
@@ -247,7 +267,6 @@ void SetCoordinatesByZone(double& xpos, double& ypos)
 }
 
 vector<glm::vec3*>* gerarCurva(vector<glm::vec3*>* points) {
-
 	TXTWriter TXTWriter;
 	TXTWriter.createTXTFile();
 
@@ -272,12 +291,9 @@ vector<glm::vec3*>* gerarCurva(vector<glm::vec3*>* points) {
 	return curvaCalculada;
 }
 
-void CalcularBSpline(std::vector<glm::vec3*>* temp, std::vector<glm::vec3*>* curvaCalculada, TXTWriter& TXTWriter)
-{
-
+void CalcularBSpline(std::vector<glm::vec3*>* temp, std::vector<glm::vec3*>* curvaCalculada, TXTWriter& TXTWriter) {
 	for (int i = 0; i < (temp->size() - 3); i++) {
-
-												   // itera entre 99 variacoes para a distancia entre cada ponto
+		// itera entre 99 variacoes para a distancia entre cada ponto
 		for (int j = 0; j < 100; ++j) {
 
 			float t = static_cast<float>(j) / 99.0;
@@ -367,38 +383,38 @@ vector<glm::vec3*>* gerarCurvaFinal(vector<glm::vec3*>* internalCurve, vector<gl
 
 	for (; i < internalCurve->size() - 2; i += 2) {
 		// Ponto Interno 1
-		pontosFinais->push_back(internalCurve->at(i));
-		pontosFinais->push_back(internalCurve->at(i + 1));
+		curveFinal->push_back(internalCurve->at(i));
+		curveFinal->push_back(internalCurve->at(i + 1));
 
 		glm::vec3* a_int = internalCurve->at(i);
 
 		// Ponto Interno 2
-		pontosFinais->push_back(internalCurve->at(i + 2));
-		pontosFinais->push_back(internalCurve->at(i + 3));
+		curveFinal->push_back(internalCurve->at(i + 2));
+		curveFinal->push_back(internalCurve->at(i + 3));
 
 		glm::vec3* b_int = internalCurve->at(i + 2);
 
 		// Ponto Externo 1
-		pontosFinais->push_back(externalCurve->at(i));
-		pontosFinais->push_back(externalCurve->at(i + 1));
+		curveFinal->push_back(externalCurve->at(i));
+		curveFinal->push_back(externalCurve->at(i + 1));
 
 		glm::vec3* c_ext = externalCurve->at(i);
 
 		OBJWriter.addFaces(index, tamanhoCurvaExterna, ++faces, 1);
 
 		// Ponto Interno 2
-		pontosFinais->push_back(internalCurve->at(i + 2));
-		pontosFinais->push_back(internalCurve->at(i + 3));
+		curveFinal->push_back(internalCurve->at(i + 2));
+		curveFinal->push_back(internalCurve->at(i + 3));
 
 		// Ponto Externo 2
-		pontosFinais->push_back(externalCurve->at(i + 2));
-		pontosFinais->push_back(externalCurve->at(i + 3));
+		curveFinal->push_back(externalCurve->at(i + 2));
+		curveFinal->push_back(externalCurve->at(i + 3));
 
 		glm::vec3* d_ext = externalCurve->at(i + 2);
 
 		// Ponto Externo 1
-		pontosFinais->push_back(externalCurve->at(i));
-		pontosFinais->push_back(externalCurve->at(i + 1));
+		curveFinal->push_back(externalCurve->at(i));
+		curveFinal->push_back(externalCurve->at(i + 1));
 
 		OBJWriter.addFaces(index, tamanhoCurvaExterna, ++faces, 2);
 
@@ -421,38 +437,38 @@ vector<glm::vec3*>* gerarCurvaFinal(vector<glm::vec3*>* internalCurve, vector<gl
 	cout << i << " , " << index << endl;
 	// O trecho abaixo liga os �ltimos pontos com primeiro os primeiros
 	// Ponto Interno 1
-	pontosFinais->push_back(internalCurve->at(i));
-	pontosFinais->push_back(internalCurve->at(i + 1));
+	curveFinal->push_back(internalCurve->at(i));
+	curveFinal->push_back(internalCurve->at(i + 1));
 
 	glm::vec3* a_int = internalCurve->at(i);
 
 	// Ponto Interno 2
-	pontosFinais->push_back(internalCurve->at(0));
-	pontosFinais->push_back(internalCurve->at(1));
+	curveFinal->push_back(internalCurve->at(0));
+	curveFinal->push_back(internalCurve->at(1));
 
 	glm::vec3* b_int = internalCurve->at(0);
 
 	// Ponto Externo 1
-	pontosFinais->push_back(externalCurve->at(i));
-	pontosFinais->push_back(externalCurve->at(i + 1));
+	curveFinal->push_back(externalCurve->at(i));
+	curveFinal->push_back(externalCurve->at(i + 1));
 
 	glm::vec3* c_ext = externalCurve->at(i);
 
 	OBJWriter.addFaces(index, tamanhoCurvaExterna, ++faces, 3);
 
 	// Ponto Interno 2
-	pontosFinais->push_back(internalCurve->at(0));
-	pontosFinais->push_back(internalCurve->at(1));
+	curveFinal->push_back(internalCurve->at(0));
+	curveFinal->push_back(internalCurve->at(1));
 
 	// Ponto Externo 2
-	pontosFinais->push_back(externalCurve->at(0));
-	pontosFinais->push_back(externalCurve->at(1));
+	curveFinal->push_back(externalCurve->at(0));
+	curveFinal->push_back(externalCurve->at(1));
 
 	glm::vec3* d_ext = externalCurve->at(0);
 
 	// Ponto Externo 1
-	pontosFinais->push_back(externalCurve->at(i));
-	pontosFinais->push_back(externalCurve->at(i + 1));
+	curveFinal->push_back(externalCurve->at(i));
+	curveFinal->push_back(externalCurve->at(i + 1));
 
 	OBJWriter.addFaces(index, tamanhoCurvaExterna, ++faces, 4);
 
@@ -470,6 +486,6 @@ vector<glm::vec3*>* gerarCurvaFinal(vector<glm::vec3*>* internalCurve, vector<gl
 
 	OBJWriter.addNormalExternalCurve(normal_vec_abac, normal_vec_dbdc);
 
-	return pontosFinais;
+	return curveFinal;
 }
 
