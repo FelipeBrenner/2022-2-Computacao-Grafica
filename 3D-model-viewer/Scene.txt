@@ -8,8 +8,7 @@ scale 1 1 1
 eliminable
 
 newobj
-name bullet
-objpath objs/sphere.obj
+objpath objs/pista.obj
 translation 0 2 15
 angle 0
 rotation 0 1 0
