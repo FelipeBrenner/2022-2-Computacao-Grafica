@@ -13,8 +13,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#define GLEW_STATIC
-
 #include "MTLWriter.h"
 #include "TXTWriter.h"
 #include "OBJWriter.h"

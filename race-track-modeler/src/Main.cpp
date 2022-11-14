@@ -1,76 +1,9 @@
-#include "Includes.h"
-#include "Shader.h"
-
-#define PI 3.14159265359
-#define HALF_PI PI/2.0
-
-const GLint WIDTH = 1200, HEIGHT = 900;
-
-vector<vec3*>* selectedPoints = new vector<vec3*>();
-vector<vec3*>* originalCurve = new vector<vec3*>();
-vector<vec3*>* externalCurve = new vector<vec3*>();
-vector<vec3*>* internalCurve = new vector<vec3*>();
-vector<vec3*>* finalCurve = new vector<vec3*>();
-vector<GLfloat>* selectedPointsFloat = new vector<GLfloat>();
-vector<GLfloat>* finalCurveFloat = new vector<GLfloat>();
-
-int tamanhoCurvaInterna = 0;
-int tamanhoCurvaExterna = 0;
-
-int faces = 0;
-
-bool draw = false;
-GLuint vaoCurve, vboCurve;
-GLuint vaoPoints, vboPoints;
-
-void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
-
-int getZone(float x, float y);
-void setCoordinatesByZone(double& xpos, double& ypos);
-void convertCoordinates(double& x, double& y);
-
-void calculateBSpline(vector<vec3*>* temp, vector<vec3*>* curvaCalculada, TXTWriter& TXTWriter);
-vector<vec3*>* generateOriginalCurve(vector<vec3*>* points);
-vector<vec3*>* generateSideCurve(vector<vec3*>* points, bool external);
-vector<vec3*>* generateFinalCurve(vector<vec3*>* internalCurve, vector<vec3*>* externalCurve);
-vector<GLfloat>* convertVectorToFloat(vector<vec3*>* points);
-
-void runBinds(GLuint vao, GLuint vbo, vector<GLfloat>* vector, float size);
+#include "Main.h"
 
 int main() {
-	glfwInit();
-
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
-
-	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Curva", nullptr, nullptr);
-
-	int screenWidth, screenHeight;
-	glfwGetFramebufferSize(window, &screenWidth, &screenHeight);
-
-	if (nullptr == window) {
-		cout << "Falha ao criar janela GLFW" << endl;
-		glfwTerminate();
+	if (setup() != 0){
 		return EXIT_FAILURE;
 	}
-
-	glfwMakeContextCurrent(window);
-	glewExperimental = GL_TRUE;
-
-	if (GLEW_OK != glewInit()) {
-		cout << "Falha ao criar janela GLEW" << endl;
-		return EXIT_FAILURE;
-	}
-
-	glViewport(0, 0, screenWidth, screenHeight);
-
-	Shader coreShader("shaders/core.vert", "shaders/core.frag");
-	coreShader.Use();
-
-	GLint colorLoc = glGetUniformLocation(coreShader.program, "inputColor");
 
 	glGenVertexArrays(1, &vaoCurve);
 	glGenBuffers(1, &vboCurve);
@@ -89,7 +22,6 @@ int main() {
 	OBJWriter.createOBJFile();
 
 	while (!glfwWindowShouldClose(window)) {
-
 		glClearColor(0.6f, 0.6f, 0.6f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glfwPollEvents();
@@ -119,6 +51,44 @@ int main() {
 
 	glfwTerminate();
 	return EXIT_SUCCESS;
+}
+
+int setup() {
+	glfwInit();
+
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+
+	window = glfwCreateWindow(WIDTH, HEIGHT, "Curva", nullptr, nullptr);
+
+	int screenWidth, screenHeight;
+	glfwGetFramebufferSize(window, &screenWidth, &screenHeight);
+
+	if (nullptr == window) {
+		cout << "Falha ao criar janela GLFW" << endl;
+		glfwTerminate();
+		return EXIT_FAILURE;
+	}
+
+	glfwMakeContextCurrent(window);
+	glewExperimental = GL_TRUE;
+
+	if (GLEW_OK != glewInit()) {
+		cout << "Falha ao criar janela GLEW" << endl;
+		return EXIT_FAILURE;
+	}
+
+	glViewport(0, 0, screenWidth, screenHeight);
+
+	Shader coreShader("shaders/core.vert", "shaders/core.frag");
+	coreShader.Use();
+
+	colorLoc = glGetUniformLocation(coreShader.program, "inputColor");
+
+	return 0;
 }
 
 void runBinds(GLuint vao, GLuint vbo, vector<GLfloat>* vector, float size) {
@@ -225,8 +195,8 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 		internalCurve = generateSideCurve(originalCurve, false);
 
 		// tamanho do array dividido por 2 - porque a metade desses valores e cor branca
-		tamanhoCurvaExterna = externalCurve->size() / 2.0;
-		tamanhoCurvaInterna = internalCurve->size() / 2.0;
+		externalCurveSize = externalCurve->size() / 2.0;
+		internalCurveSize = internalCurve->size() / 2.0;
 
 		OBJWriter OBJWriter;
 		OBJWriter.saveTextureValuesToOBJ();
@@ -384,7 +354,7 @@ vector<vec3*>* generateFinalCurve(vector<vec3*>* internalCurve, vector<vec3*>* e
 
 		vec3* c_ext = externalCurve->at(i);
 
-		OBJWriter.addFaces(index, tamanhoCurvaExterna, ++faces, 1);
+		OBJWriter.addFaces(index, externalCurveSize, ++faces, 1);
 
 		// Ponto Interno 2
 		finalCurve->push_back(internalCurve->at(i + 2));
@@ -400,7 +370,7 @@ vector<vec3*>* generateFinalCurve(vector<vec3*>* internalCurve, vector<vec3*>* e
 		finalCurve->push_back(externalCurve->at(i));
 		finalCurve->push_back(externalCurve->at(i + 1));
 
-		OBJWriter.addFaces(index, tamanhoCurvaExterna, ++faces, 2);
+		OBJWriter.addFaces(index, externalCurveSize, ++faces, 2);
 
 		// pega os vetores das normais
 		// y e z sao invertidos para modificar os eixos
@@ -438,7 +408,7 @@ vector<vec3*>* generateFinalCurve(vector<vec3*>* internalCurve, vector<vec3*>* e
 
 	vec3* c_ext = externalCurve->at(i);
 
-	OBJWriter.addFaces(index, tamanhoCurvaExterna, ++faces, 3);
+	OBJWriter.addFaces(index, externalCurveSize, ++faces, 3);
 
 	// Ponto Interno 2
 	finalCurve->push_back(internalCurve->at(0));
@@ -454,7 +424,7 @@ vector<vec3*>* generateFinalCurve(vector<vec3*>* internalCurve, vector<vec3*>* e
 	finalCurve->push_back(externalCurve->at(i));
 	finalCurve->push_back(externalCurve->at(i + 1));
 
-	OBJWriter.addFaces(index, tamanhoCurvaExterna, ++faces, 4);
+	OBJWriter.addFaces(index, externalCurveSize, ++faces, 4);
 
 	// pega os vetores das normais
 	// y e z sao invertidos para modificar os eixos
