@@ -98,6 +98,7 @@ int main() {
 			glfwSetWindowShouldClose(window, GLFW_TRUE);
 		}
 
+		// renderiza os pontos
 		if (selectedPointsFloat->size() > 0) {
 			glPointSize(10);
 			runBinds(vaoPoints, vboPoints, selectedPointsFloat, 0);
@@ -105,6 +106,7 @@ int main() {
 			glDrawArrays(GL_POINTS, 0, selectedPointsFloat->size() / 3);
 		}
 
+		// renderiza a curva
 		if (draw) {
 			runBinds(vaoCurve, vboCurve, finalCurveFloat, 6 * sizeof(GLfloat));
 			glUniform4f(colorLoc, 1.0f, 1.0f, 1.0f, 1.0f);

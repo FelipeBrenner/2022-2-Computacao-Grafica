@@ -1,19 +1,12 @@
-#pragma once
 #include "Includes.h"
-
-#ifndef TXTWRITER_H
-#define TXTWRITER_H
 
 using namespace std;
 
-class TXTWriter
-{
-
+class TXTWriter {
 public:
 	ofstream TXTFile;
 
-	TXTWriter() {	
-	}
+	TXTWriter() {}
 
 	void createTXTFile() {
 		TXTFile.open("generated-files/pistaOriginal.txt");
@@ -27,5 +20,3 @@ public:
 		TXTFile.close();
 	}
 };
-
-#endif

@@ -2,12 +2,12 @@
 
 using namespace std;
 
-class OBJWriter
-{
+class OBJWriter {
 public:
 	ofstream OBJFile;
 
 	OBJWriter() {}
+	
 	void createOBJFile() {
 		OBJFile.open("generated-files/pista.obj");
 		OBJFile << "mtllib " << "pista.mtl" << "\n" << endl;

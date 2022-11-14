@@ -2,10 +2,10 @@
 
 using namespace std;
 
-class MTLWriter
-{
+class MTLWriter {
 public:
 	MTLWriter() {}
+
 	static void createMtlFile() {
 		static ofstream mtlFile;
 		mtlFile.open("generated-files/pista.mtl");
