@@ -15,16 +15,12 @@ int main() {
 
 	glfwSetMouseButtonCallback(window, mouse_button_callback);
 
-	writeObjMtl();
-	
 	while (!glfwWindowShouldClose(window)) {
 		glClearColor(0.6f, 0.6f, 0.6f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glfwPollEvents();
 
-		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-			glfwSetWindowShouldClose(window, GLFW_TRUE);
-		}
+		keyboard_callback();
 
 		// renderiza os pontos
 		if (controlPointsFloat->size() > 0) {
@@ -117,12 +113,18 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 			externalCurve = generateSideCurve(originalCurve, true);
 			internalCurve = generateSideCurve(originalCurve, false);
 
+			externalCurveFloat->clear();
+			externalCurveFloat = convertVectorToFloat(externalCurve);
+
+			internalCurveFloat->clear();
+			internalCurveFloat = convertVectorToFloat(externalCurve);
+
 			// tamanho do array dividido por 2 - porque a metade desses valores e cor branca
 			externalCurveSize = externalCurve->size() / 2.0;
 			internalCurveSize = internalCurve->size() / 2.0;
 
-			OBJWriter OBJWriter;
-			OBJWriter.saveTextureValuesToOBJ();
+			// OBJWriter OBJWriter;
+			// // OBJWriter.saveTextureValuesToOBJ();
 
 			finalCurve->clear();
 			finalCurve = generateFinalCurve(internalCurve, externalCurve);
@@ -130,6 +132,16 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 
 			runBinds(vaoCurve, vboCurve, finalCurveFloat, 6 * sizeof(GLfloat));
 		}
+	}
+}
+
+void keyboard_callback() {
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+		glfwSetWindowShouldClose(window, GLFW_TRUE);
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS) {
+		writeObjMtl();
 	}
 }
 
@@ -225,8 +237,8 @@ void setCoordinatesByZone(double& xpos, double& ypos)
 }
 
 vector<vec3*>* generateOriginalCurve(vector<vec3*>* points) {
-	TXTWriter TXTWriter;
-	TXTWriter.createTXTFile();
+	// TXTWriter TXTWriter;
+	// TXTWriter.createTXTFile();
 
 	vector<vec3*>* curvaCalculada = new vector<vec3*>();
 	vector<vec3*>* temp = new vector<vec3*>();
@@ -241,15 +253,15 @@ vector<vec3*>* generateOriginalCurve(vector<vec3*>* points) {
 	temp->push_back(points->at(1));
 	temp->push_back(points->at(2));
 
-	calculateBSpline(temp, curvaCalculada, TXTWriter);
+	calculateBSpline(temp, curvaCalculada);
 
-	TXTWriter.closeTXTFile();
+	// TXTWriter.closeTXTFile();
 	cout << "Curva gerada com sucesso!" << endl;
 
 	return curvaCalculada;
 }
 
-void calculateBSpline(vector<vec3*>* temp, vector<vec3*>* curvaCalculada, TXTWriter& TXTWriter) {
+void calculateBSpline(vector<vec3*>* temp, vector<vec3*>* curvaCalculada) {
 	for (int i = 0; i < (temp->size() - 3); i++) {
 		// itera entre 99 variacoes para a distancia entre cada ponto
 		for (int j = 0; j < 100; ++j) {
@@ -270,7 +282,7 @@ void calculateBSpline(vector<vec3*>* temp, vector<vec3*>* curvaCalculada, TXTWri
 
 			curvaCalculada->push_back(point);
 
-			TXTWriter.addPoint(point->x, point->y, point->z);
+			// TXTWriter.addPoint(point->x, point->y, point->z);
 
 			curvaCalculada->push_back(new vec3(0.0, 0.1, 1.0));
 		}
@@ -281,7 +293,7 @@ vector<vec3*>* generateSideCurve(vector<vec3*>* points, bool external) {
 
 	// recebe os pontos da curva original do meio
 
-	OBJWriter OBJWriter;
+	// OBJWriter OBJWriter;
 	vector<vec3*>* calculatedCurve = new vector<vec3*>();
 
 	for (int j = 0; j < points->size() - 1; j += 2) {
@@ -314,7 +326,7 @@ vector<vec3*>* generateSideCurve(vector<vec3*>* points, bool external) {
 		calculatedCurve->push_back(pontosGerados);
 
 		// adiciona pro obj
-		OBJWriter.addPointsFinalCurve(pontosGerados->x, pontosGerados->y, pontosGerados->z);
+		// // OBJWriter.addPointsFinalCurve(pontosGerados->x, pontosGerados->y, pontosGerados->z);
 
 		// adiciona cor branca para curva
 		calculatedCurve->push_back(new vec3(0.0, 0.1, 1.0));
@@ -324,7 +336,7 @@ vector<vec3*>* generateSideCurve(vector<vec3*>* points, bool external) {
 }
 
 vector<vec3*>* generateFinalCurve(vector<vec3*>* internalCurve, vector<vec3*>* externalCurve) {
-	OBJWriter OBJWriter;
+	// OBJWriter OBJWriter;
 
 	int i = 0;
 	int index = 1;
@@ -348,7 +360,7 @@ vector<vec3*>* generateFinalCurve(vector<vec3*>* internalCurve, vector<vec3*>* e
 
 		vec3* c_ext = externalCurve->at(i);
 
-		OBJWriter.addFaces(index, externalCurveSize, ++faces, 1);
+		// OBJWriter.addFaces(index, externalCurveSize, ++faces, 1);
 
 		// Ponto Interno 2
 		finalCurve->push_back(internalCurve->at(i + 2));
@@ -364,7 +376,7 @@ vector<vec3*>* generateFinalCurve(vector<vec3*>* internalCurve, vector<vec3*>* e
 		finalCurve->push_back(externalCurve->at(i));
 		finalCurve->push_back(externalCurve->at(i + 1));
 
-		OBJWriter.addFaces(index, externalCurveSize, ++faces, 2);
+		// OBJWriter.addFaces(index, externalCurveSize, ++faces, 2);
 
 		// pega os vetores das normais
 		// y e z sao invertidos para modificar os eixos
@@ -378,7 +390,7 @@ vector<vec3*>* generateFinalCurve(vector<vec3*>* internalCurve, vector<vec3*>* e
 		vec3 normal_vec_abac = cross(ac, ab);
 		vec3 normal_vec_dbdc = cross(db, dc);
 
-		OBJWriter.addNormalExternalCurve(normal_vec_abac, normal_vec_dbdc);
+		// OBJWriter.addNormalExternalCurve(normal_vec_abac, normal_vec_dbdc);
 
 		index++;
 	}
@@ -402,7 +414,7 @@ vector<vec3*>* generateFinalCurve(vector<vec3*>* internalCurve, vector<vec3*>* e
 
 	vec3* c_ext = externalCurve->at(i);
 
-	OBJWriter.addFaces(index, externalCurveSize, ++faces, 3);
+	// OBJWriter.addFaces(index, externalCurveSize, ++faces, 3);
 
 	// Ponto Interno 2
 	finalCurve->push_back(internalCurve->at(0));
@@ -418,7 +430,7 @@ vector<vec3*>* generateFinalCurve(vector<vec3*>* internalCurve, vector<vec3*>* e
 	finalCurve->push_back(externalCurve->at(i));
 	finalCurve->push_back(externalCurve->at(i + 1));
 
-	OBJWriter.addFaces(index, externalCurveSize, ++faces, 4);
+	// OBJWriter.addFaces(index, externalCurveSize, ++faces, 4);
 
 	// pega os vetores das normais
 	// y e z sao invertidos para modificar os eixos
@@ -432,15 +444,15 @@ vector<vec3*>* generateFinalCurve(vector<vec3*>* internalCurve, vector<vec3*>* e
 	vec3 normal_vec_abac = cross(ab, ac);
 	vec3 normal_vec_dbdc = cross(db, dc);
 
-	OBJWriter.addNormalExternalCurve(normal_vec_abac, normal_vec_dbdc);
+	// OBJWriter.addNormalExternalCurve(normal_vec_abac, normal_vec_dbdc);
 
 	return finalCurve;
 }
 
 void writeObjMtl() {
-	MTLWriter MTLWriter;
-	MTLWriter.createMTLFile();
+	OBJWriter* objWriter = new OBJWriter(internalCurveFloat, externalCurveFloat);
+	SplineWriter* splineWriter = new SplineWriter(finalCurveFloat);
 
-	OBJWriter OBJWriter;
-	OBJWriter.createOBJFile();
+	objWriter -> WriteOBJ();
+	splineWriter -> WriteSpline();
 }

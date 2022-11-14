@@ -1,5 +1,7 @@
 #include "Includes.h"
 #include "Shader.h"
+#include "OBJWriter.h"
+#include "SplineWriter.h"
 
 #define PI 3.14159265359
 #define HALF_PI PI/2.0
@@ -11,16 +13,19 @@ vector<vec3*>* internalCurve = new vector<vec3*>();
 vector<vec3*>* finalCurve = new vector<vec3*>();
 vector<GLfloat>* controlPointsFloat = new vector<GLfloat>();
 vector<GLfloat>* finalCurveFloat = new vector<GLfloat>();
+vector<GLfloat>* externalCurveFloat = new vector<GLfloat>();
+vector<GLfloat>* internalCurveFloat = new vector<GLfloat>();
 
 int setup();
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
+void keyboard_callback();
 void writeObjMtl();
 
 int getZone(float x, float y);
 void setCoordinatesByZone(double& xpos, double& ypos);
 void convertCoordinates(double& x, double& y);
 
-void calculateBSpline(vector<vec3*>* temp, vector<vec3*>* curvaCalculada, TXTWriter& TXTWriter);
+void calculateBSpline(vector<vec3*>* temp, vector<vec3*>* curvaCalculada);
 vector<vec3*>* generateOriginalCurve(vector<vec3*>* points);
 vector<vec3*>* generateSideCurve(vector<vec3*>* points, bool external);
 vector<vec3*>* generateFinalCurve(vector<vec3*>* internalCurve, vector<vec3*>* externalCurve);

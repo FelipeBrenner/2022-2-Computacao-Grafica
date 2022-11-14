@@ -13,9 +13,5 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "MTLWriter.h"
-#include "TXTWriter.h"
-#include "OBJWriter.h"
-
 using namespace std;
 using namespace glm;
