@@ -35,7 +35,7 @@ vector<vec3*>* generateSideCurve(vector<vec3*>* points, bool external);
 vector<vec3*>* generateFinalCurve(vector<vec3*>* internalCurve, vector<vec3*>* externalCurve);
 vector<GLfloat>* convertVectorToFloat(vector<vec3*>* points);
 
-void runBinds(GLuint vao, GLuint vbo, vector<GLfloat>* vector);
+void runBinds(GLuint vao, GLuint vbo, vector<GLfloat>* vector, float size);
 
 int main() {
 	glfwInit();
@@ -98,19 +98,17 @@ int main() {
 			glfwSetWindowShouldClose(window, GLFW_TRUE);
 		}
 
-		// desenha os pontos
 		if (selectedPointsFloat->size() > 0) {
 			glPointSize(10);
-			runBinds(vaoPoints, vboPoints, selectedPointsFloat);
+			runBinds(vaoPoints, vboPoints, selectedPointsFloat, 0);
 			glUniform4f(colorLoc, 0.0f, 0.0f, 0.0f, 1.0f);
 			glDrawArrays(GL_POINTS, 0, selectedPointsFloat->size() / 3);
 		}
 
-		// desenha os triângulos, enviando para o vetor de pontos finais
 		if (draw) {
-			glBindVertexArray(vaoCurve);
+			runBinds(vaoCurve, vboCurve, finalCurveFloat, 6 * sizeof(GLfloat));
 			glUniform4f(colorLoc, 1.0f, 1.0f, 1.0f, 1.0f);
-			glDrawArrays(GL_TRIANGLES, 0, finalCurveFloat->size());
+			glDrawArrays(GL_TRIANGLES, 0, finalCurveFloat->size() / 3);
 		}
 
 		// gera o desenho na tela
@@ -121,12 +119,12 @@ int main() {
 	return EXIT_SUCCESS;
 }
 
-void runBinds(GLuint vao, GLuint vbo, vector<GLfloat>* vector) {
+void runBinds(GLuint vao, GLuint vbo, vector<GLfloat>* vector, float size) {
 	glBindVertexArray(vao);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * vector->size(), vector->data(), GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)0);
 	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, size, NULL);
 }
 
 vector<GLfloat>* convertVectorToFloat(vector<vec3*>* points) {
@@ -214,7 +212,7 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 
 		selectedPointsFloat = convertVectorToFloat(selectedPoints);
 
-		runBinds(vaoPoints, vboPoints, selectedPointsFloat);
+		runBinds(vaoPoints, vboPoints, selectedPointsFloat, 0);
 	}
 
 	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
@@ -234,7 +232,7 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 		finalCurve = generateFinalCurve(internalCurve, externalCurve);
 		finalCurveFloat = convertVectorToFloat(finalCurve);
 
-		runBinds(vaoCurve, vboCurve, finalCurveFloat);
+		runBinds(vaoCurve, vboCurve, finalCurveFloat, 6 * sizeof(GLfloat));
 	}
 }
 
