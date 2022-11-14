@@ -37,4 +37,3 @@ const GLint WIDTH = 1200, HEIGHT = 900;
 int internalCurveSize = 0;
 int externalCurveSize = 0;
 int faces = 0;
-bool draw = false;

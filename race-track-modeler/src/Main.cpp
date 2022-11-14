@@ -39,7 +39,7 @@ int main() {
 		}
 
 		// renderiza a curva
-		if (draw) {
+		if (selectedPointsFloat->size() > 6) {
 			runBinds(vaoCurve, vboCurve, finalCurveFloat, 6 * sizeof(GLfloat));
 			glUniform4f(colorLoc, 1.0f, 1.0f, 1.0f, 1.0f);
 			glDrawArrays(GL_TRIANGLES, 0, finalCurveFloat->size() / 3);
@@ -161,7 +161,6 @@ int getZone(float x, float y) {
 }
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
-
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
 		double xpos, ypos;
 		
@@ -185,26 +184,27 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 		selectedPointsFloat = convertVectorToFloat(selectedPoints);
 
 		runBinds(vaoPoints, vboPoints, selectedPointsFloat, 0);
-	}
 
-	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
-		draw = true;
+		cout << "finalCurveFloat->size(): " << finalCurveFloat->size() << endl;
 
-		originalCurve = generateOriginalCurve(selectedPoints);
-		externalCurve = generateSideCurve(originalCurve, true);
-		internalCurve = generateSideCurve(originalCurve, false);
+		if(selectedPointsFloat->size() > 6) {
+			originalCurve = generateOriginalCurve(selectedPoints);
+			externalCurve = generateSideCurve(originalCurve, true);
+			internalCurve = generateSideCurve(originalCurve, false);
 
-		// tamanho do array dividido por 2 - porque a metade desses valores e cor branca
-		externalCurveSize = externalCurve->size() / 2.0;
-		internalCurveSize = internalCurve->size() / 2.0;
+			// tamanho do array dividido por 2 - porque a metade desses valores e cor branca
+			externalCurveSize = externalCurve->size() / 2.0;
+			internalCurveSize = internalCurve->size() / 2.0;
 
-		OBJWriter OBJWriter;
-		OBJWriter.saveTextureValuesToOBJ();
+			OBJWriter OBJWriter;
+			OBJWriter.saveTextureValuesToOBJ();
 
-		finalCurve = generateFinalCurve(internalCurve, externalCurve);
-		finalCurveFloat = convertVectorToFloat(finalCurve);
+			finalCurve->clear();
+			finalCurve = generateFinalCurve(internalCurve, externalCurve);
+			finalCurveFloat = convertVectorToFloat(finalCurve);
 
-		runBinds(vaoCurve, vboCurve, finalCurveFloat, 6 * sizeof(GLfloat));
+			runBinds(vaoCurve, vboCurve, finalCurveFloat, 6 * sizeof(GLfloat));
+		}
 	}
 }
 
@@ -442,4 +442,3 @@ vector<vec3*>* generateFinalCurve(vector<vec3*>* internalCurve, vector<vec3*>* e
 
 	return finalCurve;
 }
-
