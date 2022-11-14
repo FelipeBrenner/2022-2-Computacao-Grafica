@@ -6,11 +6,11 @@
 
 const GLint WIDTH = 1200, HEIGHT = 900;
 
-vector<glm::vec3*>* selectedPoints = new vector<glm::vec3*>();
-vector<glm::vec3*>* originalCurve = new vector<glm::vec3*>();
-vector<glm::vec3*>* externalCurve = new vector<glm::vec3*>();
-vector<glm::vec3*>* internalCurve = new vector<glm::vec3*>();
-vector<glm::vec3*>* finalCurve = new vector<glm::vec3*>();
+vector<vec3*>* selectedPoints = new vector<vec3*>();
+vector<vec3*>* originalCurve = new vector<vec3*>();
+vector<vec3*>* externalCurve = new vector<vec3*>();
+vector<vec3*>* internalCurve = new vector<vec3*>();
+vector<vec3*>* finalCurve = new vector<vec3*>();
 vector<GLfloat>* selectedPointsFloat = new vector<GLfloat>();
 vector<GLfloat>* finalCurveFloat = new vector<GLfloat>();
 
@@ -29,11 +29,11 @@ int getZone(float x, float y);
 void setCoordinatesByZone(double& xpos, double& ypos);
 void convertCoordinates(double& x, double& y);
 
-void calculateBSpline(vector<glm::vec3*>* temp, vector<glm::vec3*>* curvaCalculada, TXTWriter& TXTWriter);
-vector<glm::vec3*>* generateOriginalCurve(vector<glm::vec3*>* points);
-vector<glm::vec3*>* generateSideCurve(vector<glm::vec3*>* points, bool external);
-vector<glm::vec3*>* generateFinalCurve(vector<glm::vec3*>* internalCurve, vector<glm::vec3*>* externalCurve);
-vector<GLfloat>* convertVectorToFloat(vector<glm::vec3*>* points);
+void calculateBSpline(vector<vec3*>* temp, vector<vec3*>* curvaCalculada, TXTWriter& TXTWriter);
+vector<vec3*>* generateOriginalCurve(vector<vec3*>* points);
+vector<vec3*>* generateSideCurve(vector<vec3*>* points, bool external);
+vector<vec3*>* generateFinalCurve(vector<vec3*>* internalCurve, vector<vec3*>* externalCurve);
+vector<GLfloat>* convertVectorToFloat(vector<vec3*>* points);
 
 void runBinds(GLuint vao, GLuint vbo, vector<GLfloat>* vector);
 
@@ -90,7 +90,7 @@ int main() {
 
 	while (!glfwWindowShouldClose(window)) {
 
-		glClearColor(0.6f, 0.6f, 0.8f, 1.0f);
+		glClearColor(0.6f, 0.6f, 0.6f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glfwPollEvents();
 
@@ -129,7 +129,7 @@ void runBinds(GLuint vao, GLuint vbo, vector<GLfloat>* vector) {
 	glEnableVertexAttribArray(0);
 }
 
-vector<GLfloat>* convertVectorToFloat(vector<glm::vec3*>* points) {
+vector<GLfloat>* convertVectorToFloat(vector<vec3*>* points) {
 	std:vector<GLfloat>* temp = new vector<GLfloat>();
 
 	for (int i = 0; i < points->size(); i++) {
@@ -201,7 +201,7 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 		convertCoordinates(xpos, ypos);
 
 		// gera um novo vec3 com o ponto para a curva
-		glm::vec3* point = new glm::vec3(xpos, ypos, 0.0);
+		vec3* point = new vec3(xpos, ypos, 0.0);
 		
 		// adiciona ao vetor de pontos selecionados
 		selectedPoints->push_back(point);
@@ -260,16 +260,16 @@ void setCoordinatesByZone(double& xpos, double& ypos)
 	}
 }
 
-vector<glm::vec3*>* generateOriginalCurve(vector<glm::vec3*>* points) {
+vector<vec3*>* generateOriginalCurve(vector<vec3*>* points) {
 	TXTWriter TXTWriter;
 	TXTWriter.createTXTFile();
 
-	vector<glm::vec3*>* curvaCalculada = new vector<glm::vec3*>();
-	vector<glm::vec3*>* temp = new vector<glm::vec3*>();
-	vector<glm::vec3*>* temp2 = new vector<glm::vec3*>();
+	vector<vec3*>* curvaCalculada = new vector<vec3*>();
+	vector<vec3*>* temp = new vector<vec3*>();
+	vector<vec3*>* temp2 = new vector<vec3*>();
 
 	for (int i = 0; i < points->size(); i++) {
-		temp->push_back(new glm::vec3(points->at(i)->x, points->at(i)->y, 0));
+		temp->push_back(new vec3(points->at(i)->x, points->at(i)->y, 0));
 	}
 
 	//cria mais um ponto para terminar a curva, com o ponto inicial
@@ -285,7 +285,7 @@ vector<glm::vec3*>* generateOriginalCurve(vector<glm::vec3*>* points) {
 	return curvaCalculada;
 }
 
-void calculateBSpline(vector<glm::vec3*>* temp, vector<glm::vec3*>* curvaCalculada, TXTWriter& TXTWriter) {
+void calculateBSpline(vector<vec3*>* temp, vector<vec3*>* curvaCalculada, TXTWriter& TXTWriter) {
 	for (int i = 0; i < (temp->size() - 3); i++) {
 		// itera entre 99 variacoes para a distancia entre cada ponto
 		for (int j = 0; j < 100; ++j) {
@@ -302,27 +302,27 @@ void calculateBSpline(vector<glm::vec3*>* temp, vector<glm::vec3*>* curvaCalcula
 				(-3 * pow(t, 3) + 3 * pow(t, 2) + 3 * t + 1) * temp->at(i + 2)->y +
 				(1 * pow(t, 3) + 0 * pow(t, 2) + 0 * t + 0) * temp->at(i + 3)->y) / 6);
 
-			glm::vec3* point = new glm::vec3(x, y, 0.0);
+			vec3* point = new vec3(x, y, 0.0);
 
 			curvaCalculada->push_back(point);
 
 			TXTWriter.addPoint(point->x, point->y, point->z);
 
-			curvaCalculada->push_back(new glm::vec3(0.0, 0.1, 1.0));
+			curvaCalculada->push_back(new vec3(0.0, 0.1, 1.0));
 		}
 	}
 }
 
-vector<glm::vec3*>* generateSideCurve(vector<glm::vec3*>* points, bool external) {
+vector<vec3*>* generateSideCurve(vector<vec3*>* points, bool external) {
 
 	// recebe os pontos da curva original do meio
 
 	OBJWriter OBJWriter;
-	vector<glm::vec3*>* calculatedCurve = new vector<glm::vec3*>();
+	vector<vec3*>* calculatedCurve = new vector<vec3*>();
 
 	for (int j = 0; j < points->size() - 1; j += 2) {
-		glm::vec3* a = points->at(j);
-		glm::vec3* b;
+		vec3* a = points->at(j);
+		vec3* b;
 
 		if (j == points->size() - 2) b = points->at(0);
 		else b = points->at(j + 2);
@@ -336,16 +336,16 @@ vector<glm::vec3*>* generateSideCurve(vector<glm::vec3*>* points, bool external)
 		}
 
 		// arco tangente
-		GLfloat angle = glm::atan(dy, dx);
+		GLfloat angle = atan(dy, dx);
 
 		if (external) angle += HALF_PI;
 		else angle -= HALF_PI;
 
 		// 0.09 -> tamanho da curva, fator de escala
-		GLfloat offsetX = glm::cos(angle) * 0.05;
-		GLfloat offsetY = glm::sin(angle) * 0.05;
+		GLfloat offsetX = cos(angle) * 0.05;
+		GLfloat offsetY = sin(angle) * 0.05;
 
-		glm::vec3* pontosGerados = new glm::vec3(a->x + offsetX, a->y + offsetY, 0.0);
+		vec3* pontosGerados = new vec3(a->x + offsetX, a->y + offsetY, 0.0);
 
 		calculatedCurve->push_back(pontosGerados);
 
@@ -353,13 +353,13 @@ vector<glm::vec3*>* generateSideCurve(vector<glm::vec3*>* points, bool external)
 		OBJWriter.addPointsFinalCurve(pontosGerados->x, pontosGerados->y, pontosGerados->z);
 
 		// adiciona cor branca para curva
-		calculatedCurve->push_back(new glm::vec3(0.0, 0.1, 1.0));
+		calculatedCurve->push_back(new vec3(0.0, 0.1, 1.0));
 	}
 
 	return calculatedCurve;
 }
 
-vector<glm::vec3*>* generateFinalCurve(vector<glm::vec3*>* internalCurve, vector<glm::vec3*>* externalCurve) {
+vector<vec3*>* generateFinalCurve(vector<vec3*>* internalCurve, vector<vec3*>* externalCurve) {
 	OBJWriter OBJWriter;
 
 	int i = 0;
@@ -370,19 +370,19 @@ vector<glm::vec3*>* generateFinalCurve(vector<glm::vec3*>* internalCurve, vector
 		finalCurve->push_back(internalCurve->at(i));
 		finalCurve->push_back(internalCurve->at(i + 1));
 
-		glm::vec3* a_int = internalCurve->at(i);
+		vec3* a_int = internalCurve->at(i);
 
 		// Ponto Interno 2
 		finalCurve->push_back(internalCurve->at(i + 2));
 		finalCurve->push_back(internalCurve->at(i + 3));
 
-		glm::vec3* b_int = internalCurve->at(i + 2);
+		vec3* b_int = internalCurve->at(i + 2);
 
 		// Ponto Externo 1
 		finalCurve->push_back(externalCurve->at(i));
 		finalCurve->push_back(externalCurve->at(i + 1));
 
-		glm::vec3* c_ext = externalCurve->at(i);
+		vec3* c_ext = externalCurve->at(i);
 
 		OBJWriter.addFaces(index, tamanhoCurvaExterna, ++faces, 1);
 
@@ -394,7 +394,7 @@ vector<glm::vec3*>* generateFinalCurve(vector<glm::vec3*>* internalCurve, vector
 		finalCurve->push_back(externalCurve->at(i + 2));
 		finalCurve->push_back(externalCurve->at(i + 3));
 
-		glm::vec3* d_ext = externalCurve->at(i + 2);
+		vec3* d_ext = externalCurve->at(i + 2);
 
 		// Ponto Externo 1
 		finalCurve->push_back(externalCurve->at(i));
@@ -405,14 +405,14 @@ vector<glm::vec3*>* generateFinalCurve(vector<glm::vec3*>* internalCurve, vector
 		// pega os vetores das normais
 		// y e z sao invertidos para modificar os eixos
 		// produto escalar
-		glm::vec3 ab = glm::vec3(b_int->x - a_int->x, b_int->z - a_int->z, b_int->y - a_int->y);
-		glm::vec3 ac = glm::vec3(c_ext->x - a_int->x, c_ext->z - a_int->z, c_ext->y - a_int->y);
-		glm::vec3 dc = glm::vec3(c_ext->x - d_ext->x, c_ext->z - d_ext->z, c_ext->y - d_ext->y);
-		glm::vec3 db = glm::vec3(b_int->x - d_ext->x, b_int->z - d_ext->z, b_int->y - d_ext->y);
+		vec3 ab = vec3(b_int->x - a_int->x, b_int->z - a_int->z, b_int->y - a_int->y);
+		vec3 ac = vec3(c_ext->x - a_int->x, c_ext->z - a_int->z, c_ext->y - a_int->y);
+		vec3 dc = vec3(c_ext->x - d_ext->x, c_ext->z - d_ext->z, c_ext->y - d_ext->y);
+		vec3 db = vec3(b_int->x - d_ext->x, b_int->z - d_ext->z, b_int->y - d_ext->y);
 
 		// prooduto vetorial
-		glm::vec3 normal_vec_abac = glm::cross(ac, ab);
-		glm::vec3 normal_vec_dbdc = glm::cross(db, dc);
+		vec3 normal_vec_abac = cross(ac, ab);
+		vec3 normal_vec_dbdc = cross(db, dc);
 
 		OBJWriter.addNormalExternalCurve(normal_vec_abac, normal_vec_dbdc);
 
@@ -424,19 +424,19 @@ vector<glm::vec3*>* generateFinalCurve(vector<glm::vec3*>* internalCurve, vector
 	finalCurve->push_back(internalCurve->at(i));
 	finalCurve->push_back(internalCurve->at(i + 1));
 
-	glm::vec3* a_int = internalCurve->at(i);
+	vec3* a_int = internalCurve->at(i);
 
 	// Ponto Interno 2
 	finalCurve->push_back(internalCurve->at(0));
 	finalCurve->push_back(internalCurve->at(1));
 
-	glm::vec3* b_int = internalCurve->at(0);
+	vec3* b_int = internalCurve->at(0);
 
 	// Ponto Externo 1
 	finalCurve->push_back(externalCurve->at(i));
 	finalCurve->push_back(externalCurve->at(i + 1));
 
-	glm::vec3* c_ext = externalCurve->at(i);
+	vec3* c_ext = externalCurve->at(i);
 
 	OBJWriter.addFaces(index, tamanhoCurvaExterna, ++faces, 3);
 
@@ -448,7 +448,7 @@ vector<glm::vec3*>* generateFinalCurve(vector<glm::vec3*>* internalCurve, vector
 	finalCurve->push_back(externalCurve->at(0));
 	finalCurve->push_back(externalCurve->at(1));
 
-	glm::vec3* d_ext = externalCurve->at(0);
+	vec3* d_ext = externalCurve->at(0);
 
 	// Ponto Externo 1
 	finalCurve->push_back(externalCurve->at(i));
@@ -459,14 +459,14 @@ vector<glm::vec3*>* generateFinalCurve(vector<glm::vec3*>* internalCurve, vector
 	// pega os vetores das normais
 	// y e z sao invertidos para modificar os eixos
 	// produto escalar
-	glm::vec3 ab = glm::vec3(a_int->x - b_int->x, a_int->z - b_int->z, a_int->y - b_int->y);
-	glm::vec3 ac = glm::vec3(a_int->x - c_ext->x, a_int->z - c_ext->z, a_int->y - c_ext->y);
-	glm::vec3 dc = glm::vec3(d_ext->x - c_ext->x, d_ext->z - c_ext->z, d_ext->y - c_ext->y);
-	glm::vec3 db = glm::vec3(d_ext->x - b_int->x, d_ext->z - b_int->z, d_ext->y - b_int->y);
+	vec3 ab = vec3(a_int->x - b_int->x, a_int->z - b_int->z, a_int->y - b_int->y);
+	vec3 ac = vec3(a_int->x - c_ext->x, a_int->z - c_ext->z, a_int->y - c_ext->y);
+	vec3 dc = vec3(d_ext->x - c_ext->x, d_ext->z - c_ext->z, d_ext->y - c_ext->y);
+	vec3 db = vec3(d_ext->x - b_int->x, d_ext->z - b_int->z, d_ext->y - b_int->y);
 
 	// prooduto vetorial
-	glm::vec3 normal_vec_abac = glm::cross(ab, ac);
-	glm::vec3 normal_vec_dbdc = glm::cross(db, dc);
+	vec3 normal_vec_abac = cross(ab, ac);
+	vec3 normal_vec_dbdc = cross(db, dc);
 
 	OBJWriter.addNormalExternalCurve(normal_vec_abac, normal_vec_dbdc);
 

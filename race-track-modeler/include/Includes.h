@@ -20,3 +20,4 @@
 #include "OBJWriter.h"
 
 using namespace std;
+using namespace glm;
