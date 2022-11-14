@@ -10,7 +10,7 @@ public:
 	
 	void createOBJFile() {
 		OBJFile.open("generated-files/pista.obj");
-		OBJFile << "mtllib " << "pista.mtl" << "\n" << endl;
+		OBJFile << "mtllib " << "mtls/pista.mtl" << "\n" << endl;
 		OBJFile << "g " << "road" << "\n" << endl;
 		OBJFile << "usemtl road\n" << endl;
 		OBJFile.close();

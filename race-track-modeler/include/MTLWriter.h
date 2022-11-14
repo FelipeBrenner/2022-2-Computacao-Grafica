@@ -6,7 +6,7 @@ class MTLWriter {
 public:
 	MTLWriter() {}
 
-	static void createMtlFile() {
+	static void createMTLFile() {
 		static ofstream mtlFile;
 		mtlFile.open("generated-files/pista.mtl");
 		mtlFile << "newmtl " << "road\n" << endl;

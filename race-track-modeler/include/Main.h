@@ -4,16 +4,17 @@
 #define PI 3.14159265359
 #define HALF_PI PI/2.0
 
-vector<vec3*>* selectedPoints = new vector<vec3*>();
+vector<vec3*>* controlPoints = new vector<vec3*>();
 vector<vec3*>* originalCurve = new vector<vec3*>();
 vector<vec3*>* externalCurve = new vector<vec3*>();
 vector<vec3*>* internalCurve = new vector<vec3*>();
 vector<vec3*>* finalCurve = new vector<vec3*>();
-vector<GLfloat>* selectedPointsFloat = new vector<GLfloat>();
+vector<GLfloat>* controlPointsFloat = new vector<GLfloat>();
 vector<GLfloat>* finalCurveFloat = new vector<GLfloat>();
 
 int setup();
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
+void writeObjMtl();
 
 int getZone(float x, float y);
 void setCoordinatesByZone(double& xpos, double& ypos);

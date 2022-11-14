@@ -15,12 +15,8 @@ int main() {
 
 	glfwSetMouseButtonCallback(window, mouse_button_callback);
 
-	MTLWriter MTLWriter;
-	MTLWriter.createMtlFile();
-
-	OBJWriter OBJWriter;
-	OBJWriter.createOBJFile();
-
+	writeObjMtl();
+	
 	while (!glfwWindowShouldClose(window)) {
 		glClearColor(0.6f, 0.6f, 0.6f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -31,15 +27,15 @@ int main() {
 		}
 
 		// renderiza os pontos
-		if (selectedPointsFloat->size() > 0) {
+		if (controlPointsFloat->size() > 0) {
 			glPointSize(10);
-			runBinds(vaoPoints, vboPoints, selectedPointsFloat, 0);
+			runBinds(vaoPoints, vboPoints, controlPointsFloat, 0);
 			glUniform4f(colorLoc, 0.0f, 0.0f, 0.0f, 1.0f);
-			glDrawArrays(GL_POINTS, 0, selectedPointsFloat->size() / 3);
+			glDrawArrays(GL_POINTS, 0, controlPointsFloat->size() / 3);
 		}
 
 		// renderiza a curva
-		if (selectedPointsFloat->size() > 6) {
+		if (controlPointsFloat->size() > 6) {
 			runBinds(vaoCurve, vboCurve, finalCurveFloat, 6 * sizeof(GLfloat));
 			glUniform4f(colorLoc, 1.0f, 1.0f, 1.0f, 1.0f);
 			glDrawArrays(GL_TRIANGLES, 0, finalCurveFloat->size() / 3);
@@ -89,6 +85,52 @@ int setup() {
 	colorLoc = glGetUniformLocation(coreShader.program, "inputColor");
 
 	return 0;
+}
+
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
+	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+		double xpos, ypos;
+		
+		// pega posicao
+		glfwGetCursorPos(window, &xpos, &ypos);
+
+		convertCoordinates(xpos, ypos);
+
+		// gera um novo vec3 com o ponto para a curva
+		vec3* point = new vec3(xpos, ypos, 0.0);
+		
+		// adiciona ao vetor de pontos selecionados
+		controlPoints->push_back(point);
+
+		cout << "- Ponto de Controle Computado:" << endl;
+		cout << "x = " << xpos << endl;
+		cout << "y = " << ypos << endl;
+
+		setCoordinatesByZone(xpos, ypos);
+
+		controlPointsFloat = convertVectorToFloat(controlPoints);
+
+		runBinds(vaoPoints, vboPoints, controlPointsFloat, 0);
+
+		if(controlPointsFloat->size() > 6) {
+			originalCurve = generateOriginalCurve(controlPoints);
+			externalCurve = generateSideCurve(originalCurve, true);
+			internalCurve = generateSideCurve(originalCurve, false);
+
+			// tamanho do array dividido por 2 - porque a metade desses valores e cor branca
+			externalCurveSize = externalCurve->size() / 2.0;
+			internalCurveSize = internalCurve->size() / 2.0;
+
+			OBJWriter OBJWriter;
+			OBJWriter.saveTextureValuesToOBJ();
+
+			finalCurve->clear();
+			finalCurve = generateFinalCurve(internalCurve, externalCurve);
+			finalCurveFloat = convertVectorToFloat(finalCurve);
+
+			runBinds(vaoCurve, vboCurve, finalCurveFloat, 6 * sizeof(GLfloat));
+		}
+	}
 }
 
 void runBinds(GLuint vao, GLuint vbo, vector<GLfloat>* vector, float size) {
@@ -157,54 +199,6 @@ int getZone(float x, float y) {
 	}
 	else {
 		return 2;
-	}
-}
-
-void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
-	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-		double xpos, ypos;
-		
-		// pega posicao
-		glfwGetCursorPos(window, &xpos, &ypos);
-
-		convertCoordinates(xpos, ypos);
-
-		// gera um novo vec3 com o ponto para a curva
-		vec3* point = new vec3(xpos, ypos, 0.0);
-		
-		// adiciona ao vetor de pontos selecionados
-		selectedPoints->push_back(point);
-
-		cout << "- Ponto de Controle Computado:" << endl;
-		cout << "x = " << xpos << endl;
-		cout << "y = " << ypos << endl;
-
-		setCoordinatesByZone(xpos, ypos);
-
-		selectedPointsFloat = convertVectorToFloat(selectedPoints);
-
-		runBinds(vaoPoints, vboPoints, selectedPointsFloat, 0);
-
-		cout << "finalCurveFloat->size(): " << finalCurveFloat->size() << endl;
-
-		if(selectedPointsFloat->size() > 6) {
-			originalCurve = generateOriginalCurve(selectedPoints);
-			externalCurve = generateSideCurve(originalCurve, true);
-			internalCurve = generateSideCurve(originalCurve, false);
-
-			// tamanho do array dividido por 2 - porque a metade desses valores e cor branca
-			externalCurveSize = externalCurve->size() / 2.0;
-			internalCurveSize = internalCurve->size() / 2.0;
-
-			OBJWriter OBJWriter;
-			OBJWriter.saveTextureValuesToOBJ();
-
-			finalCurve->clear();
-			finalCurve = generateFinalCurve(internalCurve, externalCurve);
-			finalCurveFloat = convertVectorToFloat(finalCurve);
-
-			runBinds(vaoCurve, vboCurve, finalCurveFloat, 6 * sizeof(GLfloat));
-		}
 	}
 }
 
@@ -441,4 +435,12 @@ vector<vec3*>* generateFinalCurve(vector<vec3*>* internalCurve, vector<vec3*>* e
 	OBJWriter.addNormalExternalCurve(normal_vec_abac, normal_vec_dbdc);
 
 	return finalCurve;
+}
+
+void writeObjMtl() {
+	MTLWriter MTLWriter;
+	MTLWriter.createMTLFile();
+
+	OBJWriter OBJWriter;
+	OBJWriter.createOBJFile();
 }
