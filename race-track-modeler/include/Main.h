@@ -13,8 +13,11 @@ vector<GLfloat>* controlPointsFloat = new vector<GLfloat>();
 vector<GLfloat>* finalCurveFloat = new vector<GLfloat>();
 
 int setup();
-void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
+void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
+void keyboardCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 void writeObjMtl();
+void runBinds(GLuint vao, GLuint vbo, vector<GLfloat>* vector, float size);
+float euclideanDistance(float xa, float ya, float xb, float yb);
 
 int getZone(float x, float y);
 void setCoordinatesByZone(double& xpos, double& ypos);
@@ -25,8 +28,7 @@ vector<vec3*>* generateOriginalCurve(vector<vec3*>* points);
 vector<vec3*>* generateSideCurve(vector<vec3*>* points, bool external);
 vector<vec3*>* generateFinalCurve(vector<vec3*>* internalCurve, vector<vec3*>* externalCurve);
 vector<GLfloat>* convertVectorToFloat(vector<vec3*>* points);
-
-void runBinds(GLuint vao, GLuint vbo, vector<GLfloat>* vector, float size);
+void generateCurve();
 
 GLFWwindow* window;
 GLint colorLoc;
@@ -38,3 +40,5 @@ const GLint WIDTH = 1200, HEIGHT = 900;
 int internalCurveSize = 0;
 int externalCurveSize = 0;
 int faces = 0;
+
+int selectedIndex = -1;

@@ -13,7 +13,8 @@ int main() {
 
 	glfwMakeContextCurrent(window);
 
-	glfwSetMouseButtonCallback(window, mouse_button_callback);
+	glfwSetMouseButtonCallback(window, mouseButtonCallback);
+	glfwSetKeyCallback(window, keyboardCallback);
 	
 	while (!glfwWindowShouldClose(window)) {
 		glClearColor(0.6f, 0.6f, 0.6f, 1.0f);
@@ -85,14 +86,12 @@ int setup() {
 	return 0;
 }
 
-void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
+void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
 		faces = 0;
 		writeObjMtl();
 
 		double xpos, ypos;
-		
-		// pega posicao
 		glfwGetCursorPos(window, &xpos, &ypos);
 
 		convertCoordinates(xpos, ypos);
@@ -113,25 +112,81 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 
 		runBinds(vaoPoints, vboPoints, controlPointsFloat, 0);
 
-		if(controlPointsFloat->size() > 6) {
-			originalCurve = generateOriginalCurve(controlPoints);
-			externalCurve = generateSideCurve(originalCurve, true);
-			internalCurve = generateSideCurve(originalCurve, false);
+		if(controlPointsFloat->size() > 6) generateCurve();
+	}
 
-			// tamanho do array dividido por 2 - porque a metade desses valores e cor branca
-			externalCurveSize = externalCurve->size() / 2.0;
-			internalCurveSize = internalCurve->size() / 2.0;
+	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
+		double xpos, ypos;
+		glfwGetCursorPos(window, &xpos, &ypos);
+		convertCoordinates(xpos, ypos);
+		int nearestIndex = 0;
+		float nearestIndexDistance = euclideanDistance(xpos, ypos, controlPoints->at(0)->x, controlPoints->at(0)->y);
+		for(int i = 1; i < controlPoints->size(); i++){
+			float distance = euclideanDistance(xpos, ypos, controlPoints->at(i)->x, controlPoints->at(i)->y);
+			if(distance < nearestIndexDistance){
+				nearestIndex = i;
+				nearestIndexDistance = distance;
+			}
+		}
+	
+		selectedIndex = nearestIndex;
+		cout << "selectedIndex " << selectedIndex << endl;	
+	}
+}
 
-			OBJWriter OBJWriter;
-			OBJWriter.saveTextureValuesToOBJ();
-
-			finalCurve->clear();
-			finalCurve = generateFinalCurve(internalCurve, externalCurve);
-			finalCurveFloat = convertVectorToFloat(finalCurve);
-
-			runBinds(vaoCurve, vboCurve, finalCurveFloat, 6 * sizeof(GLfloat));
+void keyboardCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+	if (key == GLFW_KEY_W && action == GLFW_PRESS) {
+		if(selectedIndex > -1) {
+			float z = controlPoints->at(selectedIndex)->z;
+			if (0.0f <= z && z <= 1.0f) {
+				z = z +  0.1f;
+				if(z > 1) z = 1.0;
+				controlPoints->at(selectedIndex)->z = z;
+				cout << "z aumentou = " << controlPoints->at(selectedIndex)->z << endl;
+			}
+			controlPointsFloat->clear();
+			controlPointsFloat = convertVectorToFloat(controlPoints);
+			if(controlPointsFloat->size() > 6) generateCurve();
 		}
 	}
+
+	if (key == GLFW_KEY_S && action == GLFW_PRESS) {
+		if(selectedIndex > -1) {	
+			float z = controlPoints->at(selectedIndex)->z;
+			if (0.0f <= z && z <= 1.0f) {
+				z = z - 0.1f;
+				if(z < 0) z = 0.0;
+				controlPoints->at(selectedIndex)->z = z;
+				cout << "z diminuiu = " << controlPoints->at(selectedIndex)->z << endl;
+			}
+			controlPointsFloat->clear();
+			controlPointsFloat = convertVectorToFloat(controlPoints);
+			if(controlPointsFloat->size() > 6) generateCurve();
+		}
+	}
+}
+
+float euclideanDistance(float xa, float ya, float xb, float yb) {
+	return sqrt(((xb - xa) * (xb - xa)) + ((yb - ya) * (yb - ya)));
+}
+
+void generateCurve() {
+	originalCurve = generateOriginalCurve(controlPoints);
+	externalCurve = generateSideCurve(originalCurve, true);
+	internalCurve = generateSideCurve(originalCurve, false);
+
+	// tamanho do array dividido por 2 - porque a metade desses valores e cor branca
+	externalCurveSize = externalCurve->size() / 2.0;
+	internalCurveSize = internalCurve->size() / 2.0;
+
+	OBJWriter OBJWriter;
+	OBJWriter.saveTextureValuesToOBJ();
+
+	finalCurve->clear();
+	finalCurve = generateFinalCurve(internalCurve, externalCurve);
+	finalCurveFloat = convertVectorToFloat(finalCurve);
+
+	runBinds(vaoCurve, vboCurve, finalCurveFloat, 6 * sizeof(GLfloat));
 }
 
 void runBinds(GLuint vao, GLuint vbo, vector<GLfloat>* vector, float size) {
@@ -242,7 +297,7 @@ vector<vec3*>* generateOriginalCurve(vector<vec3*>* points) {
 	vector<vec3*>* temp2 = new vector<vec3*>();
 
 	for (int i = 0; i < points->size(); i++) {
-		temp->push_back(new vec3(points->at(i)->x, points->at(i)->y, 0));
+		temp->push_back(new vec3(points->at(i)->x, points->at(i)->y, points->at(i)->z));
 	}
 
 	//cria mais um ponto para terminar a curva, com o ponto inicial
@@ -275,7 +330,12 @@ void calculateBSpline(vector<vec3*>* temp, vector<vec3*>* curvaCalculada, TXTWri
 				(-3 * pow(t, 3) + 3 * pow(t, 2) + 3 * t + 1) * temp->at(i + 2)->y +
 				pow(t, 3) * temp->at(i + 3)->y) / 6);
 
-			vec3* point = new vec3(x, y, 0.0);
+			GLfloat z = (((-1 * pow(t, 3) + 3 * pow(t, 2) - 3 * t + 1) * temp->at(i)->z +
+				(3 * pow(t, 3) - 6 * pow(t, 2) + 4) * temp->at(i + 1)->z +
+				(-3 * pow(t, 3) + 3 * pow(t, 2) + 3 * t + 1) * temp->at(i + 2)->z +
+				pow(t, 3) * temp->at(i + 3)->z) / 6);
+
+			vec3* point = new vec3(x, y, z);
 
 			curvaCalculada->push_back(point);
 
@@ -318,7 +378,7 @@ vector<vec3*>* generateSideCurve(vector<vec3*>* points, bool external) {
 		GLfloat offsetX = cos(angle) * 0.05;
 		GLfloat offsetY = sin(angle) * 0.05;
 
-		vec3* pontosGerados = new vec3(a->x + offsetX, a->y + offsetY, 0.0);
+		vec3* pontosGerados = new vec3(a->x + offsetX, a->y + offsetY, a->z);
 
 		calculatedCurve->push_back(pontosGerados);
 
@@ -391,8 +451,8 @@ vector<vec3*>* generateFinalCurve(vector<vec3*>* internalCurve, vector<vec3*>* e
 
 		index++;
 	}
-	cout << i << " , " << index << endl;
-	// O trecho abaixo liga os �ltimos pontos com primeiro os primeiros
+	
+	// O trecho abaixo liga os últimos pontos com primeiro os primeiros
 	// Ponto Interno 1
 	finalCurve->push_back(internalCurve->at(i));
 	finalCurve->push_back(internalCurve->at(i + 1));
