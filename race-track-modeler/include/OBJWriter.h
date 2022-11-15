@@ -65,4 +65,9 @@ public:
 		OBJFile << endl;
 		OBJFile.close();
 	}
+
+	void clearOBJ() {
+		OBJFile.open("generated-files/pista.obj", std::ofstream::out | std::ofstream::trunc);
+		OBJFile.close();
+	}
 };
