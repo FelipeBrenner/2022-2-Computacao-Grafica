@@ -266,14 +266,14 @@ void calculateBSpline(vector<vec3*>* temp, vector<vec3*>* curvaCalculada, TXTWri
 			float t = static_cast<float>(j) / 99.0;
 
 			GLfloat x = (((-1 * pow(t, 3) + 3 * pow(t, 2) - 3 * t + 1) * temp->at(i)->x +
-				(3 * pow(t, 3) - 6 * pow(t, 2) + 0 * t + 4) * temp->at(i + 1)->x +
+				(3 * pow(t, 3) - 6 * pow(t, 2) + 4) * temp->at(i + 1)->x +
 				(-3 * pow(t, 3) + 3 * pow(t, 2) + 3 * t + 1) * temp->at(i + 2)->x +
-				(1 * pow(t, 3) + 0 * pow(t, 2) + 0 * t + 0) * temp->at(i + 3)->x) / 6);
+				pow(t, 3) * temp->at(i + 3)->x) / 6);
 
 			GLfloat y = (((-1 * pow(t, 3) + 3 * pow(t, 2) - 3 * t + 1) * temp->at(i)->y +
-				(3 * pow(t, 3) - 6 * pow(t, 2) + 0 * t + 4) * temp->at(i + 1)->y +
+				(3 * pow(t, 3) - 6 * pow(t, 2) + 4) * temp->at(i + 1)->y +
 				(-3 * pow(t, 3) + 3 * pow(t, 2) + 3 * t + 1) * temp->at(i + 2)->y +
-				(1 * pow(t, 3) + 0 * pow(t, 2) + 0 * t + 0) * temp->at(i + 3)->y) / 6);
+				pow(t, 3) * temp->at(i + 3)->y) / 6);
 
 			vec3* point = new vec3(x, y, 0.0);
 
