@@ -88,9 +88,6 @@ int setup() {
 
 void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-		faces = 0;
-		writeObjMtl();
-
 		double xpos, ypos;
 		glfwGetCursorPos(window, &xpos, &ypos);
 
@@ -171,6 +168,9 @@ float euclideanDistance(float xa, float ya, float xb, float yb) {
 }
 
 void generateCurve() {
+	faces = 0;
+	writeObjMtl();
+
 	originalCurve = generateOriginalCurve(controlPoints);
 	externalCurve = generateSideCurve(originalCurve, true);
 	internalCurve = generateSideCurve(originalCurve, false);
@@ -341,7 +341,7 @@ void calculateBSpline(vector<vec3*>* temp, vector<vec3*>* curvaCalculada, TXTWri
 
 			TXTWriter.addPoint(point->x, point->y, point->z);
 
-			curvaCalculada->push_back(new vec3(0.0, 0.1, 1.0));
+			// curvaCalculada->push_back(new vec3(0.0, 0.1, 1.0));
 		}
 	}
 }
