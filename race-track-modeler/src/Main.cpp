@@ -87,9 +87,7 @@ int setup() {
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-		
-		OBJWriter OBJWriter_;
-		OBJWriter_.clearOBJ();
+		faces = 0;
 		writeObjMtl();
 
 		double xpos, ypos;

@@ -9,7 +9,7 @@ public:
 	OBJWriter() {}
 	
 	void createOBJFile() {
-		OBJFile.open("generated-files/pista.obj");
+		OBJFile.open("generated-files/pista.obj", ofstream::out | ofstream::trunc);
 		OBJFile << "mtllib " << "mtls/pista.mtl" << "\n" << endl;
 		OBJFile << "g " << "road" << "\n" << endl;
 		OBJFile << "usemtl road\n" << endl;
@@ -63,11 +63,6 @@ public:
 		OBJFile << "vt " << 0.0 << " " << 1.0 << endl;
 		OBJFile << "vt " << 0.0 << " " << 0.0 << endl;
 		OBJFile << endl;
-		OBJFile.close();
-	}
-
-	void clearOBJ() {
-		OBJFile.open("generated-files/pista.obj", std::ofstream::out | std::ofstream::trunc);
 		OBJFile.close();
 	}
 };
