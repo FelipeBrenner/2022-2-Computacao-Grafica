@@ -14,8 +14,6 @@ int main() {
 	glfwMakeContextCurrent(window);
 
 	glfwSetMouseButtonCallback(window, mouse_button_callback);
-
-	writeObjMtl();
 	
 	while (!glfwWindowShouldClose(window)) {
 		glClearColor(0.6f, 0.6f, 0.6f, 1.0f);
@@ -89,6 +87,11 @@ int setup() {
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+		
+		OBJWriter OBJWriter_;
+		OBJWriter_.clearOBJ();
+		writeObjMtl();
+
 		double xpos, ypos;
 		
 		// pega posicao
@@ -374,7 +377,7 @@ vector<vec3*>* generateFinalCurve(vector<vec3*>* internalCurve, vector<vec3*>* e
 		vec3 dc = vec3(c_ext->x - d_ext->x, c_ext->z - d_ext->z, c_ext->y - d_ext->y);
 		vec3 db = vec3(b_int->x - d_ext->x, b_int->z - d_ext->z, b_int->y - d_ext->y);
 
-		// prooduto vetorial
+		// produto vetorial
 		vec3 normal_vec_abac = cross(ac, ab);
 		vec3 normal_vec_dbdc = cross(db, dc);
 
