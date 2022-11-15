@@ -55,7 +55,6 @@ public:
 	}
 	
 	void saveTextureValuesToOBJ() {
-
 		OBJFile.open("generated-files/pista.obj", ios::app);
 		OBJFile << endl;
 		OBJFile << "vt " << 1.0 << " " << 1.0 << endl;

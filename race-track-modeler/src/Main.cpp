@@ -142,6 +142,14 @@ void runBinds(GLuint vao, GLuint vbo, vector<GLfloat>* vector, float size) {
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, size, NULL);
 }
 
+void writeObjMtl() {
+	MTLWriter MTLWriter;
+	MTLWriter.createMTLFile();
+
+	OBJWriter OBJWriter;
+	OBJWriter.createOBJFile();
+}
+
 vector<GLfloat>* convertVectorToFloat(vector<vec3*>* points) {
 	std:vector<GLfloat>* temp = new vector<GLfloat>();
 
@@ -436,12 +444,4 @@ vector<vec3*>* generateFinalCurve(vector<vec3*>* internalCurve, vector<vec3*>* e
 	OBJWriter.addNormalExternalCurve(normal_vec_abac, normal_vec_dbdc);
 
 	return finalCurve;
-}
-
-void writeObjMtl() {
-	MTLWriter MTLWriter;
-	MTLWriter.createMTLFile();
-
-	OBJWriter OBJWriter;
-	OBJWriter.createOBJFile();
 }
