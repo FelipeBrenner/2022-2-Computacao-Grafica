@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <chrono>
 #include <math.h>
+#include <time.h>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -31,6 +32,7 @@ public:
     static void mouse_callback(GLFWwindow* window, double xpos, double ypos);
     static void processInput(GLFWwindow* window);
     static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+    float calculateAngle(int indexA, int indexB);
 
     void Finish();
 

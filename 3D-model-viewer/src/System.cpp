@@ -16,6 +16,10 @@ float lastY = 1080 / 2.0;
 
 bool bulletWasFired = false, targetHasBeenHit = false;
 
+float curveScale = 20.0f;
+int carPosition = 1;
+vector<vec3*> curvePoints;
+
 float fov = 45.0f;
 
 enum RotationStatus {
@@ -39,7 +43,7 @@ int System::Init() {
     glfwGetFramebufferSize( window, &screenWidth, &screenHeight );
     
     if ( window == nullptr ) {
-        std::cout << "Failed to create GLFW Window" << std::endl;
+        cout << "Failed to create GLFW Window" << endl;
         glfwTerminate();
         
         return EXIT_FAILURE;
@@ -53,7 +57,7 @@ int System::Init() {
     glewExperimental = GL_TRUE;
     
     if ( glewInit() != GLEW_OK ) {
-        std::cout << "Failed no init GLEW." << std::endl;
+        cout << "Failed no init GLEW." << endl;
         return EXIT_FAILURE;
     }
     
@@ -66,10 +70,6 @@ int System::Init() {
     coreShader = Shader("shaders/core.vert", "shaders/core.frag");
     coreShader.Use();
 
-    // glEnable(GL_CULL_FACE);
-	// glCullFace(GL_BACK);
-	// glFrontFace(GL_CCW);
-
     return EXIT_SUCCESS;
 }
 
@@ -78,8 +78,8 @@ void System::Run(vector<Mesh*> meshs) {
     glfwSetCursorPosCallback (window, System::mouse_callback);
     glfwSetScrollCallback(window, System::scroll_callback);
 
-    CurveReader* curveReader = new CurveReader;
-    curveReader->read("scene/pista.txt");
+    CurveReader* curveReader = new CurveReader();
+    curvePoints = curveReader->read("scene/pista.txt", curveScale);
     
     for (Mesh* mesh : meshs) {
         for (Group* group : mesh->getGroups()) {
@@ -155,6 +155,8 @@ void System::Run(vector<Mesh*> meshs) {
             glBindVertexArray(0);
         }
     }
+
+    
     
     float angle = 0.0f;
     float camX = 1.0f;
@@ -164,6 +166,27 @@ void System::Run(vector<Mesh*> meshs) {
     glm::mat4 view;
 
     RotationStatus rotationStatus = none;
+
+    clock_t time = clock();
+
+    Mesh* bullet;
+    Mesh* target;
+    Mesh* curve;
+    Mesh* car;
+    for (Mesh* mesh : meshs) {
+        if(mesh->objectName == "bullet") bullet = mesh;
+        if(mesh->objectName == "target") target = mesh;
+        if(mesh->objectName == "curve") {
+            mesh->scaleModel(vec3(curveScale));
+            // coreShader.setMatrix4fv("model", mesh->model);
+            curve = mesh;
+        }
+        if(mesh->objectName == "car") {
+            mesh->translateModel(vec3(curvePoints.at(0)->x, curvePoints.at(0)->y*curveScale, curvePoints.at(0)->z));
+            // coreShader.setMatrix4fv("model", mesh->model);
+            car = mesh;
+        }
+    }
 
     while ( !glfwWindowShouldClose( window ) ) {
         
@@ -184,18 +207,6 @@ void System::Run(vector<Mesh*> meshs) {
         coreShader.setVec3("lightPos", vec3(100.0f, 1.0f, 100.0f));
         coreShader.setVec3("viewPos", vec3(camX, camY, camZ));
 
-        Mesh* bullet;
-        Mesh* target;
-        for (Mesh* mesh : meshs) {
-            if(mesh->objectName == "bullet") {
-                bullet = mesh;
-            };
-
-            if(mesh->objectName == "target") {
-                target = mesh;
-            }
-        }
-
         if(target->z * target->scale > bullet->z * bullet->scale) {
             bulletWasFired = false;
             meshs.clear();
@@ -204,6 +215,21 @@ void System::Run(vector<Mesh*> meshs) {
         for (Mesh* mesh : meshs) {
             if (mesh->objectName == "bullet" && bulletWasFired) {
                 mesh->translateModel(vec3(0.0f, 0.0f, -0.01f));
+            }
+
+            if (mesh->objectName == "car" && (clock() - time) / 1000000.0 > 0.01) {
+                float xDif = curvePoints.at(carPosition+1)->x - curvePoints.at(carPosition)->x;
+                float yDif = curvePoints.at(carPosition+1)->y - curvePoints.at(carPosition)->y;
+                float zDif = curvePoints.at(carPosition+1)->z - curvePoints.at(carPosition)->z;
+
+                mesh->translateModel(vec3(xDif, yDif, zDif));
+
+                // float angle = -curveReader->calculateAngle(curvePoints, carPosition);
+                // mesh->rotateModel(angle, vec3(0,1,0));
+                
+                carPosition++;
+                if(carPosition == curvePoints.size()-1) carPosition = 0;
+                time = clock();
             }
 
             coreShader.setMatrix4fv("model", mesh->model);
@@ -216,7 +242,7 @@ void System::Run(vector<Mesh*> meshs) {
                 glBindTexture(GL_TEXTURE_2D, 0);
             }   
         }
-        
+
         glfwSwapBuffers(window);
         processInput(window);
     }

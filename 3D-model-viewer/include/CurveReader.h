@@ -12,7 +12,7 @@ using namespace glm;
 class CurveReader {
 public:
     CurveReader();
-    vector<vec3*> curvePoints;
     
-    void read(string filename);
+    vector<vec3*> read(string filename, float scale);
+    float calculateAngle(vector<vec3*> curvePoints, int index);
 };
