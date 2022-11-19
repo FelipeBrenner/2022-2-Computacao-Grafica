@@ -1,7 +1,7 @@
 #include "Main.h"
 
 int main() {
-	if (setup() != 0){
+	if (setup() != 0) {
 		return EXIT_FAILURE;
 	}
 
@@ -17,7 +17,7 @@ int main() {
 	glfwSetKeyCallback(window, keyboardCallback);
 	
 	while (!glfwWindowShouldClose(window)) {
-		glClearColor(0.6f, 0.6f, 0.6f, 1.0f);
+		glClearColor(0.6f, 0.7f, 0.8f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glfwPollEvents();
 
@@ -25,12 +25,48 @@ int main() {
 			glfwSetWindowShouldClose(window, GLFW_TRUE);
 		}
 
+		if (upPressed) {
+			if(selectedIndex > -1) {
+				float z = controlPoints->at(selectedIndex)->z;
+				if (0.0f <= z && z <= 1.0f) {
+					z = z +  zIndexSensitivity;
+					if(z > 1) z = 1.0;
+					controlPoints->at(selectedIndex)->z = z;
+					cout << "z aumentou = " << controlPoints->at(selectedIndex)->z << endl;
+
+					for(int i=selectedIndex*3; i<selectedIndex*3+3; i++) controlPointsColor->at(i) = z;
+				}
+				controlPointsFloat->clear();
+				controlPointsFloat = convertVectorToFloat(controlPoints);
+				if(controlPointsFloat->size() > 6) generateCurve();
+			}
+		}
+
+		if (downPressed) {
+			if(selectedIndex > -1) {	
+				float z = controlPoints->at(selectedIndex)->z;
+				if (0.0f <= z && z <= 1.0f) {
+					z = z - zIndexSensitivity;
+					if(z < 0) z = 0.0;
+					controlPoints->at(selectedIndex)->z = z;
+					cout << "z diminuiu = " << controlPoints->at(selectedIndex)->z << endl;
+					for(int i=selectedIndex*3; i<selectedIndex*3+3; i++) controlPointsColor->at(i) = z;
+				}
+				controlPointsFloat->clear();
+				controlPointsFloat = convertVectorToFloat(controlPoints);
+				if(controlPointsFloat->size() > 6) generateCurve();
+			}
+		}
+
 		// renderiza os pontos
-		if (controlPointsFloat->size() > 0) {
-			glPointSize(10);
-			runBinds(vaoPoints, vboPoints, controlPointsFloat, 0);
-			glUniform4f(colorLoc, 0.0f, 0.0f, 0.0f, 1.0f);
-			glDrawArrays(GL_POINTS, 0, controlPointsFloat->size() / 3);
+		glPointSize(10);
+		for (int i=0; i < controlPointsFloat->size(); i+=3) {
+			vector<GLfloat>* point = new vector<GLfloat>();
+			for(int j=i; j<i+3; j++) point->push_back(controlPointsFloat->at(j));
+
+			runBinds(vaoPoints, vboPoints, point, 0);
+			glUniform4f(colorLoc, controlPointsColor->at(i), controlPointsColor->at(i+1), controlPointsColor->at(i+2), 1.0f);
+			glDrawArrays(GL_POINTS, 0, 1);
 		}
 
 		// renderiza a curva
@@ -107,6 +143,8 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
 
 		controlPointsFloat = convertVectorToFloat(controlPoints);
 
+		for(int i=0; i<3; i++) controlPointsColor->push_back(0.0);
+
 		runBinds(vaoPoints, vboPoints, controlPointsFloat, 0);
 
 		if(controlPointsFloat->size() > 6) generateCurve();
@@ -132,35 +170,10 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
 }
 
 void keyboardCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
-	if (key == GLFW_KEY_W && action == GLFW_PRESS) {
-		if(selectedIndex > -1) {
-			float z = controlPoints->at(selectedIndex)->z;
-			if (0.0f <= z && z <= 1.0f) {
-				z = z +  0.1f;
-				if(z > 1) z = 1.0;
-				controlPoints->at(selectedIndex)->z = z;
-				cout << "z aumentou = " << controlPoints->at(selectedIndex)->z << endl;
-			}
-			controlPointsFloat->clear();
-			controlPointsFloat = convertVectorToFloat(controlPoints);
-			if(controlPointsFloat->size() > 6) generateCurve();
-		}
-	}
-
-	if (key == GLFW_KEY_S && action == GLFW_PRESS) {
-		if(selectedIndex > -1) {	
-			float z = controlPoints->at(selectedIndex)->z;
-			if (0.0f <= z && z <= 1.0f) {
-				z = z - 0.1f;
-				if(z < 0) z = 0.0;
-				controlPoints->at(selectedIndex)->z = z;
-				cout << "z diminuiu = " << controlPoints->at(selectedIndex)->z << endl;
-			}
-			controlPointsFloat->clear();
-			controlPointsFloat = convertVectorToFloat(controlPoints);
-			if(controlPointsFloat->size() > 6) generateCurve();
-		}
-	}
+	if (key == GLFW_KEY_W && action == GLFW_PRESS) upPressed = true;
+	if (key == GLFW_KEY_S && action == GLFW_PRESS) downPressed = true;
+	if (key == GLFW_KEY_W && action == GLFW_RELEASE) upPressed = false;
+	if (key == GLFW_KEY_S && action == GLFW_RELEASE) downPressed = false;
 }
 
 float euclideanDistance(float xa, float ya, float xb, float yb) {
@@ -206,7 +219,7 @@ void writeObjMtl() {
 }
 
 vector<GLfloat>* convertVectorToFloat(vector<vec3*>* points) {
-	std:vector<GLfloat>* temp = new vector<GLfloat>();
+	vector<GLfloat>* temp = new vector<GLfloat>();
 
 	for (int i = 0; i < points->size(); i++) {
 		temp->push_back(points->at(i)->x);

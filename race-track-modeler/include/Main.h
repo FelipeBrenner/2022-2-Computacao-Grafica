@@ -9,6 +9,7 @@ vector<vec3*>* originalCurve = new vector<vec3*>();
 vector<vec3*>* externalCurve = new vector<vec3*>();
 vector<vec3*>* internalCurve = new vector<vec3*>();
 vector<vec3*>* finalCurve = new vector<vec3*>();
+vector<GLfloat>* controlPointsColor = new vector<GLfloat>();
 vector<GLfloat>* controlPointsFloat = new vector<GLfloat>();
 vector<GLfloat>* finalCurveFloat = new vector<GLfloat>();
 
@@ -36,9 +37,11 @@ GLuint vaoCurve, vboCurve;
 GLuint vaoPoints, vboPoints;
 
 const GLint WIDTH = 1200, HEIGHT = 900;
+const float zIndexSensitivity = 0.01f;
 
 int internalCurveSize = 0;
 int externalCurveSize = 0;
 int faces = 0;
 
 int selectedIndex = -1;
+static bool upPressed, downPressed;
