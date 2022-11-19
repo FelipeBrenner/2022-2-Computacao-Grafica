@@ -8,6 +8,7 @@ scale 1 1 1
 eliminable
 
 newobj
+name curve
 objpath objs/pista.obj
 translation 0 2 15
 angle 0

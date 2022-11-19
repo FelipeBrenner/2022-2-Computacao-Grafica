@@ -11,7 +11,7 @@ int main() {
     vector<Mesh*> meshs;
     
     SceneReader* sceneReader = new SceneReader();
-    sceneReader->read("Scene.txt");
+    sceneReader->read("scene/scene.txt");
 
     for(SceneObject* sceneObj : sceneReader->sceneObjects) {
         string meshPath = sceneObj->path;

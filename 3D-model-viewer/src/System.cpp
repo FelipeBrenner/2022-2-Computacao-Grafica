@@ -1,5 +1,6 @@
 #include "System.h"
 #include "Mesh.h"
+#include "CurveReader.h"
 
 const unsigned int SCR_WIDTH = 1920;
 const unsigned int SCR_HEIGHT = 1080;
@@ -76,6 +77,9 @@ void System::Run(vector<Mesh*> meshs) {
     glfwSetFramebufferSizeCallback(window, System::framebuffer_size_callback);
     glfwSetCursorPosCallback (window, System::mouse_callback);
     glfwSetScrollCallback(window, System::scroll_callback);
+
+    CurveReader* curveReader = new CurveReader;
+    curveReader->read("scene/pista.txt");
     
     for (Mesh* mesh : meshs) {
         for (Group* group : mesh->getGroups()) {

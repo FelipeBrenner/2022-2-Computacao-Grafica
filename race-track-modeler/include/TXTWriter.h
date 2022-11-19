@@ -9,7 +9,7 @@ public:
 	TXTWriter() {}
 
 	void createTXTFile() {
-		TXTFile.open("generated-files/pistaOriginal.txt");
+		TXTFile.open("generated-files/pista.txt");
 	}
 
 	void addPoint(float x, float y, float z){	
