@@ -34,7 +34,7 @@ int main() {
 					controlPoints->at(selectedIndex)->z = z;
 					cout << "z aumentou = " << controlPoints->at(selectedIndex)->z << endl;
 
-					for(int i=selectedIndex*3; i<selectedIndex*3+3; i++) controlPointsColor->at(i) = z;
+					controlPointsColor->at(selectedIndex) = new vec3(z,z,z);
 				}
 				controlPointsFloat->clear();
 				controlPointsFloat = convertVectorToFloat(controlPoints);
@@ -50,7 +50,7 @@ int main() {
 					if(z < 0) z = 0.0;
 					controlPoints->at(selectedIndex)->z = z;
 					cout << "z diminuiu = " << controlPoints->at(selectedIndex)->z << endl;
-					for(int i=selectedIndex*3; i<selectedIndex*3+3; i++) controlPointsColor->at(i) = z;
+					controlPointsColor->at(selectedIndex) = new vec3(z,z,z);
 				}
 				controlPointsFloat->clear();
 				controlPointsFloat = convertVectorToFloat(controlPoints);
@@ -65,7 +65,7 @@ int main() {
 			for(int j=i; j<i+3; j++) point->push_back(controlPointsFloat->at(j));
 
 			runBinds(vaoPoints, vboPoints, point, 0);
-			glUniform4f(colorLoc, controlPointsColor->at(i), controlPointsColor->at(i+1), controlPointsColor->at(i+2), 1.0f);
+			glUniform4f(colorLoc, controlPointsColor->at(i/3)->x, controlPointsColor->at(i/3)->y, controlPointsColor->at(i/3)->z, 1.0f);
 			glDrawArrays(GL_POINTS, 0, 1);
 		}
 
@@ -143,7 +143,7 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
 
 		controlPointsFloat = convertVectorToFloat(controlPoints);
 
-		for(int i=0; i<3; i++) controlPointsColor->push_back(0.0);
+		controlPointsColor->push_back(new vec3(0.0, 0.0, 0.0));
 
 		runBinds(vaoPoints, vboPoints, controlPointsFloat, 0);
 

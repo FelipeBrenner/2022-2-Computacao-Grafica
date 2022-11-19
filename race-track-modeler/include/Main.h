@@ -9,7 +9,7 @@ vector<vec3*>* originalCurve = new vector<vec3*>();
 vector<vec3*>* externalCurve = new vector<vec3*>();
 vector<vec3*>* internalCurve = new vector<vec3*>();
 vector<vec3*>* finalCurve = new vector<vec3*>();
-vector<GLfloat>* controlPointsColor = new vector<GLfloat>();
+vector<vec3*>* controlPointsColor = new vector<vec3*>();
 vector<GLfloat>* controlPointsFloat = new vector<GLfloat>();
 vector<GLfloat>* finalCurveFloat = new vector<GLfloat>();
 
