@@ -31,25 +31,45 @@ vector<vec3*> CurveReader::read(string filename, float scale) {
     return curvePoints;
 }
 
+// float CurveReader::calculateAngle(vector<vec3*> curvePoints, int index) {
+// 	vec3* a = curvePoints.at(index);
+// 	vec3* b;
+// 	vec3* c;
+
+// 	if (index == curvePoints.size() - 2) {
+// 		b = curvePoints.at(index+1);
+// 		c = curvePoints.at(0);
+// 	}
+//     else if (index == curvePoints.size() - 1) {
+// 		b = curvePoints.at(0);
+// 		c = curvePoints.at(1);
+// 	}
+// 	else {
+// 		b = curvePoints.at(index+1);
+// 		c = curvePoints.at(index+2);
+// 	}
+
+// 	float angle = atan(b->x - a->x, b->z - a->z) - atan(c->x - b->x, c->z - b->z);
+
+// 	return angle;
+// }
+
 float CurveReader::calculateAngle(vector<vec3*> curvePoints, int index) {
 	vec3* a = curvePoints.at(index);
 	vec3* b;
-	vec3* c;
 
-	if (index == curvePoints.size() - 2) {
-		b = curvePoints.at(index+1);
-		c = curvePoints.at(0);
-	}
-    else if (index == curvePoints.size() - 1) {
-		b = curvePoints.at(0);
-		c = curvePoints.at(1);
-	}
-	else {
-		b = curvePoints.at(index+1);
-		c = curvePoints.at(index+2);
-	}
+	if (index == curvePoints.size() - 1) b = curvePoints.at(0);
+	else b = curvePoints.at(index+1);
 
-	float angle = atan(b->x - a->x, b->z - a->z) - atan(c->x - b->x, c->z - b->z);
+    float dx = b->x - a->x;
+	float dy = b->y - a->y;
+
+    if (dx == 0 || dy == 0) {
+        dx = b->x - curvePoints.at(index - 1)->x;
+        dy = b->y - curvePoints.at(index - 1)->y;
+    }
+
+	float angle = atan(dy, dx);
 
 	return angle;
 }

@@ -18,9 +18,10 @@ int main() {
         Mesh* mesh = ObjReader::read(meshPath);
 
         mesh->objectName = sceneObj->name;
-        mesh->translateModel(sceneObj->initalTrans);
-        mesh->rotateModel(sceneObj->angle, sceneObj->initalRot);
-        mesh->scaleModel(sceneObj->initalEscale);
+        mesh->translation = sceneObj->initalTrans;
+        mesh->angle = sceneObj->angle;
+        mesh->rotation = sceneObj->initalRot;
+        mesh->scale = sceneObj->initalEscale;
         meshs.push_back(mesh);
     }
 

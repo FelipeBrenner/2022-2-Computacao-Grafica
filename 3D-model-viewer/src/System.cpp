@@ -156,8 +156,6 @@ void System::Run(vector<Mesh*> meshs) {
         }
     }
 
-    
-    
     float angle = 0.0f;
     float camX = 1.0f;
     float camY = 0.5f;
@@ -177,15 +175,10 @@ void System::Run(vector<Mesh*> meshs) {
         if(mesh->objectName == "bullet") bullet = mesh;
         if(mesh->objectName == "target") target = mesh;
         if(mesh->objectName == "curve") {
-            mesh->scaleModel(vec3(curveScale));
-            // coreShader.setMatrix4fv("model", mesh->model);
+            mesh->scale = vec3(curveScale);
             curve = mesh;
         }
-        if(mesh->objectName == "car") {
-            mesh->translateModel(vec3(curvePoints.at(0)->x, curvePoints.at(0)->y*curveScale, curvePoints.at(0)->z));
-            // coreShader.setMatrix4fv("model", mesh->model);
-            car = mesh;
-        }
+        if(mesh->objectName == "car") car = mesh;
     }
 
     while ( !glfwWindowShouldClose( window ) ) {
@@ -207,32 +200,35 @@ void System::Run(vector<Mesh*> meshs) {
         coreShader.setVec3("lightPos", vec3(100.0f, 1.0f, 100.0f));
         coreShader.setVec3("viewPos", vec3(camX, camY, camZ));
 
-        if(target->z * target->scale > bullet->z * bullet->scale) {
-            bulletWasFired = false;
-            meshs.clear();
-        }
+        // if(target->z * target->scale > bullet->z * bullet->scale) {
+        //     bulletWasFired = false;
+        //     meshs.clear();
+        // }
         
         for (Mesh* mesh : meshs) {
-            if (mesh->objectName == "bullet" && bulletWasFired) {
-                mesh->translateModel(vec3(0.0f, 0.0f, -0.01f));
+            // if (mesh->objectName == "bullet" && bulletWasFired) {
+            //     mesh->translateModel(vec3(0.0f, 0.0f, -0.01f));
+            // }
+
+            if(mesh->objectName == "curve") {
+                mesh->scale = vec3(curveScale);
             }
 
             if (mesh->objectName == "car" && (clock() - time) / 1000000.0 > 0.01) {
-                float xDif = curvePoints.at(carPosition+1)->x - curvePoints.at(carPosition)->x;
-                float yDif = curvePoints.at(carPosition+1)->y - curvePoints.at(carPosition)->y;
-                float zDif = curvePoints.at(carPosition+1)->z - curvePoints.at(carPosition)->z;
-
-                mesh->translateModel(vec3(xDif, yDif, zDif));
-
-                // float angle = -curveReader->calculateAngle(curvePoints, carPosition);
-                // mesh->rotateModel(angle, vec3(0,1,0));
+                // mesh->angle = -curveReader->calculateAngle(curvePoints, carPosition);
+                mesh->translation = vec3(curvePoints.at(carPosition)->x, curvePoints.at(carPosition)->y*curveScale, curvePoints.at(carPosition)->z);
                 
                 carPosition++;
                 if(carPosition == curvePoints.size()-1) carPosition = 0;
                 time = clock();
             }
 
-            coreShader.setMatrix4fv("model", mesh->model);
+            mat4 model = mat4(1);
+            model = translate(model, mesh->translation);
+            model = scale(model, mesh->scale);
+            model = rotate(model, mesh->angle, mesh->rotation);
+
+            coreShader.setMatrix4fv("model", model);
 
             for (Group* group : mesh->getGroups()) {
                 coreShader.UseTexture(group->getName());
@@ -240,7 +236,7 @@ void System::Run(vector<Mesh*> meshs) {
                 glDrawArrays(GL_TRIANGLES, 0, group->getNumVertices());
                 glBindVertexArray(0);
                 glBindTexture(GL_TEXTURE_2D, 0);
-            }   
+            }
         }
 
         glfwSwapBuffers(window);

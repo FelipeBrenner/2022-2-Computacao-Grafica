@@ -29,13 +29,12 @@ public:
     int addNormal(vec3*);
     int addGroup(Group*);
     int addMaterial(string name, Material* material);
-    void translateModel(vec3 initialTrans);
-    void scaleModel(vec3 initalScale);
-    void rotateModel(float angle, vec3 initalRotation);
-    glm::mat4 model;
     
     string objectName;
-    float x, y, z, scale;
+    vec3 translation;
+    vec3 scale;
+    vec3 rotation;
+    float angle;
     
     vector<Group*> getGroups() {
         return groups;
