@@ -9,7 +9,7 @@ eliminable
 
 newobj
 name car
-objpath objs/trout.obj
+objpath objs/bmw.obj
 translation 0 0 0
 angle 0
 rotation 0 1 0 
