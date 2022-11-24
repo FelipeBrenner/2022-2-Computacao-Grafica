@@ -66,42 +66,60 @@ Mesh* ObjReader::read(string filename) {
 
 void ObjReader::face(Group* group, stringstream& sline) {
     Face* face = new Face();
+    vector<vec3> verticesInfo;
+
     string token;
-    int i = 0;
-    
     while (getline(sline, token, ' ')) {
+
         if (token.empty()) {
             continue;
         }
 
-        if (i++ > 2) {
-            Face* face2 = face;
-            face = new Face();
-            face->push(face2->getVertices()[0], face2->getNormais()[0], face2->getTextures()[0]);
-            face->push(face2->getVertices()[2], face2->getNormais()[2], face2->getTextures()[2]);
-            group->addFace(face2);
-        }
-
         stringstream stoken(token);
-        
+
         string aux;
         getline(stoken, aux, '/');
         int v;
-        if (aux.empty()) v = -1;
+        if (aux.empty()) v = 0;
         else v = stoi(aux);
 
         getline(stoken, aux, '/');
         int t;
-        if (aux.empty()) t = -1;
+        if (aux.empty()) t = 0;
         else t = stoi(aux);
 
         getline(stoken, aux, '/');
         int n;
-        if (aux.empty()) n = -1;
+        if (aux.empty()) n = 0;
         else n = stoi(aux);
 
-        face->push(v, n, t);
+        vec3 verticeInfo = vec3(v, n, t);
+        verticesInfo.push_back(verticeInfo);
+
     }
-    
-    group->addFace(face);
+    int i = 0;
+    int j = 0;
+    int ignore = -1;
+    int inFace = 0;
+
+    while (i < verticesInfo.size() - 2) {
+
+        for (vec3& verticeInfo : verticesInfo) {
+            if (j > 0 and j <= ignore) {
+                j++;
+                continue;
+            }
+            face->push(verticesInfo[j].x, verticesInfo[j].y, verticesInfo[j].z);
+            inFace++;
+            if (inFace > 2) break;
+            j++;
+        }
+        inFace = 0;
+        ignore = j - 1;
+        j = 0;
+        i++;
+        group->addFace(face);
+        Face* face = new Face();
+    }
+
 }

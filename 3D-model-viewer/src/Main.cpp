@@ -11,17 +11,16 @@ int main() {
     vector<Mesh*> meshs;
     
     SceneReader* sceneReader = new SceneReader();
-    sceneReader->read("scene/scene.txt");
+    sceneReader->read("scene.txt");
 
     for(SceneObject* sceneObj : sceneReader->sceneObjects) {
         string meshPath = sceneObj->path;
         Mesh* mesh = ObjReader::read(meshPath);
 
         mesh->objectName = sceneObj->name;
-        mesh->translation = sceneObj->initalTrans;
-        mesh->angle = sceneObj->angle;
-        mesh->rotation = sceneObj->initalRot;
-        mesh->scale = sceneObj->initalEscale;
+        mesh->translateModel(sceneObj->initalTrans);
+        mesh->rotateModel(sceneObj->angle, sceneObj->initalRot);
+        mesh->scaleModel(sceneObj->initalEscale);
         meshs.push_back(mesh);
     }
 
