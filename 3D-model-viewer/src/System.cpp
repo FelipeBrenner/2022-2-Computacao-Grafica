@@ -214,18 +214,19 @@ void System::Run(vector<Mesh*> meshs) {
                 mesh->scale = vec3(curveScale);
             }
 
-            if (mesh->objectName == "car" && (clock() - time) / 1000000.0 > 0.01) {
-                // mesh->angle = -curveReader->calculateAngle(curvePoints, carPosition);
+            if (mesh->objectName == "car" && (clock() - time) / 1000000.0 > 0.03) {
+                mesh->angle = curveReader->calculateAngle(curvePoints, carPosition);
+                
                 mesh->translation = vec3(curvePoints.at(carPosition)->x, curvePoints.at(carPosition)->y*curveScale, curvePoints.at(carPosition)->z);
                 
                 carPosition++;
-                if(carPosition == curvePoints.size()-1) carPosition = 0;
+                if(carPosition == curvePoints.size()-5) carPosition = 0;
                 time = clock();
             }
 
             mat4 model = mat4(1);
-            model = translate(model, mesh->translation);
             model = scale(model, mesh->scale);
+            model = translate(model, mesh->translation);
             model = rotate(model, mesh->angle, mesh->rotation);
 
             coreShader.setMatrix4fv("model", model);

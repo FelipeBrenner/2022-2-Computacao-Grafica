@@ -9,6 +9,9 @@
 using namespace std;
 using namespace glm;
 
+#define PI 3.14159265359
+#define HALF_PI PI/2.0
+
 class CurveReader {
 public:
     CurveReader();
