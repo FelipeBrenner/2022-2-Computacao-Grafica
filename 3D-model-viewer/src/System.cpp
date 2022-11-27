@@ -221,20 +221,6 @@ void System::Run(vector<Mesh*> meshs) {
 
     clock_t time = clock();
 
-    Mesh* bullet = new Mesh();
-    Mesh* target = new Mesh();
-    Mesh* curve;
-    Mesh* car;
-    for (Mesh* mesh : meshs) {
-        if(mesh->objectName == "bullet") bullet = mesh;
-        if(mesh->objectName == "target") target = mesh;
-        if(mesh->objectName == "curve") {
-            mesh->scale = vec3(curveScale);
-            curve = mesh;
-        }
-        if(mesh->objectName == "car") car = mesh;
-    }
-
     while ( !glfwWindowShouldClose( window ) ) {
         
         glfwPollEvents();
@@ -270,18 +256,6 @@ void System::Run(vector<Mesh*> meshs) {
                         bool hasCollidedZ = mesh->translation.z + mesh->zHitbox > otherMesh->translation.z - otherMesh->zHitbox && mesh->translation.z - mesh->zHitbox < otherMesh->translation.z + otherMesh->zHitbox;
 
                         if (hasCollidedX && hasCollidedY && hasCollidedZ) {
-                            cout << "mesh->translation.x = " << mesh->translation.x << endl;
-                            cout << "mesh->translation.y = " << mesh->translation.y << endl;
-                            cout << "mesh->translation.z = " << mesh->translation.z << endl;
-                            cout << "mesh->xHitbox = " << mesh->xHitbox << endl;
-                            cout << "mesh->yHitbox = " << mesh->yHitbox << endl;
-                            cout << "mesh->zHitbox = " << mesh->zHitbox << endl;
-                            cout << "otherMesh->translation.x = " << otherMesh->translation.x << endl;
-                            cout << "otherMesh->translation.y = " << otherMesh->translation.y << endl;
-                            cout << "otherMesh->translation.z = " << otherMesh->translation.z << endl;
-                            cout << "otherMesh->xHitbox = " << otherMesh->xHitbox << endl;
-                            cout << "otherMesh->yHitbox = " << otherMesh->yHitbox << endl;
-                            cout << "otherMesh->zHitbox = " << otherMesh->zHitbox << endl;
                             mesh->eliminated = true;
                         }
                     }
