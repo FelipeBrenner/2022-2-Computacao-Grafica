@@ -85,13 +85,14 @@ void System::Run(vector<Mesh*> meshs) {
         for (Group* group : mesh->getGroups()) {
             Material* material = mesh->getMaterial(group->getMaterial());
             coreShader.LoadTexture(strdup(material->getTexture().c_str()), strdup("texture1"), group->getName());
-            coreShader.setVec3("materialAmbient", vec3(material->getAmbient()->x, material->getAmbient()->y, material->getAmbient()->z));
-            coreShader.setVec3("materialDiffuse", vec3(material->getDiffuse()->x, material->getDiffuse()->y, material->getDiffuse()->z));
-            // coreShader.setVec3("materialSpecular", vec3(material->getSpecular()->x, material->getSpecular()->y, material->getSpecular()->z));
-            coreShader.setFloat("materialShininess", material->getShininess());
             vector<float> vertices;
             vector<float> textures;
             vector<float> normais;
+            vector<float> ambientLight;
+            vector<float> diffuseLight;
+            vector<float> specularLight;
+            vector<float> shininessLight;
+
             
             for (Face* face : group->getFaces()) {
                 for (int verticeID : face->getVertices()) {
@@ -100,6 +101,26 @@ void System::Run(vector<Mesh*> meshs) {
                         vertices.push_back(vertice->x);
                         vertices.push_back(vertice->y);
                         vertices.push_back(vertice->z);
+
+                        ambientLight.push_back(material->getAmbient()->x);
+                        ambientLight.push_back(material->getAmbient()->y);
+                        ambientLight.push_back(material->getAmbient()->z);
+
+                        diffuseLight.push_back(material->getDiffuse()->x);
+                        diffuseLight.push_back(material->getDiffuse()->y);
+                        diffuseLight.push_back(material->getDiffuse()->z);
+
+                        /*
+                        specularLight.push_back(material->getSpecular()->x);
+                        specularLight.push_back(material->getSpecular()->y);
+                        specularLight.push_back(material->getSpecular()->z);
+                        */
+                        specularLight.push_back(0.0f);
+                        specularLight.push_back(0.0f);
+                        specularLight.push_back(0.0f);
+
+                        shininessLight.push_back(material->getShininess());
+
                     }
                     
                     group->increaseNumVertices();
@@ -123,11 +144,16 @@ void System::Run(vector<Mesh*> meshs) {
                 }
             }
             
-            GLuint VBOvertices, VBOtextures, VBOnormais, VAO;
+            GLuint VBOvertices, VBOtextures, VBOnormais, VBOamb, VBOdiff, VBOspec, VBOshin, VAO;
             glGenVertexArrays(1, &VAO);
             glGenBuffers(1, &VBOvertices);
             glGenBuffers(1, &VBOtextures);
             glGenBuffers(1, &VBOnormais);
+            glGenBuffers(1, &VBOamb);
+            glGenBuffers(1, &VBOdiff);
+            glGenBuffers(1, &VBOspec);
+            glGenBuffers(1, &VBOshin);
+
             glBindVertexArray(VAO);
             
             // Vertices
@@ -150,6 +176,34 @@ void System::Run(vector<Mesh*> meshs) {
 
             glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
             glEnableVertexAttribArray(2);
+
+            // Ambient
+            glBindBuffer(GL_ARRAY_BUFFER, VBOamb);
+            glBufferData(GL_ARRAY_BUFFER, ambientLight.size() * sizeof(float), ambientLight.data(), GL_STATIC_DRAW);
+
+            glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
+            glEnableVertexAttribArray(3);
+
+            // Diffuse
+            glBindBuffer(GL_ARRAY_BUFFER, VBOdiff);
+            glBufferData(GL_ARRAY_BUFFER, diffuseLight.size() * sizeof(float), diffuseLight.data(), GL_STATIC_DRAW);
+
+            glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
+            glEnableVertexAttribArray(4);
+
+            // Specular
+            glBindBuffer(GL_ARRAY_BUFFER, VBOspec);
+            glBufferData(GL_ARRAY_BUFFER, specularLight.size() * sizeof(float), specularLight.data(), GL_STATIC_DRAW);
+
+            glVertexAttribPointer(5, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
+            glEnableVertexAttribArray(5);
+
+            // Shininess
+            glBindBuffer(GL_ARRAY_BUFFER, VBOshin);
+            glBufferData(GL_ARRAY_BUFFER, shininessLight.size() * sizeof(float), shininessLight.data(), GL_STATIC_DRAW);
+
+            glVertexAttribPointer(6, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat), (GLvoid*)0);
+            glEnableVertexAttribArray(6);
             
             group->setVAO(&VAO);
             glBindVertexArray(0);
@@ -242,7 +296,7 @@ void System::Run(vector<Mesh*> meshs) {
                 // mesh->xAngle = curveReader->calculateAngle(curvePoints, carPosition, 'x');
                 mesh->yAngle = curveReader->calculateAngle(curvePoints, carPosition, 'y');
                 // mesh->zAngle = curveReader->calculateAngle(curvePoints, carPosition, 'z');
-                
+
                 mesh->translation = vec3(curvePoints.at(carPosition)->x, curvePoints.at(carPosition)->y, curvePoints.at(carPosition)->z);
                 
                 carPosition++;
@@ -265,7 +319,7 @@ void System::Run(vector<Mesh*> meshs) {
                 glDrawArrays(GL_TRIANGLES, 0, group->getNumVertices());
                 glBindVertexArray(0);
                 glBindTexture(GL_TEXTURE_2D, 0);
-            }
+            }   
         }
 
         for (int i=0; i<meshs.size(); i++) {
