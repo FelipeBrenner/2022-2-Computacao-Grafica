@@ -34,7 +34,9 @@ public:
     vec3 translation;
     vec3 scale;
     vec3 rotation;
-    float angle;
+    float xAngle;
+    float yAngle;
+    float zAngle;
     
     vector<Group*> getGroups() {
         return groups;

@@ -397,9 +397,6 @@ vector<vec3*>* generateSideCurve(vector<vec3*>* points, bool external) {
 
 		// adiciona pro obj
 		OBJWriter.addPointsFinalCurve(pontosGerados->x, pontosGerados->y, pontosGerados->z);
-
-		// adiciona cor branca para curva
-		calculatedCurve->push_back(new vec3(0.0, 0.1, 1.0));
 	}
 
 	return calculatedCurve;

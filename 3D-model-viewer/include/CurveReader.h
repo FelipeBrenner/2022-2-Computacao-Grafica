@@ -17,5 +17,5 @@ public:
     CurveReader();
     
     vector<vec3*> read(string filename, float scale);
-    float calculateAngle(vector<vec3*> curvePoints, int index);
+    float calculateAngle(vector<vec3*> curvePoints, int index, char coordinate);
 };

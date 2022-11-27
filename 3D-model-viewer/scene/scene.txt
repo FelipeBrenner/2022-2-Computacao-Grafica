@@ -2,24 +2,16 @@ newobj
 name target
 objpath objs/Pikachu.obj
 translation 0 0 -30
-angle 2
-rotation 0 1 0 
+angle 0
 scale 1 1 1
 eliminable
 
 newobj
 name car
 objpath objs/bmw.obj
-translation 0 0 0
-angle 0
-rotation 0 1 0 
 scale 1 1 1
 eliminable
 
 newobj
 name curve
 objpath objs/pista.obj
-translation 0 0 0
-angle 0
-rotation 0 1 0
-scale 1 1 1

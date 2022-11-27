@@ -22,7 +22,7 @@ vector<vec3*> CurveReader::read(string filename, float scale) {
         if (identifier == "v") {
             float x, y, z;
             sline >> x >> y >> z;
-            curvePoints.push_back(new vec3(x * scale, y, z * scale));
+            curvePoints.push_back(new vec3(x * scale, y * scale, z * scale));
         }
     }
 
@@ -31,27 +31,55 @@ vector<vec3*> CurveReader::read(string filename, float scale) {
     return curvePoints;
 }
 
-float CurveReader::calculateAngle(vector<vec3*> curvePoints, int index) {
+float CurveReader::calculateAngle(vector<vec3*> curvePoints, int index, char coordinate) {
 	vec3* a = curvePoints.at(index);
 	vec3* b;
 
-	if (index == curvePoints.size() - 5) b = curvePoints.at(0);
-	else b = curvePoints.at(index+5);
+	if (index == curvePoints.size() - 2) b = curvePoints.at(0);
+	else b = curvePoints.at(index + 2);
 
-    float dx = b->x - a->x;
-	float dz = b->z - a->z;
+    float dx, dy, dz, angle;
 
-    if (dx == 0 || dz == 0) {
-        dx = b->x - curvePoints.at(index - 5)->x;
-        dz = b->z - curvePoints.at(index - 5)->z;
+    switch(coordinate) {
+        case 'x':
+            dz = b->z - a->z;
+            dy = b->y - a->y;
+
+            if (dz == 0 || dy == 0) {
+                dz = b->z - curvePoints.at(index - 2)->z;
+                dy = b->y - curvePoints.at(index - 2)->y;
+            }
+
+            angle = PI - atan(dy, dz);
+
+            break;
+        case 'y':
+            dx = b->x - a->x;
+            dz = b->z - a->z;
+
+            if (dx == 0 || dz == 0) {
+                dx = b->x - curvePoints.at(index - 2)->x;
+                dz = b->z - curvePoints.at(index - 2)->z;
+            }
+
+            angle = 2 * PI - atan(dz, dx);
+
+            break;
+        case 'z':
+            dx = b->x - a->x;
+            dy = b->y - a->y;
+
+            if (dx == 0 || dy == 0) {
+                dx = b->x - curvePoints.at(index - 2)->x;
+                dy = b->y - curvePoints.at(index - 2)->y;
+            }
+
+            cout << "dx = " << dx << " dy = " << dy << endl;
+
+            angle = PI - atan(dy, dx);
+
+            break;
     }
 
-	float angle = atan(dz, dx);
-
-    // if (angle > 0) angle += HALF_PI;
-	// else angle -= HALF_PI;
-
-    cout << "angle: " << angle << " PI - angle: " << PI - angle << endl;
-
-	return 2*PI - angle;
+	return angle;
 }

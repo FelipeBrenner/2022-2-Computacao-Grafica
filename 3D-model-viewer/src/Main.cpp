@@ -19,7 +19,7 @@ int main() {
 
         mesh->objectName = sceneObj->name;
         mesh->translation = sceneObj->initalTrans;
-        mesh->angle = sceneObj->angle;
+        mesh->yAngle = sceneObj->angle;
         mesh->rotation = sceneObj->initalRot;
         mesh->scale = sceneObj->initalEscale;
         meshs.push_back(mesh);
