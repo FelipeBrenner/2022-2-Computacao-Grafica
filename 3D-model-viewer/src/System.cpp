@@ -14,7 +14,7 @@ float pitchVariable = 0.0f;
 float lastX = 1920 / 2.0;
 float lastY = 1080 / 2.0;
 
-bool bulletWasFired = false, targetHasBeenHit = false;
+bool bulletWasFired = false;
 
 float curveScale = 20.0f;
 int carPosition = 1;
@@ -200,11 +200,6 @@ void System::Run(vector<Mesh*> meshs) {
         coreShader.setVec3("lightPos", vec3(100.0f, 1.0f, 100.0f));
         coreShader.setVec3("viewPos", vec3(camX, camY, camZ));
 
-        // if(target->z * target->scale > bullet->z * bullet->scale) {
-        //     bulletWasFired = false;
-        //     meshs.clear();
-        // }
-
         Mesh* meshsAfterCollision;
         
         for (Mesh* mesh : meshs) {
@@ -221,6 +216,18 @@ void System::Run(vector<Mesh*> meshs) {
                         bool hasCollidedZ = mesh->translation.z + mesh->zHitbox > otherMesh->translation.z - otherMesh->zHitbox && mesh->translation.z - mesh->zHitbox < otherMesh->translation.z + otherMesh->zHitbox;
 
                         if (hasCollidedX && hasCollidedY && hasCollidedZ) {
+                            cout << "mesh->translation.x = " << mesh->translation.x << endl;
+                            cout << "mesh->translation.y = " << mesh->translation.y << endl;
+                            cout << "mesh->translation.z = " << mesh->translation.z << endl;
+                            cout << "mesh->xHitbox = " << mesh->xHitbox << endl;
+                            cout << "mesh->yHitbox = " << mesh->yHitbox << endl;
+                            cout << "mesh->zHitbox = " << mesh->zHitbox << endl;
+                            cout << "otherMesh->translation.x = " << otherMesh->translation.x << endl;
+                            cout << "otherMesh->translation.y = " << otherMesh->translation.y << endl;
+                            cout << "otherMesh->translation.z = " << otherMesh->translation.z << endl;
+                            cout << "otherMesh->xHitbox = " << otherMesh->xHitbox << endl;
+                            cout << "otherMesh->yHitbox = " << otherMesh->yHitbox << endl;
+                            cout << "otherMesh->zHitbox = " << otherMesh->zHitbox << endl;
                             mesh->eliminated = true;
                         }
                     }
@@ -244,11 +251,11 @@ void System::Run(vector<Mesh*> meshs) {
             }
 
             mat4 model = mat4(1);
-            model = scale(model, mesh->scale);
             model = translate(model, mesh->translation);
             // model = rotate(model, mesh->xAngle, vec3(1,0,0));
             model = rotate(model, mesh->yAngle, vec3(0,1,0));
             // model = rotate(model, mesh->zAngle, vec3(0,0,1));
+            model = scale(model, mesh->scale);
 
             coreShader.setMatrix4fv("model", model);
 

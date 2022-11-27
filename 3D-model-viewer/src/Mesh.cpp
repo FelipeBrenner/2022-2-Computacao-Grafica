@@ -2,6 +2,9 @@
  
 Mesh::Mesh() {
     eliminated = false;
+    xHitbox = 0;
+    yHitbox = 0;
+    zHitbox = 0;
 }
 
 glm::vec3* Mesh::vertice(int id) {

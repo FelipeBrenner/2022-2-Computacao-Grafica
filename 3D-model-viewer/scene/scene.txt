@@ -1,13 +1,6 @@
 newobj
-objpath objs/Pikachu.obj
-translation 0 0 -30
-angle 0
-scale 1 1 1
-
-newobj
 objpath objs/sphere.obj
 translation -13.91672 10.63812 -2.2038
-angle 0
 scale 1 1 1
 eliminable
 
