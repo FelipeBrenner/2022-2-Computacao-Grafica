@@ -37,6 +37,12 @@ public:
     float xAngle;
     float yAngle;
     float zAngle;
+
+    float xHitbox;
+    float yHitbox;
+    float zHitbox;
+    bool eliminable;
+    bool eliminated;
     
     vector<Group*> getGroups() {
         return groups;

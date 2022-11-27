@@ -27,6 +27,9 @@ Mesh* ObjReader::read(string filename) {
         else if (temp == "v") {
             sline >> x >> y >> z;
             mesh->addVertice(new glm::vec3(x, y, z));
+            if(abs(x) > mesh->xHitbox) mesh->xHitbox = abs(x);
+            if(abs(y) > mesh->yHitbox) mesh->yHitbox = abs(y);
+            if(abs(z) > mesh->zHitbox) mesh->zHitbox = abs(z);
         }
         else if (temp == "vt") {
             sline >> x >> y;

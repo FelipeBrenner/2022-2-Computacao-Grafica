@@ -64,7 +64,7 @@ void SceneReader::read(string filename) {
             sceneObject->initalEscale = vec3(stof(scalex), stof(scaley), stof(scalez));
         }
         else if (identifier == "eliminable") {
-
+            sceneObject->eliminable = true;
         }
     }
 

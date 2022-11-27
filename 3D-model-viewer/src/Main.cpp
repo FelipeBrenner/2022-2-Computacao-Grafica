@@ -22,6 +22,7 @@ int main() {
         mesh->yAngle = sceneObj->angle;
         mesh->rotation = sceneObj->initalRot;
         mesh->scale = sceneObj->initalEscale;
+        mesh->eliminable = sceneObj->eliminable;
         meshs.push_back(mesh);
     }
 

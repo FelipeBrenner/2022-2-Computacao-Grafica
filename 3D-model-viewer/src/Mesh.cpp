@@ -1,6 +1,8 @@
 #include "Mesh.h"
  
-Mesh::Mesh() {}
+Mesh::Mesh() {
+    eliminated = false;
+}
 
 glm::vec3* Mesh::vertice(int id) {
     return vertices[id];

@@ -21,4 +21,5 @@ public:
     vec3 initalRot;
     float angle;
     string name;
+    bool eliminable;
 };
