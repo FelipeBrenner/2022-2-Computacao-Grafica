@@ -244,23 +244,8 @@ void System::Run(vector<Mesh*> meshs) {
         Mesh* meshsAfterCollision;
         
         for (Mesh* mesh : meshs) {
-            // if (mesh->objectName == "bullet" && bulletWasFired) {
-            //     mesh->translateModel(vec3(0.0f, 0.0f, -0.01f));
-            // }
-
-            if (mesh->eliminable) {
-                for (Mesh* otherMesh : meshs) {
-                    bool hasOtherEliminable = otherMesh->eliminable && mesh != otherMesh;
-                    if (hasOtherEliminable) {
-                        bool hasCollidedX = mesh->translation.x + mesh->xHitbox > otherMesh->translation.x - otherMesh->xHitbox && mesh->translation.x - mesh->xHitbox < otherMesh->translation.x + otherMesh->xHitbox;
-                        bool hasCollidedY = mesh->translation.y + mesh->yHitbox > otherMesh->translation.y - otherMesh->yHitbox && mesh->translation.y - mesh->yHitbox < otherMesh->translation.y + otherMesh->yHitbox;
-                        bool hasCollidedZ = mesh->translation.z + mesh->zHitbox > otherMesh->translation.z - otherMesh->zHitbox && mesh->translation.z - mesh->zHitbox < otherMesh->translation.z + otherMesh->zHitbox;
-
-                        if (hasCollidedX && hasCollidedY && hasCollidedZ) {
-                            mesh->eliminated = true;
-                        }
-                    }
-                }
+            if (mesh->objectName == "bullet" && bulletWasFired) {
+                mesh->translation.z -= 0.01f;
             }
 
             if(mesh->objectName == "curve") {
@@ -294,7 +279,22 @@ void System::Run(vector<Mesh*> meshs) {
                 glDrawArrays(GL_TRIANGLES, 0, group->getNumVertices());
                 glBindVertexArray(0);
                 glBindTexture(GL_TEXTURE_2D, 0);
-            }   
+            }
+
+            if (mesh->eliminable) {
+                for (Mesh* otherMesh : meshs) {
+                    bool hasOtherEliminable = otherMesh->eliminable && mesh != otherMesh;
+                    if (hasOtherEliminable) {
+                        bool hasCollidedX = mesh->translation.x + mesh->xHitbox > otherMesh->translation.x - otherMesh->xHitbox && mesh->translation.x - mesh->xHitbox < otherMesh->translation.x + otherMesh->xHitbox;
+                        bool hasCollidedY = mesh->translation.y + mesh->yHitbox > otherMesh->translation.y - otherMesh->yHitbox && mesh->translation.y - mesh->yHitbox < otherMesh->translation.y + otherMesh->yHitbox;
+                        bool hasCollidedZ = mesh->translation.z + mesh->zHitbox > otherMesh->translation.z - otherMesh->zHitbox && mesh->translation.z - mesh->zHitbox < otherMesh->translation.z + otherMesh->zHitbox;
+
+                        if (hasCollidedX && hasCollidedY && hasCollidedZ) {
+                            mesh->eliminated = true;
+                        }
+                    }
+                }
+            }
         }
 
         for (int i=0; i<meshs.size(); i++) {

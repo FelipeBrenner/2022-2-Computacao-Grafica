@@ -3,13 +3,26 @@ name curve
 objpath objs/pista.obj
 
 newobj
-objpath objs/sphere.obj
-translation -13.91672 10.63812 -2.2038
+name car
+objpath objs/bmw.obj
 scale 1 1 1
 eliminable
 
 newobj
-name car
-objpath objs/bmw.obj
+objpath objs/sphere.obj
+translation 0.99 0.98335 -10.0
+scale 1 1 1
+eliminable
+
+newobj
+name bullet
+objpath objs/sphere.obj
+translation 0.99 0.98335 30.0
+scale 1 1 1
+eliminable
+
+newobj
+objpath objs/trout.obj
+translation 0.99 0.98335 20.0
 scale 1 1 1
 eliminable
