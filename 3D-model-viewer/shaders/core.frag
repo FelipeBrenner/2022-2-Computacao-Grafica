@@ -13,6 +13,7 @@ out vec4 color;
 uniform vec3 lightPos;
 uniform vec3 viewPos;
 uniform vec3 lightColor;
+uniform vec3 cameraPos;
 
 uniform sampler2D texture1;
 
@@ -36,4 +37,11 @@ void main() {
         
     vec3 result = ambient + diffuse + specular;
     color = vec4(result, 1.0) * objectColor;
+
+    // Calculate fog
+    vec4  fog_colour = vec4(0.3, 0.3, 0.3, 1.0);
+    float dist = distance(cameraPos, FragPos);
+    float fatm = 1/dist;
+    
+    color = color * fatm + (1 - fatm) * fog_colour;
 }

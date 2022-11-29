@@ -239,6 +239,7 @@ void System::Run(vector<Mesh*> meshs) {
         coreShader.setVec3("lightColor", vec3(1.0f, 1.0f, 1.0f));
         coreShader.setVec3("lightPos", vec3(100.0f, 1.0f, 100.0f));
         coreShader.setVec3("viewPos", vec3(camX, camY, camZ));
+        coreShader.setVec3("cameraPos", cameraPos);
 
         Mesh* meshsAfterCollision;
         
