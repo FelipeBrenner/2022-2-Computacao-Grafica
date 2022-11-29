@@ -274,7 +274,7 @@ void System::Run(vector<Mesh*> meshs) {
                 mesh->translation = vec3(curvePoints.at(carPosition)->x, curvePoints.at(carPosition)->y, curvePoints.at(carPosition)->z);
                 
                 carPosition++;
-                if(carPosition == curvePoints.size()-2) carPosition = 0;
+                if(carPosition == curvePoints.size() - 1) carPosition = 0;
                 time = clock();
             }
 

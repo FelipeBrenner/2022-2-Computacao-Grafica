@@ -35,8 +35,8 @@ float CurveReader::calculateAngle(vector<vec3*> curvePoints, int index, char coo
 	vec3* a = curvePoints.at(index);
 	vec3* b;
 
-	if (index == curvePoints.size() - 2) b = curvePoints.at(0);
-	else b = curvePoints.at(index + 2);
+	if (index == curvePoints.size() - 1) b = curvePoints.at(0);
+	else b = curvePoints.at(index + 1);
 
     float dx, dy, dz, angle;
 
@@ -46,8 +46,8 @@ float CurveReader::calculateAngle(vector<vec3*> curvePoints, int index, char coo
             dy = b->y - a->y;
 
             if (dz == 0 || dy == 0) {
-                dz = b->z - curvePoints.at(index - 2)->z;
-                dy = b->y - curvePoints.at(index - 2)->y;
+                dz = b->z - curvePoints.at(index - 1)->z;
+                dy = b->y - curvePoints.at(index - 1)->y;
             }
 
             angle = PI - atan(dy, dz);
@@ -58,8 +58,8 @@ float CurveReader::calculateAngle(vector<vec3*> curvePoints, int index, char coo
             dz = b->z - a->z;
 
             if (dx == 0 || dz == 0) {
-                dx = b->x - curvePoints.at(index - 2)->x;
-                dz = b->z - curvePoints.at(index - 2)->z;
+                dx = b->x - curvePoints.at(index - 1)->x;
+                dz = b->z - curvePoints.at(index - 1)->z;
             }
 
             angle = 2 * PI - atan(dz, dx);
@@ -70,8 +70,8 @@ float CurveReader::calculateAngle(vector<vec3*> curvePoints, int index, char coo
             dy = b->y - a->y;
 
             if (dx == 0 || dy == 0) {
-                dx = b->x - curvePoints.at(index - 2)->x;
-                dy = b->y - curvePoints.at(index - 2)->y;
+                dx = b->x - curvePoints.at(index - 1)->x;
+                dy = b->y - curvePoints.at(index - 1)->y;
             }
 
             cout << "dx = " << dx << " dy = " << dy << endl;

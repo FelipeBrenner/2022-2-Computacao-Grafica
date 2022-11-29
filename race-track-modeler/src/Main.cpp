@@ -32,7 +32,6 @@ int main() {
 					z = z +  zIndexSensitivity;
 					if(z > 1) z = 1.0;
 					controlPoints->at(selectedIndex)->z = z;
-					cout << "z aumentou = " << controlPoints->at(selectedIndex)->z << endl;
 
 					controlPointsColor->at(selectedIndex) = new vec3(z,z,z);
 				}
@@ -49,7 +48,6 @@ int main() {
 					z = z - zIndexSensitivity;
 					if(z < 0) z = 0.0;
 					controlPoints->at(selectedIndex)->z = z;
-					cout << "z diminuiu = " << controlPoints->at(selectedIndex)->z << endl;
 					controlPointsColor->at(selectedIndex) = new vec3(z,z,z);
 				}
 				controlPointsFloat->clear();
@@ -135,12 +133,6 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
 		// adiciona ao vetor de pontos selecionados
 		controlPoints->push_back(point);
 
-		cout << "- Ponto de Controle Computado:" << endl;
-		cout << "x = " << xpos << endl;
-		cout << "y = " << ypos << endl;
-
-		setCoordinatesByZone(xpos, ypos);
-
 		controlPointsFloat = convertVectorToFloat(controlPoints);
 
 		controlPointsColor->push_back(new vec3(0.0, 0.0, 0.0));
@@ -165,7 +157,6 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
 		}
 	
 		selectedIndex = nearestIndex;
-		cout << "selectedIndex " << selectedIndex << endl;	
 	}
 }
 
@@ -262,58 +253,18 @@ void convertCoordinates(double& x, double& y) {
 	}
 }
 
-int getZone(float x, float y) {
-
-// pega o quadrante que esta
-	if (x > 0.0 && y > 0.0) {
-		return 1;
-	}
-	else if (x > 0.0 && y < 0.0) {
-		return 4;
-	}
-	else if (x < 0.0 && y < 0.0) {
-		return 3;
-	}
-	else {
-		return 2;
-	}
-}
-
-void setCoordinatesByZone(double& xpos, double& ypos)
-{
-	// arrendodamento de curva, aumentando um pouco a curva
-	int zone = getZone(xpos, ypos);
-	if (zone == 1) {
-		xpos += 0.5;
-		ypos += 0.5;
-	}
-	else if (zone == 2) {
-		xpos -= 0.5;
-		ypos += 0.5;
-	}
-	else if (zone == 3) {
-		xpos -= 0.5;
-		ypos -= 0.5;
-	}
-	else if (zone == 4) {
-		xpos += 0.5;
-		ypos -= 0.5;
-	}
-}
-
 vector<vec3*>* generateOriginalCurve(vector<vec3*>* points) {
 	TXTWriter TXTWriter;
 	TXTWriter.createTXTFile();
 
 	vector<vec3*>* curvaCalculada = new vector<vec3*>();
 	vector<vec3*>* temp = new vector<vec3*>();
-	vector<vec3*>* temp2 = new vector<vec3*>();
 
 	for (int i = 0; i < points->size(); i++) {
 		temp->push_back(new vec3(points->at(i)->x, points->at(i)->y, points->at(i)->z));
 	}
 
-	//cria mais um ponto para terminar a curva, com o ponto inicial
+	// cria mais um ponto para terminar a curva, com o ponto inicial
 	temp->push_back(points->at(0));
 	temp->push_back(points->at(1));
 	temp->push_back(points->at(2));
@@ -321,7 +272,6 @@ vector<vec3*>* generateOriginalCurve(vector<vec3*>* points) {
 	calculateBSpline(temp, curvaCalculada, TXTWriter);
 
 	TXTWriter.closeTXTFile();
-	cout << "Curva gerada com sucesso!" << endl;
 
 	return curvaCalculada;
 }
@@ -353,32 +303,27 @@ void calculateBSpline(vector<vec3*>* temp, vector<vec3*>* curvaCalculada, TXTWri
 			curvaCalculada->push_back(point);
 
 			TXTWriter.addPoint(point->x, point->y, point->z);
-
-			// curvaCalculada->push_back(new vec3(0.0, 0.1, 1.0));
 		}
 	}
 }
 
 vector<vec3*>* generateSideCurve(vector<vec3*>* points, bool external) {
-
-	// recebe os pontos da curva original do meio
-
 	OBJWriter OBJWriter;
 	vector<vec3*>* calculatedCurve = new vector<vec3*>();
 
-	for (int j = 0; j < points->size() - 1; j += 2) {
+	for (int j = 0; j < points->size() - 1; j += 1) {
 		vec3* a = points->at(j);
 		vec3* b;
 
-		if (j == points->size() - 2) b = points->at(0);
-		else b = points->at(j + 2);
+		if (j == points->size() - 1) b = points->at(0);
+		else b = points->at(j + 1);
 
 		GLfloat dx = b->x - a->x;
 		GLfloat dy = b->y - a->y;
 
 		if (dx == 0 || dy == 0) {
-			dx = b->x - points->at(j - 2)->x;
-			dy = b->y - points->at(j - 2)->y;
+			dx = b->x - points->at(j - 1)->x;
+			dy = b->y - points->at(j - 1)->y;
 		}
 
 		// arco tangente
@@ -387,16 +332,16 @@ vector<vec3*>* generateSideCurve(vector<vec3*>* points, bool external) {
 		if (external) angle += HALF_PI;
 		else angle -= HALF_PI;
 
-		// 0.09 -> tamanho da curva, fator de escala
+		// multiplica por um fator de escala para mudar a largura da curva
 		GLfloat offsetX = cos(angle) * 0.05;
 		GLfloat offsetY = sin(angle) * 0.05;
 
-		vec3* pontosGerados = new vec3(a->x + offsetX, a->y + offsetY, a->z);
+		vec3* pontoGerado = new vec3(a->x + offsetX, a->y + offsetY, a->z);
 
-		calculatedCurve->push_back(pontosGerados);
+		calculatedCurve->push_back(pontoGerado);
 
 		// adiciona pro obj
-		OBJWriter.addPointsFinalCurve(pontosGerados->x, pontosGerados->y, pontosGerados->z);
+		OBJWriter.addPointsFinalCurve(pontoGerado->x, pontoGerado->y, pontoGerado->z);
 
 		// adiciona cor branca para curva
 		calculatedCurve->push_back(new vec3(0.0, 0.1, 1.0));
