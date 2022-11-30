@@ -28,6 +28,7 @@ void calculateBSpline(vector<vec3*>* temp, vector<vec3*>* curvaCalculada, TXTWri
 vector<vec3*>* generateOriginalCurve(vector<vec3*>* points);
 vector<vec3*>* generateSideCurve(vector<vec3*>* points, bool external);
 vector<vec3*>* generateFinalCurve(vector<vec3*>* internalCurve, vector<vec3*>* externalCurve);
+void generateNormals(vector<vec3*>* internalCurve, vector<vec3*>* externalCurve);
 vector<GLfloat>* convertVectorToFloat(vector<vec3*>* points);
 void generateCurve();
 
