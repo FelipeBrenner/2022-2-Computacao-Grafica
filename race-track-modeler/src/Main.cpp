@@ -187,6 +187,7 @@ void generateCurve() {
 	OBJWriter.saveTextureValuesToOBJ();
 
 	finalCurve->clear();
+	generateNormals(internalCurve, externalCurve);
 	finalCurve = generateFinalCurve(internalCurve, externalCurve);
 	finalCurveFloat = convertVectorToFloat(finalCurve);
 
@@ -361,19 +362,13 @@ vector<vec3*>* generateFinalCurve(vector<vec3*>* internalCurve, vector<vec3*>* e
 		finalCurve->push_back(internalCurve->at(i));
 		finalCurve->push_back(internalCurve->at(i + 1));
 
-		vec3* a_int = internalCurve->at(i);
-
 		// Ponto Interno 2
 		finalCurve->push_back(internalCurve->at(i + 2));
 		finalCurve->push_back(internalCurve->at(i + 3));
 
-		vec3* b_int = internalCurve->at(i + 2);
-
 		// Ponto Externo 1
 		finalCurve->push_back(externalCurve->at(i));
 		finalCurve->push_back(externalCurve->at(i + 1));
-
-		vec3* c_ext = externalCurve->at(i);
 
 		OBJWriter.addFaces(index, externalCurveSize, ++faces, 1);
 
@@ -385,13 +380,59 @@ vector<vec3*>* generateFinalCurve(vector<vec3*>* internalCurve, vector<vec3*>* e
 		finalCurve->push_back(externalCurve->at(i + 2));
 		finalCurve->push_back(externalCurve->at(i + 3));
 
-		vec3* d_ext = externalCurve->at(i + 2);
-
 		// Ponto Externo 1
 		finalCurve->push_back(externalCurve->at(i));
 		finalCurve->push_back(externalCurve->at(i + 1));
 
 		OBJWriter.addFaces(index, externalCurveSize, ++faces, 2);
+
+		index++;
+	}
+	
+	// O trecho abaixo liga os últimos pontos com primeiro os primeiros
+	// Ponto Interno 1
+	finalCurve->push_back(internalCurve->at(i));
+	finalCurve->push_back(internalCurve->at(i + 1));
+
+	// Ponto Interno 2
+	finalCurve->push_back(internalCurve->at(0));
+	finalCurve->push_back(internalCurve->at(1));
+
+	// Ponto Externo 1
+	finalCurve->push_back(externalCurve->at(i));
+	finalCurve->push_back(externalCurve->at(i + 1));
+
+	OBJWriter.addFaces(index, externalCurveSize, ++faces, 3);
+
+	// Ponto Interno 2
+	finalCurve->push_back(internalCurve->at(0));
+	finalCurve->push_back(internalCurve->at(1));
+
+	// Ponto Externo 2
+	finalCurve->push_back(externalCurve->at(0));
+	finalCurve->push_back(externalCurve->at(1));
+
+	// Ponto Externo 1
+	finalCurve->push_back(externalCurve->at(i));
+	finalCurve->push_back(externalCurve->at(i + 1));
+
+	OBJWriter.addFaces(index, externalCurveSize, ++faces, 4);
+
+	return finalCurve;
+}
+
+void generateNormals(vector<vec3*>* internalCurve, vector<vec3*>* externalCurve)
+{
+	OBJWriter OBJWriter;
+
+	int i = 0;
+	int index = 1;
+
+	for (; i < internalCurve->size() - 2; i += 2) {
+		vec3* a_int = internalCurve->at(i);
+		vec3* b_int = internalCurve->at(i + 2);
+		vec3* c_ext = externalCurve->at(i);
+		vec3* d_ext = externalCurve->at(i + 2);
 
 		// pega os vetores das normais
 		// y e z sao invertidos para modificar os eixos
@@ -409,43 +450,11 @@ vector<vec3*>* generateFinalCurve(vector<vec3*>* internalCurve, vector<vec3*>* e
 
 		index++;
 	}
-	
-	// O trecho abaixo liga os últimos pontos com primeiro os primeiros
-	// Ponto Interno 1
-	finalCurve->push_back(internalCurve->at(i));
-	finalCurve->push_back(internalCurve->at(i + 1));
 
 	vec3* a_int = internalCurve->at(i);
-
-	// Ponto Interno 2
-	finalCurve->push_back(internalCurve->at(0));
-	finalCurve->push_back(internalCurve->at(1));
-
 	vec3* b_int = internalCurve->at(0);
-
-	// Ponto Externo 1
-	finalCurve->push_back(externalCurve->at(i));
-	finalCurve->push_back(externalCurve->at(i + 1));
-
 	vec3* c_ext = externalCurve->at(i);
-
-	OBJWriter.addFaces(index, externalCurveSize, ++faces, 3);
-
-	// Ponto Interno 2
-	finalCurve->push_back(internalCurve->at(0));
-	finalCurve->push_back(internalCurve->at(1));
-
-	// Ponto Externo 2
-	finalCurve->push_back(externalCurve->at(0));
-	finalCurve->push_back(externalCurve->at(1));
-
 	vec3* d_ext = externalCurve->at(0);
-
-	// Ponto Externo 1
-	finalCurve->push_back(externalCurve->at(i));
-	finalCurve->push_back(externalCurve->at(i + 1));
-
-	OBJWriter.addFaces(index, externalCurveSize, ++faces, 4);
 
 	// pega os vetores das normais
 	// y e z sao invertidos para modificar os eixos
@@ -455,11 +464,9 @@ vector<vec3*>* generateFinalCurve(vector<vec3*>* internalCurve, vector<vec3*>* e
 	vec3 dc = vec3(d_ext->x - c_ext->x, d_ext->z - c_ext->z, d_ext->y - c_ext->y);
 	vec3 db = vec3(d_ext->x - b_int->x, d_ext->z - b_int->z, d_ext->y - b_int->y);
 
-	// prooduto vetorial
+	// produto vetorial
 	vec3 normal_vec_abac = cross(ab, ac);
 	vec3 normal_vec_dbdc = cross(db, dc);
 
 	OBJWriter.addNormalExternalCurve(normal_vec_abac, normal_vec_dbdc);
-
-	return finalCurve;
 }
