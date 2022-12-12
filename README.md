@@ -36,4 +36,4 @@ E rodar:
 make run
 ```
 
-Qualquer dúvida para erros ocorridos nos projetos, ou determinada modificação no código e arquivos para funcionar de maneira diferente, podem entrar em contato comigo.
+Qualquer dúvida para erros ocorridos nos projetos, ou determinada modificação no código e arquivos para funcionar de maneira diferente, estou disponível para ajudar.
