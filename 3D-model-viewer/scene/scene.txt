@@ -10,7 +10,7 @@ eliminable
 
 newobj
 objpath objs/sphere.obj
-translation 0.99 0.98335 -10.0
+translation 0.99 0.98335 14.0
 scale 1 1 1
 eliminable
 
